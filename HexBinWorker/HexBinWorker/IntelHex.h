@@ -28,7 +28,11 @@ public:
 		fileName = hexFileName;
 	}
 
-	~IntelHex(void) { fclose(pHexFile); }
+	~IntelHex(void) { 
+		if (pHexFile){
+			fclose(pHexFile);
+		}
+	}
 
 	void parse();
 	

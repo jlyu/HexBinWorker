@@ -8,8 +8,9 @@ using namespace std;
 const int FLASHVOLUME = 16; //Flash的容量，以K为单位 
 
 bool IntelHex::open() {
+	pHexFile = fopen("E:\HexBinWorker\hex\LM032L.HEX", "r");
 
-	pHexFile = fopen((LPSTR)(LPCTSTR)fileName, "r");  // TODO: ?
+	//pHexFile = fopen(fileName.GetBuffer(fileName.GetLength()), "r");  // TODO: ?
 	if(pHexFile == NULL) {  
         printf("Open file error.\n");  
         return false;  

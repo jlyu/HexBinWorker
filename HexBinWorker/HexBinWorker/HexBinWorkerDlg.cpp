@@ -168,7 +168,7 @@ void CHexBinWorkerDlg::OnBnClickedOk()
 		hexFilePathName = pHexFileDlg.GetPathName(); 
 	}
 
-	IntelHex hexFile;
+	IntelHex hexFile(hexFilePathName);
 	hexFile.parse();
 
 
