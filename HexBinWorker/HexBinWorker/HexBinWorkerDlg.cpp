@@ -169,12 +169,7 @@ void CHexBinWorkerDlg::OnBnClickedOk()
 	}
 
 	IntelHex hexFile;
-	std::ifstream intelHexInput;
-
-	intelHexInput.open(hexFilePathName, ifstream::in);
-	ASSERT(intelHexInput.good());
-
-	intelHexInput >> hexFile;
+	hexFile.parse();
 
 
 	
