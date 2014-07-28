@@ -9,7 +9,7 @@ const int FLASHVOLUME = 16; //Flash的容量，以K为单位
 
 bool IntelHex::open() {
 
-	pHexFile = fopen((LPSTR)(LPCTSTR)fileName, "r"); 
+	pHexFile = fopen((LPSTR)(LPCTSTR)fileName, "r");  // TODO: ?
 	if(pHexFile == NULL) {  
         printf("Open file error.\n");  
         return false;  
