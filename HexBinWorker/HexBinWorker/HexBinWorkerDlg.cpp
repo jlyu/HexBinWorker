@@ -7,6 +7,10 @@
 #include "HexBinWorkerDlg.h"
 #include "afxdialogex.h"
 
+#include <iostream>
+#include <fstream>
+#include "IntelHex.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -63,6 +67,7 @@ BEGIN_MESSAGE_MAP(CHexBinWorkerDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_BN_CLICKED(IDOK, &CHexBinWorkerDlg::OnBnClickedOk)
 END_MESSAGE_MAP()
 
 
@@ -151,3 +156,28 @@ HCURSOR CHexBinWorkerDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+
+void CHexBinWorkerDlg::OnBnClickedOk()
+{
+//	CDialogEx::OnOK();
+	CFileDialog pHexFileDlg(TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, _T("Inter Hex (*.hex)|*.hex||")); 
+	CString hexFilePathName; 
+
+	if(pHexFileDlg.DoModal() == IDOK) {
+		hexFilePathName = pHexFileDlg.GetPathName(); 
+	}
+
+	IntelHex hexFile;
+	std::ifstream intelHexInput;
+
+	intelHexInput.open(hexFilePathName, ifstream::in);
+	ASSERT(intelHexInput.good());
+
+	intelHexInput >> hexFile;
+
+
+	
+
+
+}
