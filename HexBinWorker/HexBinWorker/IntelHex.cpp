@@ -30,7 +30,7 @@ bool IntelHex::formatParse(const char *src, const int lineNo) {
 
 	HexRecord hexRecord;
 
-	while (srcIndex <= srcLength) {  
+	while (srcIndex < srcLength) {  
 
 		if (srcIndex == 0) {
 			if (src[srcIndex] != ':') {
@@ -41,38 +41,33 @@ bool IntelHex::formatParse(const char *src, const int lineNo) {
 		}
 
 		if(srcIndex == 1) {   //提取两位的"ll"
-			//hexRecord.dataLength = new char[3];
-
             for(int index = 0; index < 2; index++) { 	
 				hexRecord.dataLength += src[srcIndex++];
             }  
-			//hexRecord.dataLength[2] = '\0';
         }
 
 		if(srcIndex == 3) {  //提取四位的"aaaa"
             for(int index = 0; index < 4; index++) {  
-        
-				hexRecord.startAddress[index] = src[srcIndex++];
+				hexRecord.startAddress += src[srcIndex++];
             }
         }
 
 		if(srcIndex == 7) {  //提取两位的"tt"
             for(int index = 0; index < 2; index++) {  
-                
-				hexRecord.recordType[index] = src[srcIndex++];
+				hexRecord.recordType += src[srcIndex++];
             }  
         }
 
 		if(srcIndex == 9) { //提取2N位的"[dd]"
-			for(int index = 0; index < srcLength - 2 - srcIndex; index++) { 
-				hexRecord.data[index] = src[srcIndex++];
+			const int dataLen = srcLength - 2 - srcIndex;
+			for(int index = 0; index < dataLen; index++) { 
+				hexRecord.data += src[srcIndex++];
 			}
 		}
 
-		if (srcIndex == srcLength-1) { //提取两位的"cc"
+		if (srcIndex == srcLength-2) { //提取两位的"cc"
 			for(int index = 0; index < 2; index++) {  
-                
-				hexRecord.sumCheck[index] = src[srcIndex++];
+				hexRecord.sumCheck += src[srcIndex++];
             }  
 		}
 

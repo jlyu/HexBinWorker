@@ -18,10 +18,10 @@ private:
 
 	struct HexRecord{
 		string dataLength;
-		char* startAddress;
-		char* recordType;
-		char* data;
-		char* sumCheck;
+		string startAddress;
+		string recordType;
+		string data;
+		string sumCheck;
 	};
 
 	struct HexLine {
