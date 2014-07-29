@@ -14,13 +14,31 @@ using namespace std;
 
 class IntelHex
 {
-
-
 private:
+
+	struct HexRecord{
+		string dataLength;
+		char* startAddress;
+		char* recordType;
+		char* data;
+		char* sumCheck;
+	};
+
+	struct HexLine {
+		int lineNo;
+		HexRecord hexRecord;
+	};
+
+
 	CString fileName;
 	FILE *pHexFile;
+	list<HexLine> fileContent;
+
+
 
 	bool open();
+	bool formatParse(const char *src, const int lineNo);
+	bool hexFormatParse(const char *src, char *dst);
 
 public:
 	IntelHex(void) { }
