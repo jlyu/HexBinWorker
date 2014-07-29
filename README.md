@@ -1,7 +1,7 @@
 ###### 开发要求：
-系统平台：Win / MacOS / Linux / BSD，任选；
-开发语言：C++ / C# / Java，任选；
-界面框架：WPF / QT / WinForm / wxWidget，任选；（建议：QT / WPF）  
+系统平台：Win / MacOS / Linux / BSD，任选；  
+开发语言：C++ / C# / Java，任选；  
+界面框架：WPF / QT / WinForm / wxWidget，任选；（建议：QT / WPF）    
 
 
 ###### 程序要求：
@@ -11,3 +11,9 @@
 4. 可在视图中对文件内容进行修改，并保证两种视图内容同步;
 5. 串口设置;（包括自动侦测可用串口）
 6. 实现ISP通讯协议，能够将文件烧入到ARM芯片。
+
+
+###### 待解决问题
+1. 了解 Intel HEX 文件格式
+2. 正则匹配 pcre.h 的使用
+3. 验证解析 .hex 文件内容

@@ -37,6 +37,8 @@ private:
 
 
 	bool open();
+	bool checkLine(const char *src);
+	bool matchLine(const char *src);
 	bool formatParse(const char *src, const int lineNo);
 	bool hexFormatParse(const char *src, char *dst);
 

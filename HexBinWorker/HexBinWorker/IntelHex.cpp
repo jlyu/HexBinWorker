@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "IntelHex.h"
 #include <string.h>
-
+#include <regex> 
 
 using namespace std;
 
@@ -17,6 +17,46 @@ bool IntelHex::open() {
         return false;  
     }  
 	return true;
+}
+
+bool IntelHex::checkLine(const char *src) {
+	
+	string checkPattern("[:0-9A-F\\r\\n]*");
+	string lineString = src;
+
+	std::regex_constants::syntax_option_type optionType = std::regex_constants::icase;
+	std::regex regExpress(checkPattern, optionType);
+	//std::smatch matchResult;
+
+	if(std::regex_match(lineString, regExpress))  
+    {  
+        return matchLine(src);  
+    }  
+    else  
+    {  
+        return false;  
+    }  
+}
+
+
+bool IntelHex::matchLine(const char *src) {
+	string matchPattern("^:(\\w{2})(\\w{4})(\\w{2})(\\w*)(\\w{2})$");
+	string lineString = src;
+	std::regex_constants::syntax_option_type optionType = std::regex_constants::icase;
+	std::regex regExpress(matchPattern, optionType);
+	std::smatch matchResult;
+
+	if(std::regex_match(lineString, matchResult, regExpress))  
+    {  
+		// http://blog.csdn.net/zhulinu/article/details/17148511
+
+        return true;  
+    }  
+    else  
+    {  
+        return false;  
+    }  
+
 }
 
 bool IntelHex::formatParse(const char *src, const int lineNo) {
@@ -127,6 +167,7 @@ void IntelHex::parse() {
 	int lineNo = 1;
 	while (fscanf(pHexFile, "%s", lineBuffer) != EOF) {
 		printf("%s\n", lineBuffer);
+		checkLine(lineBuffer);
 		formatParse(lineBuffer, lineNo);
 		lineNo++;
 	}
