@@ -49,7 +49,7 @@ bool IntelHex::matchLine(const char *src) {
 	if(std::regex_match(lineString, matchResult, regExpress))  
     {  
 		// http://blog.csdn.net/zhulinu/article/details/17148511
-
+		string substring(matchResult[1].first, matchResult[1].second);
         return true;  
     }  
     else  
