@@ -5,7 +5,7 @@
 
 using namespace std;
 
-const int FLASHVOLUME = 16; //Flash的容量，以K为单位 
+const int FLASHVOLUME = 64; //Flash的容量，以K为单位 
 
 bool IntelHex::open() {
 
@@ -38,7 +38,6 @@ bool IntelHex::checkLine(const char *src) {
     }  
 }
 
-
 bool IntelHex::matchLine(const char *src) {
 	string matchPattern("^:(\\w{2})(\\w{4})(\\w{2})(\\w*)(\\w{2})$");
 	string lineString = src;
@@ -48,8 +47,24 @@ bool IntelHex::matchLine(const char *src) {
 
 	if(std::regex_match(lineString, matchResult, regExpress))  
     {  
-		// http://blog.csdn.net/zhulinu/article/details/17148511
-		string substring(matchResult[1].first, matchResult[1].second);
+		HexRecord hexRecord;
+		HexLine hexLine;
+
+		// 子字符串赋值
+		hexRecord.dataLength = string(matchResult[1].first, matchResult[1].second);
+		hexRecord.startAddress = string(matchResult[2].first, matchResult[2].second);
+		hexRecord.recordType = string(matchResult[3].first, matchResult[3].second);
+		hexRecord.data = string(matchResult[4].first, matchResult[4].second);
+		hexRecord.sumCheck = string(matchResult[5].first, matchResult[5].second);
+		hexRecord.origRecord = lineString;
+
+		// 检验行
+		bool isPass = verifyLine(hexRecord);
+		if (isPass) {
+
+			hexLine.hexRecord = hexRecord;
+			fileContent.push_back(hexLine);
+		}
         return true;  
     }  
     else  
@@ -57,6 +72,68 @@ bool IntelHex::matchLine(const char *src) {
         return false;  
     }  
 
+}
+
+bool IntelHex::verifyLine(const HexRecord& hexRecord) {
+	// 验证数据长度
+	const unsigned int dateSize = hexRecord.data.size();
+	unsigned int dataLength = hexToDec(hexRecord.dataLength);
+
+	if (dateSize != dataLength * 2) {
+		return false;
+	}
+	
+	// 校验和
+	const int origRecordSize = hexRecord.origRecord.size();
+	unsigned int sumCheck = 0;
+	string origRecordCopy = hexRecord.origRecord;
+	typedef string::const_iterator cIter;
+	for (cIter i = origRecordCopy.begin()+1 ; i < origRecordCopy.end() - 2; i += 2) {
+		string hexStr = string(i, i+2);
+		sumCheck += hexToDec(hexStr);
+		sumCheck &= 0xFF;
+	}
+	sumCheck = (~sumCheck + 1) & 0xFF;  // 206 -> CE
+
+	char sumCheckChar[2];
+	sprintf(sumCheckChar, "%X", sumCheck); // CE
+	
+	if (string(sumCheckChar) != hexRecord.sumCheck) {
+		return false;
+	}
+
+	return true;
+}
+
+void IntelHex::hexStringToDec() {
+	// 字符串 -> 16进制表示
+	const int fileLines = fileContent.size();
+	for (int i=0; i<fileLines; i++) {
+		string data = fileContent[i].hexRecord.data;
+		char *p;
+		long n = strtol(data.c_str(), &p, 16);
+	}
+}
+
+unsigned int IntelHex::hexToDec(const string& str) {
+
+	unsigned int result = 0;
+	
+	string strCopy = str;
+	transform(strCopy.begin(), strCopy.end(), strCopy.begin(), ::toupper);
+	const int strSize = strCopy.size();
+
+	for (int i = 0; i < strSize; i++) {
+		if (strCopy[i] >= '0' && strCopy[i] <= '9') {
+			result = result * 16 + (unsigned int)(strCopy[i] - '0');
+		} else if (str[i] >= 'A' && str[i] <= 'F') {
+			result = result * 16 + (unsigned int)(strCopy[i] - 'A' + 10); 
+		} else {
+			result = result * 16 + (unsigned int)(strCopy[i] - 'A' + 10); 
+		}
+	}
+
+    return result;
 }
 
 bool IntelHex::formatParse(const char *src, const int lineNo) {
@@ -168,9 +245,11 @@ void IntelHex::parse() {
 	while (fscanf(pHexFile, "%s", lineBuffer) != EOF) {
 		printf("%s\n", lineBuffer);
 		checkLine(lineBuffer);
-		formatParse(lineBuffer, lineNo);
+		//formatParse(lineBuffer, lineNo);
 		lineNo++;
 	}
+
+	hexStringToDec();
 
 	delete(lineBuffer);
 	delete(parseBuffer);

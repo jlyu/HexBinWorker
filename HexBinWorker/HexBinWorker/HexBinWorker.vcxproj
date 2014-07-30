@@ -95,7 +95,6 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="ReadMe.txt" />
     <None Include="res\HexBinWorker.ico" />
     <None Include="res\HexBinWorker.rc2" />
   </ItemGroup>
