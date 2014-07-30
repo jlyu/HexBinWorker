@@ -122,7 +122,7 @@ void IntelHex::hexStringToDec() {
 }
 
 unsigned int IntelHex::hexToDec(const string& str) {
-
+	
 	unsigned int result = 0;
 	
 	string strCopy = str;

@@ -19,6 +19,11 @@ private:
 		string origRecord;
 	};
 
+	struct HexBlock {
+		BYTE datas[64*1024]; // ∑÷≈‰64K ≥ı ºÃÓ≥‰ FF
+		int maxAddress;
+	}
+
 	/*
 	struct DecRecord {
 		unsigned int dataLength;
