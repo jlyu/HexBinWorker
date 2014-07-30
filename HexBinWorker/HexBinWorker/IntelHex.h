@@ -14,10 +14,12 @@ private:
 		string startAddress;
 		string recordType;
 		string data;
+		vector<string> datas;
 		string sumCheck;
 		string origRecord;
 	};
 
+	/*
 	struct DecRecord {
 		unsigned int dataLength;
 		unsigned int startAddress;
@@ -25,11 +27,12 @@ private:
 		vector<unsigned int> data;
 		unsigned int sumCheck;
 	};
+	*/
 
 	struct HexLine {
 		//int lineNo;
 		HexRecord hexRecord;
-		DecRecord decRecord;
+		//DecRecord decRecord;
 	};
 
 

@@ -95,10 +95,10 @@ bool IntelHex::verifyLine(const HexRecord& hexRecord) {
 	}
 	sumCheck = (~sumCheck + 1) & 0xFF;  // 206 -> CE
 
-	char sumCheckChar[2];
-	sprintf(sumCheckChar, "%X", sumCheck); // CE
+	string hexSumCheckStr = "0x" + hexRecord.sumCheck;
+	unsigned int decSumCheck = strtol(hexSumCheckStr.c_str(), NULL, 16);
 	
-	if (string(sumCheckChar) != hexRecord.sumCheck) {
+	if (sumCheck != decSumCheck) {
 		return false;
 	}
 
@@ -107,12 +107,18 @@ bool IntelHex::verifyLine(const HexRecord& hexRecord) {
 
 void IntelHex::hexStringToDec() {
 	// 字符串 -> 16进制表示
-	const int fileLines = fileContent.size();
-	for (int i=0; i<fileLines; i++) {
-		string data = fileContent[i].hexRecord.data;
-		char *p;
-		long n = strtol(data.c_str(), &p, 16);
-	}
+	//const int fileLines = fileContent.size();
+	//for (int i=0; i<fileLines; i++) {
+	//	//typedef string::iterator Iter;
+	//	//string dataCopy = fileLines.hexR
+	//	//for (Iter i = fileLines..begin()+1 ; i < origRecordCopy.end() - 2; i += 2) {
+	//	//string hexStr = string(i, i+2);
+
+	//	//HexRecord.datas.push_back();
+
+	//	//string hexData = "0x" + fileContent[i].hexRecord.data;
+	//	//long n = strtol(data.c_str(), NULL, 16);
+	//}
 }
 
 unsigned int IntelHex::hexToDec(const string& str) {
