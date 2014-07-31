@@ -5,9 +5,30 @@
 
 using namespace std;
 
-const int FLASHVOLUME = 64; //Flash的容量，以K为单位 
+/*
+打开并读取文件
+逐行，内容校验
+正则 match hex 的域
+校验数据长度及校验和
+	通过：分析 recordType，发现 04 类型就直接 new 一个新 block
+		  实时计算数据的有效长度
+		  是否要记录每条记录的长度？？
+	最后按顺序把 hex 转成 bin 写入
+以上，Hex -> Bin 
+- - -
+反之，如何从 bin -> hex ?  信息缺失！
+观察第一行 :020000040000FA 一般都是 04 类型
+但如果第一行不是 04 类型，无法获得数据长度
 
-bool IntelHex::open() {
+先从2进制数据转成16进制数据
+
+
+
+*/
+
+
+
+bool IntelHex::openHexFile() {
 
 	CT2A asciiFileName(fileName);
 	pHexFile = fopen(asciiFileName, "r");
@@ -26,14 +47,10 @@ bool IntelHex::checkLine(const char *src) {
 
 	std::regex_constants::syntax_option_type optionType = std::regex_constants::icase;
 	std::regex regExpress(checkPattern, optionType);
-	//std::smatch matchResult;
 
-	if(std::regex_match(lineString, regExpress))  
-    {  
-        return matchLine(src);  
-    }  
-    else  
-    {  
+	if(std::regex_match(lineString, regExpress)) {  
+        return true;  
+    } else {  
         return false;  
     }  
 }
@@ -48,7 +65,7 @@ bool IntelHex::matchLine(const char *src) {
 	if(std::regex_match(lineString, matchResult, regExpress))  
     {  
 		HexRecord hexRecord;
-		HexLine hexLine;
+		//HexLine hexLine;
 
 		// 子字符串赋值
 		hexRecord.dataLength = string(matchResult[1].first, matchResult[1].second);
@@ -62,8 +79,52 @@ bool IntelHex::matchLine(const char *src) {
 		bool isPass = verifyLine(hexRecord);
 		if (isPass) {
 
-			hexLine.hexRecord = hexRecord;
-			fileContent.push_back(hexLine);
+			//hexLine.hexRecord = hexRecord;
+			//fileContent.push_back(hexLine);
+			
+			unsigned int recordTypeInt = hexToDec(hexRecord.recordType);
+
+			
+
+			switch (recordTypeInt)
+			{
+			case 0: {
+				if (hexBlocks.empty()) {
+					HexBlock newHexBlock = HexBlock();
+					hexBlocks.push_front(newHexBlock);
+				}
+
+				list<HexBlock>::iterator hexBlocksIterator = hexBlocks.begin();
+				const int startAddr = hexToDec(hexRecord.startAddress);
+				const int dataLength = hexToDec(hexRecord.dataLength);
+
+				vector<BYTE> splitedData;
+				splitHexData(hexRecord.data, splitedData);
+
+				for (int i = startAddr; i < startAddr + dataLength; i++) {
+					hexBlocksIterator->datas[i] = splitedData[i-startAddr];
+				}
+
+				hexBlocksIterator->maxAddress += 2 * dataLength;
+				
+				break;
+			}
+			case 1: { //finish
+
+				break;
+			}
+			case 2: {
+				break;
+			}
+			case 4: {
+				HexBlock newHexBlock = HexBlock();
+				hexBlocks.push_front(newHexBlock);
+				break;
+			}
+			case 5: {
+				break;
+			}
+			}
 		}
         return true;  
     }  
@@ -103,6 +164,17 @@ bool IntelHex::verifyLine(const HexRecord& hexRecord) {
 	}
 
 	return true;
+}
+
+void IntelHex::splitHexData(const string& inData, vector<BYTE>& outData) {
+	typedef string::const_iterator cIter;
+	for (cIter i = inData.begin() ; i < inData.end(); i += 2) {
+		string hexStr = string(i, i+2);
+		// TODO
+		BYTE n = strtol(hexStr.c_str(), NULL, 10);  // hex -> dec
+		BYTE test = 'CE';
+		outData.push_back(n);
+	}
 }
 
 void IntelHex::hexStringToDec() {
@@ -232,6 +304,10 @@ bool hexFormatParse(const char *src, char *dst) {
 }
 
 
+
+// - Interface
+
+
 void IntelHex::parse() {
 	const int  flashSize = 2 * FLASHVOLUME * 1024 * sizeof(char); //flash的存储单元个数  
     char *lineBuffer = new char[sizeof(char) * 100];        //存储hex文件的一行内容  
@@ -245,20 +321,66 @@ void IntelHex::parse() {
 
 	memset(flashBuffer, 'F', flashSize); //将Flash初始时全部清1
 
-	if (!open()) return;
+	if (!openHexFile()) return;
 	
 	int lineNo = 1;
+
+
 	while (fscanf(pHexFile, "%s", lineBuffer) != EOF) {
 		printf("%s\n", lineBuffer);
-		checkLine(lineBuffer);
-		//formatParse(lineBuffer, lineNo);
+		bool checkPass = checkLine(lineBuffer);
+		if (checkPass) {
+			matchLine(lineBuffer);
+		}
+		
 		lineNo++;
+		_hexEditField += lineBuffer;
+		_hexEditField += "\r\n";
 	}
 
-	hexStringToDec();
+	
+
+	
 
 	delete(lineBuffer);
 	delete(parseBuffer);
 	delete(flashBuffer);
 
+}
+
+
+string IntelHex::getHexEditFieldText() {
+	return _hexEditField;
+}
+
+
+string IntelHex::getBinEditFieldText() {
+	const int block = 16;
+
+	typedef list<HexBlock>::reverse_iterator ListRevIter;
+	for(ListRevIter rIter = hexBlocks.rbegin(); rIter != hexBlocks.rend(); rIter++) {
+		int maxAddress = rIter->maxAddress;
+		int maxLine = int(maxAddress / block);
+		for (int line = 0; line <= maxLine; line++) {
+
+			for (int i=0; i < block; i++) {
+				_binEditField += rIter->datas[line * block + i];
+				_binEditField += "	";
+			}
+
+			if (line == maxLine)
+			{
+				for (int i=0; i < maxAddress % block; i++) {
+					_binEditField += rIter->datas[line * block + i];
+					_binEditField += "	";
+				}
+			}
+
+			_binEditField += "\r\n";
+		}
+
+	}
+
+
+	return _binEditField;
 }

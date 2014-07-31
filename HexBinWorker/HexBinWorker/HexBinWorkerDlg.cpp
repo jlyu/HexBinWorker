@@ -171,7 +171,14 @@ void CHexBinWorkerDlg::OnBnClickedOk()
 	IntelHex hexFile(_T("E:\\HexBinWorker\\hex\\LM032L.hex"));
 	hexFile.parse();
 
+	// print
+	string hexText = hexFile.getHexEditFieldText();
+	CString hexEditFileText = CString(hexText.c_str());
+	GetDlgItem(IDC_HEXFILEFIELD)->SetWindowText(hexEditFileText);
 
+	string binText = hexFile.getBinEditFieldText();
+	CString binEditFileText = CString(binText.c_str());
+	GetDlgItem(IDC_BINFILEFIELD)->SetWindowText(binEditFileText);
 	
 
 

@@ -5,9 +5,12 @@
 #include <vector>
 using namespace std;
 
+const int FLASHVOLUME = 64; //Flash的容量，以K为单位
+
 class IntelHex
 {
 private:
+	
 
 	struct HexRecord {
 		string dataLength;
@@ -20,19 +23,20 @@ private:
 	};
 
 	struct HexBlock {
-		BYTE datas[64*1024]; // 分配64K 初始填充 FF
-		int maxAddress;
-	}
+		BYTE datas[FLASHVOLUME*1024]; // 分配64K 初始填充 FF
 
-	/*
-	struct DecRecord {
-		unsigned int dataLength;
-		unsigned int startAddress;
-		unsigned int recordType;
-		vector<unsigned int> data;
-		unsigned int sumCheck;
+		int maxAddress;  // 10进制
+
+		HexBlock() {
+			memset(datas, '0xFF', FLASHVOLUME*1024);
+			maxAddress = 0;
+		}
 	};
-	*/
+
+	//vector<BYTE> splitedData;
+	void splitHexData(const string& inData, vector<BYTE>& outData);
+
+	list<HexBlock> hexBlocks; 
 
 	struct HexLine {
 		//int lineNo;
@@ -47,7 +51,7 @@ private:
 
 
 
-	bool open();
+	bool openHexFile();
 	bool checkLine(const char *src);
 	bool matchLine(const char *src);
 	bool verifyLine(const HexRecord& hexRecord);
@@ -73,6 +77,13 @@ public:
 	}
 
 	void parse();
+
+
+
+	string _hexEditField;
+	string _binEditField;
+	string getHexEditFieldText();
+	string getBinEditFieldText();
 
 };
 
