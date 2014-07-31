@@ -24,16 +24,20 @@ private:
 
 	struct HexBlock {
 		BYTE datas[FLASHVOLUME*1024]; // 分配64K 初始填充 FF
-
+		
+		int validLength;
 		int maxAddress;  // 10进制
 
 		HexBlock() {
-			memset(datas, '0xFF', FLASHVOLUME*1024);
+			memset(datas, 0x00, FLASHVOLUME*1024);
 			maxAddress = 0;
 		}
 	};
 
 	//vector<BYTE> splitedData;
+	void hexStringToByte(const char* src, const int srcLen, BYTE* dst);
+	void IntelHex::byteToHexString(BYTE* source, char* dest, int sourceLen);
+
 	void splitHexData(const string& inData, vector<BYTE>& outData);
 
 	list<HexBlock> hexBlocks; 

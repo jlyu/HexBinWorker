@@ -164,11 +164,12 @@ void CHexBinWorkerDlg::OnBnClickedOk()
 	CFileDialog pHexFileDlg(TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, _T("Inter Hex (*.hex)|*.hex||")); 
 	CString hexFilePathName; 
 
-	//if(pHexFileDlg.DoModal() == IDOK) {
-	//	hexFilePathName = pHexFileDlg.GetPathName(); 
-	//}
+	if(pHexFileDlg.DoModal() == IDOK) {
+		hexFilePathName = pHexFileDlg.GetPathName(); 
+	}
 
-	IntelHex hexFile(_T("E:\\HexBinWorker\\hex\\LM032L.hex"));
+	//IntelHex hexFile(_T("E:\\HexBinWorker\\hex\\LM032L.hex"));
+	IntelHex hexFile(hexFilePathName);
 	hexFile.parse();
 
 	// print

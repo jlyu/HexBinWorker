@@ -1,7 +1,10 @@
 #include "StdAfx.h"
 #include "IntelHex.h"
-#include <string.h>
+
+#include <string>
 #include <regex> 
+
+
 
 using namespace std;
 
@@ -78,13 +81,8 @@ bool IntelHex::matchLine(const char *src) {
 		// ¼ìÑéÐÐ
 		bool isPass = verifyLine(hexRecord);
 		if (isPass) {
-
-			//hexLine.hexRecord = hexRecord;
-			//fileContent.push_back(hexLine);
 			
 			unsigned int recordTypeInt = hexToDec(hexRecord.recordType);
-
-			
 
 			switch (recordTypeInt)
 			{
@@ -105,12 +103,12 @@ bool IntelHex::matchLine(const char *src) {
 					hexBlocksIterator->datas[i] = splitedData[i-startAddr];
 				}
 
-				hexBlocksIterator->maxAddress += 2 * dataLength;
+				hexBlocksIterator->maxAddress += dataLength;
 				
 				break;
 			}
 			case 1: { //finish
-
+				return true;
 				break;
 			}
 			case 2: {
@@ -166,14 +164,72 @@ bool IntelHex::verifyLine(const HexRecord& hexRecord) {
 	return true;
 }
 
+void IntelHex::hexStringToByte(const char* src, const int srcLen, BYTE* dst) {
+    
+    for (int i = 0; i < srcLen; i += 2)
+    {
+        BYTE highByte = toupper(src[i]);
+        BYTE lowByte  = toupper(src[i+1]);
+
+        if (highByte > 0x39) {
+            highByte -= 0x37;
+		} else {
+            highByte -= 0x30;
+		}
+
+        if (lowByte > 0x39) {
+            lowByte -= 0x37;
+		} else {
+            lowByte -= 0x30;
+		}
+
+        dst[i/2] = (highByte << 4) | lowByte;
+    }
+}
+void IntelHex::byteToHexString(BYTE* source, char* dest, int sourceLen)
+{
+    short i;
+    unsigned char highByte, lowByte;
+
+
+    for (i = 0; i < sourceLen; i++)
+    {
+        highByte = source[i] >> 4;
+        lowByte = source[i] & 0x0f ;
+
+
+        highByte += 0x30;
+
+
+        if (highByte > 0x39)
+                dest[i * 2] = highByte + 0x07;
+        else
+                dest[i * 2] = highByte;
+
+
+        lowByte += 0x30;
+        if (lowByte > 0x39)
+            dest[i * 2 + 1] = lowByte + 0x07;
+        else
+            dest[i * 2 + 1] = lowByte;
+    }
+    return ;
+}
+
+
+
 void IntelHex::splitHexData(const string& inData, vector<BYTE>& outData) {
+
 	typedef string::const_iterator cIter;
 	for (cIter i = inData.begin() ; i < inData.end(); i += 2) {
-		string hexStr = string(i, i+2);
+		const string hexStr = string(i, i+2);
 		// TODO
-		BYTE n = strtol(hexStr.c_str(), NULL, 10);  // hex -> dec
-		BYTE test = 'CE';
-		outData.push_back(n);
+		//BYTE n[2];
+		//memset(n, 0, 2);
+		//hexStringToByte(hexStr.c_str(), 2, n); 
+		
+		BYTE decByte = strtol(hexStr.c_str(), NULL, 16);  // hex -> dec
+		outData.push_back(decByte);
 	}
 }
 
@@ -361,23 +417,41 @@ string IntelHex::getBinEditFieldText() {
 	for(ListRevIter rIter = hexBlocks.rbegin(); rIter != hexBlocks.rend(); rIter++) {
 		int maxAddress = rIter->maxAddress;
 		int maxLine = int(maxAddress / block);
-		for (int line = 0; line <= maxLine; line++) {
 
-			for (int i=0; i < block; i++) {
-				_binEditField += rIter->datas[line * block + i];
-				_binEditField += "	";
+		char ch[3];
+
+		for (int i = 0; i < maxAddress; i++) {
+			BYTE b = rIter->datas[i];
+			sprintf_s(ch, 3, "%02X", b);
+			_binEditField += ch;
+			_binEditField += " ";
+
+			if (i % block == block-1) {
+				_binEditField += "\r\n";
 			}
-
-			if (line == maxLine)
-			{
-				for (int i=0; i < maxAddress % block; i++) {
-					_binEditField += rIter->datas[line * block + i];
-					_binEditField += "	";
-				}
-			}
-
-			_binEditField += "\r\n";
 		}
+
+		//for (int line = 0; line <= maxLine; line++) {
+
+		//	for (int i=0; i < block; i++) {
+		//		BYTE b = rIter->datas[line * block + i];
+		//		sprintf_s(ch, 3, "%02X", b);
+		//		_binEditField += ch;
+		//		_binEditField += " ";
+		//	}
+
+		//	if (line == maxLine)
+		//	{
+		//		for (int i=0; i < maxAddress % block; i++) {
+		//			BYTE b = rIter->datas[line * block + i];
+		//			sprintf_s(ch, 3, "%02X", b);
+		//			_binEditField += ch;
+		//			_binEditField += " ";
+		//		}
+		//	}
+
+		//	_binEditField += "\r\n";
+		//}
 
 	}
 
