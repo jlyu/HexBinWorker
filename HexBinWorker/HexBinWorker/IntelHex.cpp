@@ -381,17 +381,8 @@ void IntelHex::writeToBinFile() {
 	 //¿ªÊ¼Ð´Èë  
 	typedef list<HexBlock>::reverse_iterator ListRevIter;
 	for(ListRevIter rIter = hexBlocks.rbegin(); rIter != hexBlocks.rend(); rIter++) {
-
 		int validLength = rIter->validLength;
-		//for (int i = 0; i < validLength; i++) {
-
-		//	int byteInt = (int)rIter->datas[i];
-		//	char buffer[9];
-		//	//fprintf(pBinFile, "%08s", _itoa(byteInt & 0xFF, buffer, 2));
-		//	fprintf(pBinFile, "%c", rIter->datas[i]);
-		//}
 		fwrite(rIter->datas, 1, validLength, pBinFile);
-
 	}
 
 	fclose(pBinFile);
@@ -442,32 +433,32 @@ void IntelHex::parse(const CString& hexFileName) {
 }
 
 
-string IntelHex::getHexEditFieldText() {
+string IntelHex::getEditFieldText() {
 	return _hexEditField;
 }
 
 
-string IntelHex::getBinEditFieldText() {
-
-	const int block = 16;
-
-	typedef list<HexBlock>::reverse_iterator ListRevIter;
-	for(ListRevIter rIter = hexBlocks.rbegin(); rIter != hexBlocks.rend(); rIter++) {
-		
-		char ch[3];
-		int validLength = rIter->validLength;
-
-		for (int i = 0; i < validLength; i++) {
-			BYTE b = rIter->datas[i];
-			sprintf_s(ch, 3, "%02X", b);
-			_binEditField += ch;
-			_binEditField += " ";
-
-			if (i % block == block-1) {
-				_binEditField += "\r\n";
-			}
-		}
-	}
-
-	return _binEditField;
-}
+//string IntelHex::getBinEditFieldText() {
+//
+//	const int block = 16;
+//
+//	typedef list<HexBlock>::reverse_iterator ListRevIter;
+//	for(ListRevIter rIter = hexBlocks.rbegin(); rIter != hexBlocks.rend(); rIter++) {
+//		
+//		char ch[3];
+//		int validLength = rIter->validLength;
+//
+//		for (int i = 0; i < validLength; i++) {
+//			BYTE b = rIter->datas[i];
+//			sprintf_s(ch, 3, "%02X", b);
+//			_binEditField += ch;
+//			_binEditField += " ";
+//
+//			if (i % block == block-1) {
+//				_binEditField += "\r\n";
+//			}
+//		}
+//	}
+//
+//	return _binEditField;
+//}

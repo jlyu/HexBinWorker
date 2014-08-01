@@ -3,7 +3,8 @@
 //
 
 #pragma once
-#include "IntelHex.h"
+//#include "IntelHex.h"
+#include "HexBinController.h"
 
 // CHexBinWorkerDlg ¶Ô»°¿ò
 class CHexBinWorkerDlg : public CDialogEx
@@ -35,5 +36,8 @@ public:
 
 
 private:
-	IntelHex _hexFile;
+	//IntelHex _hexFile;
+	HexBinController _hbController;
+public:
+	afx_msg void OnBnClickedHexToBin();
 };

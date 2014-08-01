@@ -69,6 +69,7 @@ BEGIN_MESSAGE_MAP(CHexBinWorkerDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDOK, &CHexBinWorkerDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDC_SAVE, &CHexBinWorkerDlg::OnBnClickedSave)
+	ON_BN_CLICKED(IDC_HEX_TO_BIN, &CHexBinWorkerDlg::OnBnClickedHexToBin)
 END_MESSAGE_MAP()
 
 
@@ -163,29 +164,32 @@ void CHexBinWorkerDlg::OnBnClickedOk()
 {
 //	CDialogEx::OnOK();
 	CFileDialog pHexFileDlg(TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, _T("Inter Hex (*.hex)|*.hex||")); 
-	CString hexFilePathName; 
+	CString filePathName; 
 
 	if(pHexFileDlg.DoModal() == IDOK) {
-		hexFilePathName = pHexFileDlg.GetPathName(); 
+		filePathName = pHexFileDlg.GetPathName(); 
 	}
 
-	_hexFile.parse(hexFilePathName);
+	//_hexFile.parse(hexFilePathName);
+	_hbController.parse(filePathName);
 
-	// print
-	string hexText = _hexFile.getHexEditFieldText();
-	CString hexEditFileText = CString(hexText.c_str());
-	GetDlgItem(IDC_HEXFILEFIELD)->SetWindowText(hexEditFileText);
+	CString hexText, binText;
+	_hbController.getEditFieldText(hexText, binText);
 
-	string binText = _hexFile.getBinEditFieldText();
-	CString binEditFileText = CString(binText.c_str());
-	GetDlgItem(IDC_BINFILEFIELD)->SetWindowText(binEditFileText);
-	
+	GetDlgItem(IDC_HEXFILEFIELD)->SetWindowText(hexText);
+	GetDlgItem(IDC_BINFILEFIELD)->SetWindowText(binText);
 }
 
 
 void CHexBinWorkerDlg::OnBnClickedSave()
 {
-	_hexFile.writeToBinFile(); //TODO: add fileNAME
-	MessageBox(_T("saved"), NULL);
+	//_hexFile.writeToBinFile(); //TODO: add fileNAME
+	//MessageBox(_T("saved"), NULL);
 
+}
+
+
+void CHexBinWorkerDlg::OnBnClickedHexToBin()
+{
+	
 }

@@ -74,9 +74,9 @@ public:
 	void writeToBinFile();
 
 	string _hexEditField;
-	string _binEditField;
-	string getHexEditFieldText();
-	string getBinEditFieldText();
+	//string _binEditField;
+	string getEditFieldText();
+	//string getBinEditFieldText();
 
 };
 
