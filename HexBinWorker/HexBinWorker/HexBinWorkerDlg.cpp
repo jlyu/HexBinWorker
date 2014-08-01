@@ -169,8 +169,6 @@ void CHexBinWorkerDlg::OnBnClickedOk()
 		hexFilePathName = pHexFileDlg.GetPathName(); 
 	}
 
-	//IntelHex hexFile(_T("E:\\HexBinWorker\\hex\\LM032L.hex"));
-	//IntelHex hexFile(hexFilePathName);
 	_hexFile.parse(hexFilePathName);
 
 	// print

@@ -99,6 +99,8 @@
     <None Include="res\HexBinWorker.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bin.h" />
+    <ClInclude Include="HexBinController.h" />
     <ClInclude Include="HexBinWorker.h" />
     <ClInclude Include="HexBinWorkerDlg.h" />
     <ClInclude Include="IntelHex.h" />
@@ -107,6 +109,8 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Bin.cpp" />
+    <ClCompile Include="HexBinController.cpp" />
     <ClCompile Include="HexBinWorker.cpp" />
     <ClCompile Include="HexBinWorkerDlg.cpp" />
     <ClCompile Include="IntelHex.cpp" />

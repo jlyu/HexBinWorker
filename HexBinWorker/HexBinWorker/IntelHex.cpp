@@ -383,12 +383,14 @@ void IntelHex::writeToBinFile() {
 	for(ListRevIter rIter = hexBlocks.rbegin(); rIter != hexBlocks.rend(); rIter++) {
 
 		int validLength = rIter->validLength;
-		for (int i = 0; i < validLength; i++) {
+		//for (int i = 0; i < validLength; i++) {
 
-			int byteInt = (int)rIter->datas[i];
-			char buffer[9];
-			fprintf(pBinFile, "%08s", _itoa(byteInt & 0xFF, buffer, 2));
-		}
+		//	int byteInt = (int)rIter->datas[i];
+		//	char buffer[9];
+		//	//fprintf(pBinFile, "%08s", _itoa(byteInt & 0xFF, buffer, 2));
+		//	fprintf(pBinFile, "%c", rIter->datas[i]);
+		//}
+		fwrite(rIter->datas, 1, validLength, pBinFile);
 
 	}
 
