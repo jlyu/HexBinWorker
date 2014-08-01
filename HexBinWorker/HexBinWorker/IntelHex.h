@@ -30,7 +30,7 @@ private:
 
 		HexBlock() {
 			memset(datas, 0x00, FLASHVOLUME*1024);
-			maxAddress = 0;
+			validLength = 0;
 		}
 	};
 

@@ -103,7 +103,7 @@ bool IntelHex::matchLine(const char *src) {
 					hexBlocksIterator->datas[i] = splitedData[i-startAddr];
 				}
 
-				hexBlocksIterator->maxAddress += dataLength;
+				hexBlocksIterator->validLength += dataLength;
 				
 				break;
 			}
@@ -415,12 +415,12 @@ string IntelHex::getBinEditFieldText() {
 
 	typedef list<HexBlock>::reverse_iterator ListRevIter;
 	for(ListRevIter rIter = hexBlocks.rbegin(); rIter != hexBlocks.rend(); rIter++) {
-		int maxAddress = rIter->maxAddress;
-		int maxLine = int(maxAddress / block);
+		int validLength = rIter->validLength;
+		int maxLine = int(validLength / block);
 
 		char ch[3];
 
-		for (int i = 0; i < maxAddress; i++) {
+		for (int i = 0; i < validLength; i++) {
 			BYTE b = rIter->datas[i];
 			sprintf_s(ch, 3, "%02X", b);
 			_binEditField += ch;
@@ -430,29 +430,6 @@ string IntelHex::getBinEditFieldText() {
 				_binEditField += "\r\n";
 			}
 		}
-
-		//for (int line = 0; line <= maxLine; line++) {
-
-		//	for (int i=0; i < block; i++) {
-		//		BYTE b = rIter->datas[line * block + i];
-		//		sprintf_s(ch, 3, "%02X", b);
-		//		_binEditField += ch;
-		//		_binEditField += " ";
-		//	}
-
-		//	if (line == maxLine)
-		//	{
-		//		for (int i=0; i < maxAddress % block; i++) {
-		//			BYTE b = rIter->datas[line * block + i];
-		//			sprintf_s(ch, 3, "%02X", b);
-		//			_binEditField += ch;
-		//			_binEditField += " ";
-		//		}
-		//	}
-
-		//	_binEditField += "\r\n";
-		//}
-
 	}
 
 
