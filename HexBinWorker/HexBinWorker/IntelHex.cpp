@@ -1,10 +1,7 @@
 #include "StdAfx.h"
 #include "IntelHex.h"
-
 #include <string>
 #include <regex> 
-
-
 
 using namespace std;
 
@@ -19,21 +16,18 @@ using namespace std;
 	最后按顺序把 hex 转成 bin 写入
 以上，Hex -> Bin 
 - - -
-反之，如何从 bin -> hex ?  信息缺失！
-观察第一行 :020000040000FA 一般都是 04 类型
-但如果第一行不是 04 类型，无法获得数据长度
-
-先从2进制数据转成16进制数据
-
-
+反之， bin -> hex 
+直接填充即可，长度固定 8 bit * 16 block
+起始地址 0x00
+8bit 二进制转16进制
 
 */
 
 
 
-bool IntelHex::openHexFile() {
+bool IntelHex::openHexFile(const CString& hexFileName) {
 
-	CT2A asciiFileName(fileName);
+	CT2A asciiFileName(hexFileName);
 	pHexFile = fopen(asciiFileName, "r");
 
 	if(pHexFile == NULL) {  
@@ -68,9 +62,6 @@ bool IntelHex::matchLine(const char *src) {
 	if(std::regex_match(lineString, matchResult, regExpress))  
     {  
 		HexRecord hexRecord;
-		//HexLine hexLine;
-
-		// 子字符串赋值
 		hexRecord.dataLength = string(matchResult[1].first, matchResult[1].second);
 		hexRecord.startAddress = string(matchResult[2].first, matchResult[2].second);
 		hexRecord.recordType = string(matchResult[3].first, matchResult[3].second);
@@ -107,7 +98,7 @@ bool IntelHex::matchLine(const char *src) {
 				
 				break;
 			}
-			case 1: { //finish
+			case 1: { //end of file
 				return true;
 				break;
 			}
@@ -116,6 +107,10 @@ bool IntelHex::matchLine(const char *src) {
 			}
 			case 4: {
 				HexBlock newHexBlock = HexBlock();
+
+				// parse type 04 here
+
+
 				hexBlocks.push_front(newHexBlock);
 				break;
 			}
@@ -228,7 +223,7 @@ void IntelHex::splitHexData(const string& inData, vector<BYTE>& outData) {
 		//memset(n, 0, 2);
 		//hexStringToByte(hexStr.c_str(), 2, n); 
 		
-		BYTE decByte = strtol(hexStr.c_str(), NULL, 16);  // hex -> dec
+		BYTE decByte = (BYTE)strtol(hexStr.c_str(), NULL, 16);  // hex -> dec
 		outData.push_back(decByte);
 	}
 }
@@ -359,12 +354,52 @@ bool hexFormatParse(const char *src, char *dst) {
 	return false;
 }
 
+void IntelHex::byteToBin(BYTE *pByte, char* pBin){
 
+	int n = (int)*pByte;
+
+	for (int i=0; i<8; i++) {
+		int p = (int)(pow(2.0, i));
+		if (n&p) {
+			pBin[7-i] = '1';
+		} else {
+			pBin[7-1] = '0';
+		}
+	}
+}
+
+void IntelHex::writeToBinFile() {
+	
+	string fileName = "E:\\HexBinWorker\\bin\\LM032L.bin";
+	FILE *pBinFile = fopen(fileName.c_str(), "wb");
+	
+	if (pBinFile == NULL) {  
+        printf("Open file error.\n");  
+        return;  
+    }
+
+	 //开始写入  
+	typedef list<HexBlock>::reverse_iterator ListRevIter;
+	for(ListRevIter rIter = hexBlocks.rbegin(); rIter != hexBlocks.rend(); rIter++) {
+
+		int validLength = rIter->validLength;
+		for (int i = 0; i < validLength; i++) {
+
+			int byteInt = (int)rIter->datas[i];
+			char buffer[9];
+			fprintf(pBinFile, "%08s", _itoa(byteInt & 0xFF, buffer, 2));
+		}
+
+	}
+
+	fclose(pBinFile);
+}
 
 // - Interface
 
 
-void IntelHex::parse() {
+void IntelHex::parse(const CString& hexFileName) {
+
 	const int  flashSize = 2 * FLASHVOLUME * 1024 * sizeof(char); //flash的存储单元个数  
     char *lineBuffer = new char[sizeof(char) * 100];        //存储hex文件的一行内容  
     char *parseBuffer = new char[sizeof(char) * 200];       //存储hex文件解析后的内容  
@@ -377,7 +412,7 @@ void IntelHex::parse() {
 
 	memset(flashBuffer, 'F', flashSize); //将Flash初始时全部清1
 
-	if (!openHexFile()) return;
+	if (!openHexFile(hexFileName)) return;
 	
 	int lineNo = 1;
 
@@ -411,14 +446,14 @@ string IntelHex::getHexEditFieldText() {
 
 
 string IntelHex::getBinEditFieldText() {
+
 	const int block = 16;
 
 	typedef list<HexBlock>::reverse_iterator ListRevIter;
 	for(ListRevIter rIter = hexBlocks.rbegin(); rIter != hexBlocks.rend(); rIter++) {
-		int validLength = rIter->validLength;
-		int maxLine = int(validLength / block);
-
+		
 		char ch[3];
+		int validLength = rIter->validLength;
 
 		for (int i = 0; i < validLength; i++) {
 			BYTE b = rIter->datas[i];
@@ -431,7 +466,6 @@ string IntelHex::getBinEditFieldText() {
 			}
 		}
 	}
-
 
 	return _binEditField;
 }

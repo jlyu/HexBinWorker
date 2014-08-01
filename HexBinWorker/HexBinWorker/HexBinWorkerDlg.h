@@ -3,7 +3,7 @@
 //
 
 #pragma once
-
+#include "IntelHex.h"
 
 // CHexBinWorkerDlg ¶Ô»°¿ò
 class CHexBinWorkerDlg : public CDialogEx
@@ -31,4 +31,9 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnBnClickedOk();
+	afx_msg void OnBnClickedSave();
+
+
+private:
+	IntelHex _hexFile;
 };

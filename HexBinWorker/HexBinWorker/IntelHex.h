@@ -3,15 +3,15 @@
 #include <map>
 #include <list>
 #include <vector>
+
 using namespace std;
 
-const int FLASHVOLUME = 64; //Flash的容量，以K为单位
+const int FLASHVOLUME = 64; // KB
 
 class IntelHex
 {
 private:
 	
-
 	struct HexRecord {
 		string dataLength;
 		string startAddress;
@@ -23,10 +23,8 @@ private:
 	};
 
 	struct HexBlock {
-		BYTE datas[FLASHVOLUME*1024]; // 分配64K 初始填充 FF
-		
+		BYTE datas[FLASHVOLUME*1024]; // alloc 64K, init with 00
 		int validLength;
-		int maxAddress;  // 10进制
 
 		HexBlock() {
 			memset(datas, 0x00, FLASHVOLUME*1024);
@@ -34,28 +32,14 @@ private:
 		}
 	};
 
-	//vector<BYTE> splitedData;
-	void hexStringToByte(const char* src, const int srcLen, BYTE* dst);
-	void IntelHex::byteToHexString(BYTE* source, char* dest, int sourceLen);
-
-	void splitHexData(const string& inData, vector<BYTE>& outData);
-
-	list<HexBlock> hexBlocks; 
-
-	struct HexLine {
-		//int lineNo;
-		HexRecord hexRecord;
-		//DecRecord decRecord;
-	};
-
 
 	CString fileName;
 	FILE *pHexFile;
-	vector<HexLine> fileContent;
+	list<HexBlock> hexBlocks;
 
 
 
-	bool openHexFile();
+	bool openHexFile(const CString& hexFileName);
 	bool checkLine(const char *src);
 	bool matchLine(const char *src);
 	bool verifyLine(const HexRecord& hexRecord);
@@ -66,7 +50,11 @@ private:
 	bool formatParse(const char *src, const int lineNo);
 	bool hexFormatParse(const char *src, char *dst);
 
-	//HEXTODEC
+	void hexStringToByte(const char* src, const int srcLen, BYTE* dst);
+	void byteToHexString(BYTE* source, char* dest, int sourceLen);
+	void splitHexData(const string& inData, vector<BYTE>& outData);
+
+	void byteToBin(BYTE *pByte, char* pBin);
 
 public:
 	IntelHex(void) { }
@@ -80,9 +68,10 @@ public:
 		}
 	}
 
-	void parse();
+	void parse(const CString& hexFileName);
 
-
+		// output
+	void writeToBinFile();
 
 	string _hexEditField;
 	string _binEditField;

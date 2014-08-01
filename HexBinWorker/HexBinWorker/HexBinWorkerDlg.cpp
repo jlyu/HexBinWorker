@@ -9,7 +9,7 @@
 
 #include <iostream>
 #include <fstream>
-#include "IntelHex.h"
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -68,6 +68,7 @@ BEGIN_MESSAGE_MAP(CHexBinWorkerDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDOK, &CHexBinWorkerDlg::OnBnClickedOk)
+	ON_BN_CLICKED(IDC_SAVE, &CHexBinWorkerDlg::OnBnClickedSave)
 END_MESSAGE_MAP()
 
 
@@ -169,18 +170,24 @@ void CHexBinWorkerDlg::OnBnClickedOk()
 	}
 
 	//IntelHex hexFile(_T("E:\\HexBinWorker\\hex\\LM032L.hex"));
-	IntelHex hexFile(hexFilePathName);
-	hexFile.parse();
+	//IntelHex hexFile(hexFilePathName);
+	_hexFile.parse(hexFilePathName);
 
 	// print
-	string hexText = hexFile.getHexEditFieldText();
+	string hexText = _hexFile.getHexEditFieldText();
 	CString hexEditFileText = CString(hexText.c_str());
 	GetDlgItem(IDC_HEXFILEFIELD)->SetWindowText(hexEditFileText);
 
-	string binText = hexFile.getBinEditFieldText();
+	string binText = _hexFile.getBinEditFieldText();
 	CString binEditFileText = CString(binText.c_str());
 	GetDlgItem(IDC_BINFILEFIELD)->SetWindowText(binEditFileText);
 	
+}
 
+
+void CHexBinWorkerDlg::OnBnClickedSave()
+{
+	_hexFile.writeToBinFile(); //TODO: add fileNAME
+	MessageBox(_T("saved"), NULL);
 
 }
