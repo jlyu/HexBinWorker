@@ -1,10 +1,8 @@
 
 // HexBinWorkerDlg.h : 头文件
-//
-
 #pragma once
-//#include "IntelHex.h"
 #include "HexBinController.h"
+
 
 // CHexBinWorkerDlg 对话框
 class CHexBinWorkerDlg : public CDialogEx
@@ -33,11 +31,12 @@ protected:
 public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedSave();
-
+	afx_msg void OnBnClickedHexToBin();
 
 private:
-	//IntelHex _hexFile;
 	HexBinController _hbController;
+
 public:
-	afx_msg void OnBnClickedHexToBin();
+	void showTextField();
+	void showFilePath();
 };

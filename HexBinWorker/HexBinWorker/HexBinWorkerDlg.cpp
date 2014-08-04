@@ -148,6 +148,29 @@ HCURSOR CHexBinWorkerDlg::OnQueryDragIcon()
 }
 
 
+void CHexBinWorkerDlg::showTextField() {
+	// clear
+	GetDlgItem(IDC_HEXFILEFIELD)->SetWindowText(_T(""));
+	GetDlgItem(IDC_BINFILEFIELD)->SetWindowText(_T(""));
+
+	CString hexText, binText;
+	_hbController.getEditFieldText(hexText, binText);
+	GetDlgItem(IDC_HEXFILEFIELD)->SetWindowText(hexText);
+	GetDlgItem(IDC_BINFILEFIELD)->SetWindowText(binText);
+}
+
+void CHexBinWorkerDlg::showFilePath() {
+	// clear
+	GetDlgItem(IDC_HEX_PATH)->SetWindowText(_T(""));
+	GetDlgItem(IDC_BIN_PATH)->SetWindowText(_T(""));
+
+	CString hexPath, binPath;
+	_hbController.getFilePath(hexPath, binPath);
+
+	GetDlgItem(IDC_HEX_PATH)->SetWindowText(hexPath);
+	GetDlgItem(IDC_BIN_PATH)->SetWindowText(binPath);
+}
+
 
 void CHexBinWorkerDlg::OnBnClickedOk()
 {
@@ -164,17 +187,9 @@ void CHexBinWorkerDlg::OnBnClickedOk()
 	_hbController.parse();
 
 	// Show 
-	CString hexText, binText;
-	_hbController.getEditFieldText(hexText, binText);
-	GetDlgItem(IDC_HEXFILEFIELD)->SetWindowText(hexText);
-	GetDlgItem(IDC_BINFILEFIELD)->SetWindowText(binText);
+	showTextField();
+	showFilePath();
 
-	bool isHexFile = _hbController.isHexFile(filePathName);
-	if (isHexFile) {
-		GetDlgItem(IDC_HEX_PATH)->SetWindowText(filePathName);
-	} else {
-		GetDlgItem(IDC_BIN_PATH)->SetWindowText(filePathName);
-	}
 }
 
 
@@ -184,7 +199,7 @@ void CHexBinWorkerDlg::OnBnClickedHexToBin()
 	_hbController.writeToBinFile();
 
 	// read bin file
-
+	_hbController.parse();
 
 }
 
