@@ -32,14 +32,10 @@ private:
 		}
 	};
 
-
-	CString fileName;
-	FILE *pHexFile;
-	list<HexBlock> hexBlocks;
+	
+	bool openHexFile(CString& hexFileName);
 
 
-
-	bool openHexFile(const CString& hexFileName);
 	bool checkLine(const char *src);
 	bool matchLine(const char *src);
 	bool verifyLine(const HexRecord& hexRecord);
@@ -56,22 +52,33 @@ private:
 
 	void byteToBin(BYTE *pByte, char* pBin);
 
+
+	CString _fileName;
+	FILE* _pHexFileHandler;
+	list<HexBlock> _hexBlocks;
+
 public:
 	IntelHex(void) { }
 	IntelHex(const CString& hexFileName) {
-		fileName = hexFileName;
+		
+		_fileName = hexFileName;
+		_pHexFileHandler = NULL;
+		//openHexFile(_fileName);
 	}
 
 	~IntelHex(void) { 
-		if (pHexFile){
-			fclose(pHexFile);
+		if (_pHexFileHandler != NULL) {
+			fclose(_pHexFileHandler);
+			_pHexFileHandler = NULL;
 		}
 	}
 
-	void parse(const CString& hexFileName);
+
+	void parse();
+	string getFilePath();
 
 		// output
-	void writeToBinFile();
+	void writeToBinFile(FILE* fileHandler);
 
 	string _hexEditField;
 	//string _binEditField;

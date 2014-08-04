@@ -37,7 +37,6 @@ protected:
 CAboutDlg::CAboutDlg() : CDialogEx(CAboutDlg::IDD)
 {
 }
-
 void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
@@ -46,23 +45,16 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
-
 // CHexBinWorkerDlg 对话框
-
-
-
-
 CHexBinWorkerDlg::CHexBinWorkerDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CHexBinWorkerDlg::IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
-
 void CHexBinWorkerDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 }
-
 BEGIN_MESSAGE_MAP(CHexBinWorkerDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
@@ -108,7 +100,6 @@ BOOL CHexBinWorkerDlg::OnInitDialog()
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
-
 void CHexBinWorkerDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
 	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
@@ -121,7 +112,6 @@ void CHexBinWorkerDlg::OnSysCommand(UINT nID, LPARAM lParam)
 		CDialogEx::OnSysCommand(nID, lParam);
 	}
 }
-
 // 如果向对话框添加最小化按钮，则需要下面的代码
 //  来绘制该图标。对于使用文档/视图模型的 MFC 应用程序，
 //  这将由框架自动完成。
@@ -150,7 +140,6 @@ void CHexBinWorkerDlg::OnPaint()
 		CDialogEx::OnPaint();
 	}
 }
-
 //当用户拖动最小化窗口时系统调用此函数取得光标
 //显示。
 HCURSOR CHexBinWorkerDlg::OnQueryDragIcon()
@@ -162,7 +151,7 @@ HCURSOR CHexBinWorkerDlg::OnQueryDragIcon()
 
 void CHexBinWorkerDlg::OnBnClickedOk()
 {
-//	CDialogEx::OnOK();
+	// Open
 	CFileDialog pHexFileDlg(TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, _T("Inter Hex (*.hex)|*.hex||")); 
 	CString filePathName; 
 
@@ -170,9 +159,11 @@ void CHexBinWorkerDlg::OnBnClickedOk()
 		filePathName = pHexFileDlg.GetPathName(); 
 	}
 
-	//_hexFile.parse(hexFilePathName);
-	_hbController.parse(filePathName);
+	// Handle
+	_hbController.init(filePathName);
+	_hbController.parse();
 
+	// Show 
 	CString hexText, binText;
 	_hbController.getEditFieldText(hexText, binText);
 	GetDlgItem(IDC_HEXFILEFIELD)->SetWindowText(hexText);
@@ -187,6 +178,17 @@ void CHexBinWorkerDlg::OnBnClickedOk()
 }
 
 
+void CHexBinWorkerDlg::OnBnClickedHexToBin()
+{
+	// using hex file to write bin file
+	_hbController.writeToBinFile();
+
+	// read bin file
+
+
+}
+
+
 void CHexBinWorkerDlg::OnBnClickedSave()
 {
 	//_hexFile.writeToBinFile(); //TODO: add fileNAME
@@ -195,7 +197,4 @@ void CHexBinWorkerDlg::OnBnClickedSave()
 }
 
 
-void CHexBinWorkerDlg::OnBnClickedHexToBin()
-{
-	
-}
+

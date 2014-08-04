@@ -25,12 +25,12 @@ using namespace std;
 
 
 
-bool IntelHex::openHexFile(const CString& hexFileName) {
+bool IntelHex::openHexFile(CString& hexFileName) {
 
 	CT2A asciiFileName(hexFileName);
-	pHexFile = fopen(asciiFileName, "r");
+	_pHexFileHandler = fopen(asciiFileName, "r");
 
-	if(pHexFile == NULL) {  
+	if(!_pHexFileHandler) {  
         printf("Open file error.\n");  
         return false;  
     }  
@@ -51,7 +51,6 @@ bool IntelHex::checkLine(const char *src) {
         return false;  
     }  
 }
-
 bool IntelHex::matchLine(const char *src) {
 	string matchPattern("^:(\\w{2})(\\w{4})(\\w{2})(\\w*)(\\w{2})$");
 	string lineString = src;
@@ -78,12 +77,12 @@ bool IntelHex::matchLine(const char *src) {
 			switch (recordTypeInt)
 			{
 			case 0: {
-				if (hexBlocks.empty()) {
+				if (_hexBlocks.empty()) {
 					HexBlock newHexBlock = HexBlock();
-					hexBlocks.push_front(newHexBlock);
+					_hexBlocks.push_front(newHexBlock);
 				}
 
-				list<HexBlock>::iterator hexBlocksIterator = hexBlocks.begin();
+				list<HexBlock>::iterator hexBlocksIterator = _hexBlocks.begin();
 				const int startAddr = hexToDec(hexRecord.startAddress);
 				const int dataLength = hexToDec(hexRecord.dataLength);
 
@@ -111,7 +110,7 @@ bool IntelHex::matchLine(const char *src) {
 				// parse type 04 here
 
 
-				hexBlocks.push_front(newHexBlock);
+				_hexBlocks.push_front(newHexBlock);
 				break;
 			}
 			case 5: {
@@ -127,7 +126,6 @@ bool IntelHex::matchLine(const char *src) {
     }  
 
 }
-
 bool IntelHex::verifyLine(const HexRecord& hexRecord) {
 	// 验证数据长度
 	const unsigned int dateSize = hexRecord.data.size();
@@ -158,7 +156,6 @@ bool IntelHex::verifyLine(const HexRecord& hexRecord) {
 
 	return true;
 }
-
 void IntelHex::hexStringToByte(const char* src, const int srcLen, BYTE* dst) {
     
     for (int i = 0; i < srcLen; i += 2)
@@ -210,9 +207,6 @@ void IntelHex::byteToHexString(BYTE* source, char* dest, int sourceLen)
     }
     return ;
 }
-
-
-
 void IntelHex::splitHexData(const string& inData, vector<BYTE>& outData) {
 
 	typedef string::const_iterator cIter;
@@ -227,7 +221,6 @@ void IntelHex::splitHexData(const string& inData, vector<BYTE>& outData) {
 		outData.push_back(decByte);
 	}
 }
-
 void IntelHex::hexStringToDec() {
 	// 字符串 -> 16进制表示
 	//const int fileLines = fileContent.size();
@@ -243,7 +236,6 @@ void IntelHex::hexStringToDec() {
 	//	//long n = strtol(data.c_str(), NULL, 16);
 	//}
 }
-
 unsigned int IntelHex::hexToDec(const string& str) {
 	
 	unsigned int result = 0;
@@ -264,7 +256,6 @@ unsigned int IntelHex::hexToDec(const string& str) {
 
     return result;
 }
-
 bool IntelHex::formatParse(const char *src, const int lineNo) {
 	//解析前格式   :llaaaattddcc               :020000000828CE
 	//解析后格式   : ll aaaa tt [dd] cc        : 02 0000 00 [0828] CE
@@ -320,7 +311,6 @@ bool IntelHex::formatParse(const char *src, const int lineNo) {
 	}
 	return true;
 }
-
 bool hexFormatParse(const char *src, char *dst) {
 	//解析前格式   :llaaaattddcc               :020000000828CE
 	//解析后格式   : ll aaaa tt [dd] cc        : 02 0000 00 [0828] CE
@@ -353,7 +343,6 @@ bool hexFormatParse(const char *src, char *dst) {
 
 	return false;
 }
-
 void IntelHex::byteToBin(BYTE *pByte, char* pBin){
 
 	int n = (int)*pByte;
@@ -367,68 +356,57 @@ void IntelHex::byteToBin(BYTE *pByte, char* pBin){
 		}
 	}
 }
-
-void IntelHex::writeToBinFile() {
+void IntelHex::writeToBinFile(FILE* fileHandler) { 
 	
-	string fileName = "E:\\HexBinWorker\\bin\\LM032L.bin";
-	FILE *pBinFile = fopen(fileName.c_str(), "wb");
-	
-	if (pBinFile == NULL) {  
+	if (fileHandler == NULL) {  
         printf("Open file error.\n");  
         return;  
     }
 
 	 //开始写入  
 	typedef list<HexBlock>::reverse_iterator ListRevIter;
-	for(ListRevIter rIter = hexBlocks.rbegin(); rIter != hexBlocks.rend(); rIter++) {
+	for(ListRevIter rIter = _hexBlocks.rbegin(); rIter != _hexBlocks.rend(); rIter++) {
 		int validLength = rIter->validLength;
-		fwrite(rIter->datas, 1, validLength, pBinFile);
+		fwrite(rIter->datas, 1, validLength, fileHandler);
 	}
-
-	fclose(pBinFile);
 }
+
 
 // - Interface
 
 
-void IntelHex::parse(const CString& hexFileName) {
+void IntelHex::parse() {
 
-	const int  flashSize = 2 * FLASHVOLUME * 1024 * sizeof(char); //flash的存储单元个数  
+	//const int  flashSize = 2 * FLASHVOLUME * 1024 * sizeof(char); //flash的存储单元个数  
     char *lineBuffer = new char[sizeof(char) * 100];        //存储hex文件的一行内容  
-    char *parseBuffer = new char[sizeof(char) * 200];       //存储hex文件解析后的内容  
-    char *flashBuffer = new char[flashSize];                //存储Flash中的内容 
+    //char *parseBuffer = new char[sizeof(char) * 200];       //存储hex文件解析后的内容  
+    //char *flashBuffer = new char[flashSize];                //存储Flash中的内容 
 
-    if (lineBuffer == NULL|| parseBuffer == NULL || flashBuffer == NULL) {  
+    if (lineBuffer == NULL /*|| parseBuffer == NULL || flashBuffer == NULL */) {  
 		printf("Apply for memory failed.!\n");  
         return;  
     }  
 
-	memset(flashBuffer, 'F', flashSize); //将Flash初始时全部清1
-
-	if (!openHexFile(hexFileName)) return;
-	
-	int lineNo = 1;
+	//memset(flashBuffer, 'F', flashSize); //将Flash初始时全部清1
 
 
-	while (fscanf(pHexFile, "%s", lineBuffer) != EOF) {
+
+	if (!openHexFile(_fileName)) return;
+
+	while (fscanf(_pHexFileHandler, "%s", lineBuffer) != EOF) {
 		printf("%s\n", lineBuffer);
 		bool checkPass = checkLine(lineBuffer);
 		if (checkPass) {
 			matchLine(lineBuffer);
 		}
 		
-		lineNo++;
 		_hexEditField += lineBuffer;
 		_hexEditField += "\r\n";
 	}
 
-	
-
-	
-
 	delete(lineBuffer);
-	delete(parseBuffer);
-	delete(flashBuffer);
+	//delete(parseBuffer);
+	//delete(flashBuffer);
 
 }
 
@@ -462,3 +440,8 @@ string IntelHex::getEditFieldText() {
 //
 //	return _binEditField;
 //}
+
+
+string IntelHex::getFilePath() {
+	return CT2A(_fileName);
+}
