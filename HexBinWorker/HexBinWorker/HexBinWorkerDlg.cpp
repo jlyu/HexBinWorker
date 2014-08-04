@@ -175,9 +175,15 @@ void CHexBinWorkerDlg::OnBnClickedOk()
 
 	CString hexText, binText;
 	_hbController.getEditFieldText(hexText, binText);
-
 	GetDlgItem(IDC_HEXFILEFIELD)->SetWindowText(hexText);
 	GetDlgItem(IDC_BINFILEFIELD)->SetWindowText(binText);
+
+	bool isHexFile = _hbController.isHexFile(filePathName);
+	if (isHexFile) {
+		GetDlgItem(IDC_HEX_PATH)->SetWindowText(filePathName);
+	} else {
+		GetDlgItem(IDC_BIN_PATH)->SetWindowText(filePathName);
+	}
 }
 
 
