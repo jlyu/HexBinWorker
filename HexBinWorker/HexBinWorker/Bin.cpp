@@ -2,13 +2,6 @@
 #include "Bin.h"
 
 
-FILE* Bin::getFileWriteHandler() {
-
-	CT2A asciiFileName(_fileName);
-	_pBinFileHandler = fopen(asciiFileName, "wb");
-	//fopen_s(&_pBinFileHandler, asciiFileName, "wb");
-	return _pBinFileHandler;
-}
 
 bool Bin::openBinFile(const CString& binFileName) {
 
@@ -109,3 +102,29 @@ string Bin::getFilePath() {
 	return filePathStr;
 }
 
+FILE* Bin::getFileWriteHandler() {
+
+	CT2A asciiFileName(_fileName);
+	_pBinFileHandler = fopen(asciiFileName, "wb");
+	//fopen_s(&_pBinFileHandler, asciiFileName, "wb");
+	return _pBinFileHandler;
+}
+
+
+void Bin::writeToHexFile(FILE* fileHandler) {
+	if (fileHandler == NULL) {  
+        printf("Open hex file error.\n");  
+        return;  
+    }
+
+	 //¿ªÊ¼Ð´Èë  
+	//typedef list<HexBlock>::reverse_iterator ListRevIter;
+	//for(ListRevIter rIter = _hexBlocks.rbegin(); rIter != _hexBlocks.rend(); rIter++) {
+		//int validLength = rIter->validLength;
+
+	fwrite(_binEditField.c_str(), 1, _binEditField.length(), fileHandler);
+	//}
+
+	fclose(fileHandler);
+	fileHandler = NULL;
+}

@@ -26,6 +26,7 @@ public:
 
 	// output
 	void writeToBinFile();
+	void writeToHexFile();
 
 };
 

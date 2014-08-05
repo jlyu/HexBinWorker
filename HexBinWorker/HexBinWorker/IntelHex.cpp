@@ -442,3 +442,12 @@ string IntelHex::getFilePath() {
 	string filePathStr = CT2A(_fileName);
 	return filePathStr;
 }
+
+FILE* IntelHex::getFileWriteHandler() {
+	CString fileNameCopy = _fileName;
+	fileNameCopy.Insert(_fileName.GetLength()-4, _T("_"));
+	CT2A asciiFileName(fileNameCopy); //avoid to overwriting original hex file 
+	_pHexFileHandler = fopen(asciiFileName, "wb");
+	//fopen_s(&_pBinFileHandler, asciiFileName, "wb");
+	return _pHexFileHandler;
+}

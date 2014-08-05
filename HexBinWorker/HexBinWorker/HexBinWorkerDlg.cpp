@@ -62,6 +62,7 @@ BEGIN_MESSAGE_MAP(CHexBinWorkerDlg, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CHexBinWorkerDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDC_SAVE, &CHexBinWorkerDlg::OnBnClickedSave)
 	ON_BN_CLICKED(IDC_HEX_TO_BIN, &CHexBinWorkerDlg::OnBnClickedHexToBin)
+	ON_BN_CLICKED(IDC_BIN_TO_HEX, &CHexBinWorkerDlg::OnBnClickedBinToHex)
 END_MESSAGE_MAP()
 
 
@@ -190,9 +191,6 @@ void CHexBinWorkerDlg::OnBnClickedOk()
 		showTextField();
 		showFilePath();
 	}
-
-
-
 }
 
 
@@ -207,6 +205,14 @@ void CHexBinWorkerDlg::OnBnClickedHexToBin()
 	showTextField();
 }
 
+void CHexBinWorkerDlg::OnBnClickedBinToHex()
+{
+	_hbController.writeToHexFile();
+	_hbController.parseHex();
+
+	//showFilePath();
+	showTextField();
+}
 
 void CHexBinWorkerDlg::OnBnClickedSave()
 {
@@ -214,6 +220,9 @@ void CHexBinWorkerDlg::OnBnClickedSave()
 	//MessageBox(_T("saved"), NULL);
 
 }
+
+
+
 
 
 

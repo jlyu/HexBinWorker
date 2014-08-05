@@ -34,5 +34,8 @@ public:
 	string _binEditField;
 	string getEditFieldText();
 	string getFilePath();
+
+	//output
+	void writeToHexFile(FILE* fileHandler);
 };
 

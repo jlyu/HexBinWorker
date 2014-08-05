@@ -54,11 +54,7 @@ void HexBinController::parse(const CString& fileName) {
 	} else {
 		_bin.parse();
 	}
-	
-	
-
 }
-
 void HexBinController::parseHex() { _hex.parse(); }
 void HexBinController::parseBin() { _bin.parse(); }
 
@@ -66,17 +62,20 @@ void HexBinController::getEditFieldText(CString& hexField, CString& binField) {
 	hexField = _hex.getEditFieldText().c_str();
 	binField = _bin.getEditFieldText().c_str();
 }
-
 void HexBinController::getFilePath(CString& hexPath, CString& binPath) {
 	hexPath = _hex.getFilePath().c_str();
 	binPath = _bin.getFilePath().c_str();
 }
 
 
-	// output
+// output
 void HexBinController::writeToBinFile() {
 
 	FILE* pFileHandler = _bin.getFileWriteHandler();
 	_hex.writeToBinFile(pFileHandler);
 
+}
+void HexBinController::writeToHexFile() {
+	FILE* pFileHandler = _hex.getFileWriteHandler();
+	_bin.writeToHexFile(pFileHandler);
 }

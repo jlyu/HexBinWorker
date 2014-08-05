@@ -39,4 +39,5 @@ private:
 public:
 	void showTextField();
 	void showFilePath();
+	afx_msg void OnBnClickedBinToHex();
 };

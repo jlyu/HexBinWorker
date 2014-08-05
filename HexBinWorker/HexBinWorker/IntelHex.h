@@ -76,6 +76,7 @@ public:
 
 	void parse();
 	string getFilePath();
+	FILE* getFileWriteHandler();
 
 		// output
 	void writeToBinFile(FILE* fileHandler);
@@ -83,6 +84,7 @@ public:
 	string _hexEditField;
 	//string _binEditField;
 	string getEditFieldText();
+	
 	//string getBinEditFieldText();
 
 };
