@@ -24,11 +24,12 @@ bool Bin::openBinFile(const CString& binFileName) {
 
 void Bin::parse() {
 
-	//char *lineBuffer = new char[sizeof(char) * 100];
 	const int bufferSize = 65536;
-	long l,lStartAddr;
-	BYTE dbSum,dbLen;
 	BYTE* pBuffer = new BYTE[bufferSize];
+
+	long lStartAddr = 0x00; //TODO
+	BYTE dbSum, dbLen;
+	
   
     if (pBuffer == NULL) {  
 		printf("Apply for memory failed.!\n");  
@@ -46,11 +47,15 @@ void Bin::parse() {
 
 	fread(pBuffer, 1, dataSize, _pBinFileHandler);
 
-	//printf(":02%04X04", lStartAddr);
-	//dbSum = 02 + (BYTE)(lStartAddr>>8) + (BYTE)lStartAddr + 04;
-	//printf("%02X\r\n", dbSum);
+	printf(":02%04X04", lStartAddr);
+	//string firstLine;
+	
+	//_binEditField +=
 
-	for (l = 0; l < dataSize; l++) {
+	dbSum = 02 + (BYTE)(lStartAddr>>8) + (BYTE)lStartAddr + 04;
+	printf("%02X\r\n", dbSum);
+
+	for (int l = 0; l < dataSize; l++) {
 		if (l%16 == 0) {
 			dbLen = (dataSize - l >= 16) ? 16 : dataSize - l;
 			printf(":%02X%04X00", dbLen, l);
@@ -64,7 +69,7 @@ void Bin::parse() {
 		}
 	}
 
-	// the last line write here
+	printf(":00000001FF");
 
 	/*while (fscanf(_pBinFileHandler, "%s", lineBuffer) != EOF) {
 		printf("%s\n", lineBuffer);

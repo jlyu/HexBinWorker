@@ -175,7 +175,7 @@ void CHexBinWorkerDlg::showFilePath() {
 void CHexBinWorkerDlg::OnBnClickedOk()
 {
 	// Open
-	CFileDialog pHexFileDlg(TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, _T("Inter Hex (*.hex)|*.hex||")); 
+	CFileDialog pHexFileDlg(TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, _T("Inter Hex (*.hex)|*.hex|Bin File|*.bin||")); 
 	CString filePathName; 
 
 	if(pHexFileDlg.DoModal() == IDOK) {

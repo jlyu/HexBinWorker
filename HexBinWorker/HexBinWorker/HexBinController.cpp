@@ -6,23 +6,31 @@ HexBinController::~HexBinController(void) {
 }
 
 void HexBinController::init(CString& fileName) {
+	CString hexFileName; 
+	CString binFileName;
 
 	string fileNameStr = CT2A(fileName);
 
 	if (isHexFile(fileName)) {
-
-		_hex = IntelHex(fileName);
+		hexFileName = fileName;
 
 		int pos = fileNameStr.find(".hex");
 		fileNameStr.replace(pos, 4, ".bin");
 		
-		CString fileNameCStr(fileNameStr.c_str());
-		_bin = Bin(fileNameCStr);
+		binFileName = fileNameStr.c_str();
+		
 
 	} else {
+		binFileName = fileName;
 
-		// TODO
+		int pos = fileNameStr.find(".bin");
+		fileNameStr.replace(pos, 4, ".hex");
+		
+		hexFileName = fileNameStr.c_str();
 	}
+
+	_hex = IntelHex(hexFileName);
+	_bin = Bin(binFileName);
 }
 
 bool HexBinController::isHexFile(const CString& fileName) {
@@ -40,7 +48,7 @@ bool HexBinController::isHexFile(const CString& fileName) {
 
 void HexBinController::parse() {
 	
-	_hex.parse();
+	//_hex.parse();
 	_bin.parse();
 
 }

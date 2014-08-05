@@ -311,7 +311,7 @@ bool IntelHex::formatParse(const char *src, const int lineNo) {
 	}
 	return true;
 }
-bool hexFormatParse(const char *src, char *dst) {
+bool IntelHex::hexFormatParse(const char *src, char *dst) {
 	//解析前格式   :llaaaattddcc               :020000000828CE
 	//解析后格式   : ll aaaa tt [dd] cc        : 02 0000 00 [0828] CE
 	int srcLength = strlen(src);
@@ -443,5 +443,6 @@ string IntelHex::getEditFieldText() {
 
 
 string IntelHex::getFilePath() {
-	return CT2A(_fileName);
+	string filePathStr = CT2A(_fileName);
+	return filePathStr;
 }
