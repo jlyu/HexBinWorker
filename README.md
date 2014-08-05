@@ -14,6 +14,11 @@
 
 
 ###### 待解决问题
-1. 了解 Intel HEX 文件格式
-2. 正则匹配 pcre.h 的使用
-3. 验证解析 .hex 文件内容
+√ 1. 了解 Intel HEX 文件格式
+√ 2. 正则匹配 pcre.h 的使用
+√ 3. 验证解析 .hex 文件内容
+4. 验证解析 .bin 文件内容
+5. 了解 ARM Cortex-M3 串口设置
+6. 实现 ISP 通讯协议
+
+![](https://raw.githubusercontent.com/ChainYu/HexBinWorker/master/docs/HexBinFileWorker.png)
