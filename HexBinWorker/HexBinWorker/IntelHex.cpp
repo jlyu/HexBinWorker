@@ -28,7 +28,8 @@ using namespace std;
 bool IntelHex::openHexFile(CString& hexFileName) {
 
 	CT2A asciiFileName(hexFileName);
-	_pHexFileHandler = fopen(asciiFileName, "r");
+	//_pHexFileHandler = fopen(asciiFileName, "r");
+	fopen_s(&_pHexFileHandler, asciiFileName, "r");
 
 	if(!_pHexFileHandler) {  
         printf("Open file error.\n");  
@@ -116,15 +117,15 @@ bool IntelHex::matchLine(const char *src) {
 			case 5: {
 				break;
 			}
-			}
-		}
-        return true;  
-    }  
-    else  
-    {  
-        return false;  
-    }  
 
+			}
+		} else {  
+		
+			printf("Hex Recoad IS NOT avaliable format");
+			return false;  
+		}  
+		return true;
+	}
 }
 bool IntelHex::verifyLine(const HexRecord& hexRecord) {
 	// 验证数据长度
@@ -211,12 +212,8 @@ void IntelHex::splitHexData(const string& inData, vector<BYTE>& outData) {
 
 	typedef string::const_iterator cIter;
 	for (cIter i = inData.begin() ; i < inData.end(); i += 2) {
+
 		const string hexStr = string(i, i+2);
-		// TODO
-		//BYTE n[2];
-		//memset(n, 0, 2);
-		//hexStringToByte(hexStr.c_str(), 2, n); 
-		
 		BYTE decByte = (BYTE)strtol(hexStr.c_str(), NULL, 16);  // hex -> dec
 		outData.push_back(decByte);
 	}
@@ -369,6 +366,9 @@ void IntelHex::writeToBinFile(FILE* fileHandler) {
 		int validLength = rIter->validLength;
 		fwrite(rIter->datas, 1, validLength, fileHandler);
 	}
+
+	fclose(fileHandler);
+	fileHandler = NULL;
 }
 
 
@@ -377,19 +377,13 @@ void IntelHex::writeToBinFile(FILE* fileHandler) {
 
 void IntelHex::parse() {
 
-	//const int  flashSize = 2 * FLASHVOLUME * 1024 * sizeof(char); //flash的存储单元个数  
     char *lineBuffer = new char[sizeof(char) * 100];        //存储hex文件的一行内容  
-    //char *parseBuffer = new char[sizeof(char) * 200];       //存储hex文件解析后的内容  
-    //char *flashBuffer = new char[flashSize];                //存储Flash中的内容 
 
-    if (lineBuffer == NULL /*|| parseBuffer == NULL || flashBuffer == NULL */) {  
+
+    if (lineBuffer == NULL ) {  
 		printf("Apply for memory failed.!\n");  
         return;  
     }  
-
-	//memset(flashBuffer, 'F', flashSize); //将Flash初始时全部清1
-
-
 
 	if (!openHexFile(_fileName)) return;
 
@@ -397,17 +391,19 @@ void IntelHex::parse() {
 		printf("%s\n", lineBuffer);
 		bool checkPass = checkLine(lineBuffer);
 		if (checkPass) {
-			matchLine(lineBuffer);
+			bool isVerify = matchLine(lineBuffer);
+			if (!isVerify)
+			{
+				delete [] lineBuffer;
+				return;
+			}
+			_hexEditField += lineBuffer;
+			_hexEditField += "\r\n";
+			
 		}
-		
-		_hexEditField += lineBuffer;
-		_hexEditField += "\r\n";
 	}
 
-	delete(lineBuffer);
-	//delete(parseBuffer);
-	//delete(flashBuffer);
-
+	delete [] lineBuffer;
 }
 
 

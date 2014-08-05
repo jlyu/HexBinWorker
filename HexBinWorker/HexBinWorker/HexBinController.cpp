@@ -3,6 +3,7 @@
 
 
 HexBinController::~HexBinController(void) {
+	//TODO
 }
 
 void HexBinController::init(CString& fileName) {
@@ -46,12 +47,20 @@ bool HexBinController::isHexFile(const CString& fileName) {
 	return false;
 }
 
-void HexBinController::parse() {
+void HexBinController::parse(const CString& fileName) {
 	
-	//_hex.parse();
-	_bin.parse();
+	if (isHexFile(fileName)) {
+		_hex.parse();
+	} else {
+		_bin.parse();
+	}
+	
+	
 
 }
+
+void HexBinController::parseHex() { _hex.parse(); }
+void HexBinController::parseBin() { _bin.parse(); }
 
 void HexBinController::getEditFieldText(CString& hexField, CString& binField) {
 	hexField = _hex.getEditFieldText().c_str();

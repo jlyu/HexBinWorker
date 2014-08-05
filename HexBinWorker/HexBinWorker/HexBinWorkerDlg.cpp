@@ -179,16 +179,19 @@ void CHexBinWorkerDlg::OnBnClickedOk()
 	CString filePathName; 
 
 	if(pHexFileDlg.DoModal() == IDOK) {
+
 		filePathName = pHexFileDlg.GetPathName(); 
+
+		// Handle
+		_hbController.init(filePathName);
+		_hbController.parse(filePathName);
+
+		// Show 
+		showTextField();
+		showFilePath();
 	}
 
-	// Handle
-	_hbController.init(filePathName);
-	_hbController.parse();
 
-	// Show 
-	showTextField();
-	showFilePath();
 
 }
 
@@ -199,8 +202,9 @@ void CHexBinWorkerDlg::OnBnClickedHexToBin()
 	_hbController.writeToBinFile();
 
 	// read bin file
-	_hbController.parse();
+	_hbController.parseBin();
 
+	showTextField();
 }
 
 

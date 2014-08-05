@@ -15,7 +15,9 @@ public:
 	~HexBinController(void);
 
 	void init(CString& fileName);
-	void parse();
+	void parse(const CString& fileName);
+	void parseHex();
+	void parseBin();
 	bool isHexFile(const CString& fileName); 
 
 	void getFilePath(CString& hexPath, CString& binPath);
