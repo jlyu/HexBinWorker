@@ -155,7 +155,7 @@ void CHexBinWorkerDlg::showTextField() {
 	GetDlgItem(IDC_BINFILEFIELD)->SetWindowText(_T(""));
 
 	CString hexText, binText;
-	_hbController.getEditFieldText(hexText, binText);
+	_hbController.getText(hexText, binText);
 	GetDlgItem(IDC_HEXFILEFIELD)->SetWindowText(hexText);
 	GetDlgItem(IDC_BINFILEFIELD)->SetWindowText(binText);
 }
@@ -197,22 +197,23 @@ void CHexBinWorkerDlg::OnBnClickedOk()
 void CHexBinWorkerDlg::OnBnClickedHexToBin()
 {
 	_hbController.parseHex();
+	
+	
 	// using hex file to write bin file
-	_hbController.writeToBinFile();
-
+	//_hbController.writeToBinFile();
 	// then, read bin file
-	_hbController.parseBin();
+	//_hbController.parseBin();
 
 	showTextField();
 }
 
 void CHexBinWorkerDlg::OnBnClickedBinToHex()
 {
-	_hbController.writeToHexFile();
-	_hbController.parseHex();
+	//_hbController.writeToHexFile();
+	//_hbController.parseHex();
 
 	//showFilePath();
-	showTextField();
+	//showTextField();
 }
 
 void CHexBinWorkerDlg::OnBnClickedSave()

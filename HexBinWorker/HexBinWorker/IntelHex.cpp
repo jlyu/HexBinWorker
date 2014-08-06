@@ -392,8 +392,6 @@ bool IntelHex::read() {
 
 	return true;
 }
-
-
 bool IntelHex::parse() {
 
 	if (_inStr.empty()) {
@@ -426,10 +424,28 @@ bool IntelHex::parse() {
 	delete [] pWritableCopy;
 	return true;
 }
-
-
-string IntelHex::getEditFieldText() {
+string IntelHex::getHex() {
 	return _inStr;
+}
+string IntelHex::getBin() {
+
+	typedef list<HexBlock>::reverse_iterator ListRevIter;
+	for(ListRevIter rIter = _hexBlocks.rbegin(); rIter != _hexBlocks.rend(); rIter++) {
+		char ch[3];
+		const int validLength = rIter->validLength;
+		
+		for (int i=0; i<validLength; i++) {
+			BYTE b = rIter->datas[i];
+			sprintf_s(ch, 3, "%02X", b);
+			_outStr += ch;
+			_outStr += " ";
+
+			if (i % RECORD_LENGTH == RECORD_LENGTH - 1) {
+				_outStr += "\r\n";
+			}
+		}
+	}
+	return _outStr;
 }
 
 

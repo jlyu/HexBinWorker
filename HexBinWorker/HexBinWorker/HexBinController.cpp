@@ -20,7 +20,7 @@ void HexBinController::init(CString& fileName) {
 		
 		binFileName = fileNameStr.c_str();
 		
-
+		_processType = PROCESS_HEX;
 	} else {
 		binFileName = fileName;
 
@@ -28,6 +28,7 @@ void HexBinController::init(CString& fileName) {
 		fileNameStr.replace(pos, 4, ".hex");
 		
 		hexFileName = fileNameStr.c_str();
+		_processType = PROCESS_BIN;
 	}
 
 	_hex = IntelHex(hexFileName);
@@ -54,7 +55,6 @@ void HexBinController::read(const CString& fileName){
 		//_bin.parse();
 	}
 }
-
 void HexBinController::readHex() { _hex.read(); }
 void HexBinController::readBin() { /*_bin.parse();*/ }
 
@@ -69,17 +69,26 @@ void HexBinController::parse(const CString& fileName) {
 void HexBinController::parseHex() { _hex.parse(); }
 void HexBinController::parseBin() { _bin.parse(); }
 
-void HexBinController::getEditFieldText(CString& hexField, CString& binField) {
-	hexField = _hex.getEditFieldText().c_str();
-	binField = _bin.getEditFieldText().c_str();
+void HexBinController::getText(CString& hexText, CString& binText) {
+	if (_processType == PROCESS_HEX) {
+		hexText = _hex.getHex().c_str();
+		binText = _hex.getBin().c_str();
+	} else if (_processType == PROCESS_BIN) {
+
+	}
 }
 void HexBinController::getFilePath(CString& hexPath, CString& binPath) {
 	hexPath = _hex.getFilePath().c_str();
 	binPath = _bin.getFilePath().c_str();
 }
 
+// MARK: text
+void HexBinController::getBinText(CString& binText) {
+	binText = _hex.getBin().c_str();
+}
 
-// output
+
+// MARK: write
 void HexBinController::writeToBinFile() {
 
 	FILE* pFileHandler = _bin.getFileWriteHandler();

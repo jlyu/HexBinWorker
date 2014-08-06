@@ -7,6 +7,7 @@
 using namespace std;
 
 const int FLASH_VOLUME = 64; // KB
+const int RECORD_LENGTH = 16;
 
 class IntelHex
 {
@@ -82,15 +83,20 @@ public:
 	bool read();
 	bool parse();
 
-	string getFilePath();
-	FILE* getFileWriteHandler();
+	// text
+	string getHex();
+	string getBin();
 
-	// output
+
+	// write
 	void writeToBinFile(FILE* fileHandler);
 
+
+	string getFilePath();
+	FILE* getFileWriteHandler();
 	string _hexEditField;
 	//string _binEditField;
-	string getEditFieldText();
+	//string getEditFieldText();
 	
 	//string getBinEditFieldText();
 
