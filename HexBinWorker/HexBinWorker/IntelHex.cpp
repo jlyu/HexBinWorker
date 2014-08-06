@@ -93,7 +93,11 @@ bool IntelHex::matchLine(const char *src) {
 				for (int i = startAddr; i < startAddr + dataLength; i++) {
 					hexBlocksIterator->datas[i] = splitedData[i-startAddr];
 				}
-
+				
+				const int dataValidLength = hexBlocksIterator->validLength;
+				if (startAddr > dataValidLength) {
+					hexBlocksIterator->validLength += startAddr - dataValidLength;
+				}
 				hexBlocksIterator->validLength += dataLength;
 				
 				break;
