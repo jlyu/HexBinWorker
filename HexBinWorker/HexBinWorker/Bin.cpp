@@ -6,8 +6,8 @@
 bool Bin::openBinFile(const CString& binFileName) {
 
 	CT2A asciiFileName(binFileName);
-	_pBinFileHandler = fopen(asciiFileName, "r");
-	//fopen_s(&_pBinFileHandler, asciiFileName, "r");
+	//_pBinFileHandler = fopen(asciiFileName, "r");
+	fopen_s(&_pBinFileHandler, asciiFileName, "r");
 
 	if(_pBinFileHandler == NULL) {  
         printf("Open file error.\n");  
@@ -57,7 +57,7 @@ void Bin::parse() {
 
 	for (int l = 0; l < dataSize; l++) {
 		if (l%16 == 0) {
-			dbLen = (dataSize - l >= 16) ? 16 : dataSize - l;
+			dbLen = static_cast<BYTE>((dataSize - l >= 16) ? 16 : dataSize - l);
 			printf(":%02X%04X00", dbLen, l);
 			bufferLine.Format(_T(":%02X%04X00"), dbLen, l);
 			bufferBlock += bufferLine;
@@ -106,8 +106,8 @@ string Bin::getFilePath() {
 FILE* Bin::getFileWriteHandler() {
 
 	CT2A asciiFileName(_fileName);
-	_pBinFileHandler = fopen(asciiFileName, "wb");
-	//fopen_s(&_pBinFileHandler, asciiFileName, "wb");
+	//_pBinFileHandler = fopen(asciiFileName, "wb");
+	fopen_s(&_pBinFileHandler, asciiFileName, "wb");
 	return _pBinFileHandler;
 }
 

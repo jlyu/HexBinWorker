@@ -71,12 +71,12 @@ bool IntelHex::matchLine(const char *src) {
 
 		// 检验行
 		bool isPass = verifyLine(hexRecord);
-		if (isPass) {
+		if (!isPass) { return false; }
 			
-			unsigned int recordTypeInt = hexToDec(hexRecord.recordType);
+		unsigned int recordTypeInt = hexToDec(hexRecord.recordType);
 
-			switch (recordTypeInt)
-			{
+		switch (recordTypeInt)
+		{
 			case 0: {
 				if (_hexBlocks.empty()) {
 					HexBlock newHexBlock = HexBlock();
@@ -128,8 +128,8 @@ bool IntelHex::matchLine(const char *src) {
 			printf("Hex Recoad IS NOT avaliable format");
 			return false;  
 		}  
-		return true;
-	}
+	return true;
+	
 }
 bool IntelHex::verifyLine(const HexRecord& hexRecord) {
 	// 验证数据长度
@@ -383,13 +383,14 @@ bool IntelHex::read() {
 	if (!openHexFile(_fileName)) return false;
 	if (_pHexFileHandler == NULL) return false;
 
-	char *lineBuffer = new char[sizeof(char) * 128];
+	const int bufferSize = sizeof(char) * 128;
+	char *lineBuffer = new char[bufferSize];
 	if (lineBuffer == NULL ) {  
 		printf("Apply for memory failed.!\n");  
         return false;  
     } 
 
-	while (fscanf(_pHexFileHandler, "%s", lineBuffer) != EOF) {
+	while (fscanf_s(_pHexFileHandler, "%s", lineBuffer, bufferSize) != EOF) {
 		_inStr += lineBuffer;
 		_inStr += "\r\n";
 	}
@@ -462,7 +463,7 @@ FILE* IntelHex::getFileWriteHandler() {
 	CString fileNameCopy = _fileName;
 	fileNameCopy.Insert(_fileName.GetLength()-4, _T("_"));
 	CT2A asciiFileName(fileNameCopy); //avoid to overwriting original hex file 
-	_pHexFileHandler = fopen(asciiFileName, "wb");
-	//fopen_s(&_pBinFileHandler, asciiFileName, "wb");
+	//_pHexFileHandler = fopen(asciiFileName, "wb");
+	fopen_s(&_pHexFileHandler, asciiFileName, "wb");
 	return _pHexFileHandler;
 }

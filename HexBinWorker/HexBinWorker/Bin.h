@@ -13,7 +13,7 @@ private:
 	bool openBinFile(const CString& binFileName);
 
 public:
-	Bin(void) { } 
+	Bin(void) { _pBinFileHandler = NULL; } 
 	Bin(CString& binFileName) {
 		_fileName = binFileName;
 		_pBinFileHandler = NULL;

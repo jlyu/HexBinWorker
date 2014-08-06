@@ -63,7 +63,7 @@ private:
 
 
 public:
-	IntelHex(void) { }
+	IntelHex(void) { _pHexFileHandler = NULL; }
 	IntelHex(const CString& hexFileName) {
 		
 		_fileName = hexFileName;
