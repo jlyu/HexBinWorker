@@ -16,6 +16,28 @@ bool Bin::openBinFile(const CString& binFileName) {
 	return true;
 }
 
+bool Bin::read() {
+	if (!openBinFile(_fileName)) { return false; }
+	if (_pBinFileHandler == NULL) { return false; }
+
+	const int bufferSize = FLASH_VOLUME * 64;
+	BYTE* pBuffer = new BYTE[bufferSize];
+
+	fseek(_pBinFileHandler, 0, SEEK_END);
+	long dataSize = ftell(_pBinFileHandler);
+	fseek(_pBinFileHandler, 0, SEEK_SET);
+	if (dataSize > bufferSize) {
+		return false;
+	}
+
+	fread(pBuffer, 1, dataSize, _pBinFileHandler);
+
+	//sprintf_s(ch, 3, "%s", b);
+	//_outStr += ch;
+
+	return true;
+}
+
 void Bin::parse() {
 
 	const int bufferSize = 65536;

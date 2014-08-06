@@ -196,14 +196,8 @@ void CHexBinWorkerDlg::OnBnClickedOk()
 
 void CHexBinWorkerDlg::OnBnClickedHexToBin()
 {
-	_hbController.parseHex();
-	
-	
-	// using hex file to write bin file
-	//_hbController.writeToBinFile();
-	// then, read bin file
-	//_hbController.parseBin();
 
+	_hbController.parseHex();  //TODO: input hex content here
 	showTextField();
 }
 

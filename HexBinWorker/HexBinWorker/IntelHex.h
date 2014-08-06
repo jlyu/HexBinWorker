@@ -4,10 +4,12 @@
 #include <list>
 #include <vector>
 
+#include "defineV.h"
+
 using namespace std;
 
-const int FLASH_VOLUME = 64; // KB
-const int RECORD_LENGTH = 16;
+//const int FLASH_VOLUME = 64; // KB
+//const int RECORD_LENGTH = 16;
 
 class IntelHex
 {
