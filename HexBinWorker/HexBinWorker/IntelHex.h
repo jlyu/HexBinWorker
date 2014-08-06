@@ -6,7 +6,7 @@
 
 using namespace std;
 
-const int FLASHVOLUME = 64; // KB
+const int FLASH_VOLUME = 64; // KB
 
 class IntelHex
 {
@@ -23,19 +23,17 @@ private:
 	};
 
 	struct HexBlock {
-		BYTE datas[FLASHVOLUME*1024]; // alloc 64K, init with 00
+		BYTE datas[FLASH_VOLUME * 1024]; // alloc 64K, init with 00
 		int validLength;
 
 		HexBlock() {
-			memset(datas, 0x00, FLASHVOLUME*1024);
+			memset(datas, 0x00, FLASH_VOLUME * 1024);
 			validLength = 0;
 		}
 	};
 
 	
 	bool openHexFile(CString& hexFileName);
-
-
 	bool checkLine(const char *src);
 	bool matchLine(const char *src);
 	bool verifyLine(const HexRecord& hexRecord);
@@ -55,7 +53,13 @@ private:
 
 	CString _fileName;
 	FILE* _pHexFileHandler;
+
+
+	string _inStr;
+	string _outStr;
+
 	list<HexBlock> _hexBlocks;
+
 
 public:
 	IntelHex(void) { }
@@ -73,12 +77,12 @@ public:
 		}
 	}
 
-
+	bool read();
 	void parse();
 	string getFilePath();
 	FILE* getFileWriteHandler();
 
-		// output
+	// output
 	void writeToBinFile(FILE* fileHandler);
 
 	string _hexEditField;

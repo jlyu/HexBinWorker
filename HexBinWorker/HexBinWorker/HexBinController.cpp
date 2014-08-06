@@ -50,7 +50,8 @@ bool HexBinController::isHexFile(const CString& fileName) {
 void HexBinController::parse(const CString& fileName) {
 	
 	if (isHexFile(fileName)) {
-		_hex.parse();
+		_hex.read();
+		//_hex.parse();
 	} else {
 		_bin.parse();
 	}

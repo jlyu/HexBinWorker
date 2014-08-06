@@ -374,11 +374,24 @@ void IntelHex::writeToBinFile(FILE* fileHandler) {
 
 // - Interface
 
+bool IntelHex::read() {
+
+	if (!openHexFile(_fileName)) return false;
+	if (_pHexFileHandler == NULL) return false;
+
+	char *lineBuffer = new char[sizeof(char) * 128];
+	while (fscanf(_pHexFileHandler, "%s", lineBuffer) != EOF) {
+		_inStr += lineBuffer;
+		_inStr += "\r\n";
+	}
+
+	return true;
+}
+
 
 void IntelHex::parse() {
 
     char *lineBuffer = new char[sizeof(char) * 100];        //存储hex文件的一行内容  
-
 
     if (lineBuffer == NULL ) {  
 		printf("Apply for memory failed.!\n");  
@@ -387,8 +400,10 @@ void IntelHex::parse() {
 
 	if (!openHexFile(_fileName)) return;
 
+
 	while (fscanf(_pHexFileHandler, "%s", lineBuffer) != EOF) {
 		printf("%s\n", lineBuffer);
+
 		bool checkPass = checkLine(lineBuffer);
 		if (checkPass) {
 			bool isVerify = matchLine(lineBuffer);
@@ -408,34 +423,8 @@ void IntelHex::parse() {
 
 
 string IntelHex::getEditFieldText() {
-	return _hexEditField;
+	return _inStr;
 }
-
-
-//string IntelHex::getBinEditFieldText() {
-//
-//	const int block = 16;
-//
-//	typedef list<HexBlock>::reverse_iterator ListRevIter;
-//	for(ListRevIter rIter = hexBlocks.rbegin(); rIter != hexBlocks.rend(); rIter++) {
-//		
-//		char ch[3];
-//		int validLength = rIter->validLength;
-//
-//		for (int i = 0; i < validLength; i++) {
-//			BYTE b = rIter->datas[i];
-//			sprintf_s(ch, 3, "%02X", b);
-//			_binEditField += ch;
-//			_binEditField += " ";
-//
-//			if (i % block == block-1) {
-//				_binEditField += "\r\n";
-//			}
-//		}
-//	}
-//
-//	return _binEditField;
-//}
 
 
 string IntelHex::getFilePath() {

@@ -176,12 +176,12 @@ void CHexBinWorkerDlg::showFilePath() {
 void CHexBinWorkerDlg::OnBnClickedOk()
 {
 	// Open
-	CFileDialog pHexFileDlg(TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, _T("Inter Hex (*.hex)|*.hex|Bin File|*.bin||")); 
-	CString filePathName; 
+	CString fileFormatter(_T("Inter Hex (*.hex)|*.hex|Bin File (*.bin)|*.bin||"));
+	CFileDialog pHexFileDlg(TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, fileFormatter); 
 
 	if(pHexFileDlg.DoModal() == IDOK) {
 
-		filePathName = pHexFileDlg.GetPathName(); 
+		CString filePathName = pHexFileDlg.GetPathName(); 
 
 		// Handle
 		_hbController.init(filePathName);
@@ -199,7 +199,7 @@ void CHexBinWorkerDlg::OnBnClickedHexToBin()
 	// using hex file to write bin file
 	_hbController.writeToBinFile();
 
-	// read bin file
+	// then, read bin file
 	_hbController.parseBin();
 
 	showTextField();

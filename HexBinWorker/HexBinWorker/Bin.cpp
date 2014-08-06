@@ -44,6 +44,7 @@ void Bin::parse() {
 
 	fread(pBuffer, 1, dataSize, _pBinFileHandler);
 
+
 	printf(":02%04X04", lStartAddr);
 	bufferLine.Format(_T(":02%04X040000"), lStartAddr);
 	bufferBlock += bufferLine;
@@ -112,18 +113,14 @@ FILE* Bin::getFileWriteHandler() {
 
 
 void Bin::writeToHexFile(FILE* fileHandler) {
+
 	if (fileHandler == NULL) {  
         printf("Open hex file error.\n");  
         return;  
     }
 
-	 //¿ªÊ¼Ð´Èë  
-	//typedef list<HexBlock>::reverse_iterator ListRevIter;
-	//for(ListRevIter rIter = _hexBlocks.rbegin(); rIter != _hexBlocks.rend(); rIter++) {
-		//int validLength = rIter->validLength;
 
 	fwrite(_binEditField.c_str(), 1, _binEditField.length(), fileHandler);
-	//}
 
 	fclose(fileHandler);
 	fileHandler = NULL;
