@@ -185,7 +185,7 @@ void CHexBinWorkerDlg::OnBnClickedOk()
 
 		// Handle
 		_hbController.init(filePathName);
-		_hbController.parse(filePathName);
+		_hbController.read(filePathName);
 
 		// Show 
 		showTextField();
@@ -196,6 +196,7 @@ void CHexBinWorkerDlg::OnBnClickedOk()
 
 void CHexBinWorkerDlg::OnBnClickedHexToBin()
 {
+	_hbController.parseHex();
 	// using hex file to write bin file
 	_hbController.writeToBinFile();
 

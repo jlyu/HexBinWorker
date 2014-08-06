@@ -67,7 +67,9 @@ public:
 		
 		_fileName = hexFileName;
 		_pHexFileHandler = NULL;
-		//openHexFile(_fileName);
+
+		_inStr = "";
+		_outStr = "";
 	}
 
 	~IntelHex(void) { 
@@ -78,7 +80,8 @@ public:
 	}
 
 	bool read();
-	void parse();
+	bool parse();
+
 	string getFilePath();
 	FILE* getFileWriteHandler();
 

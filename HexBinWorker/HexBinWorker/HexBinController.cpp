@@ -47,11 +47,21 @@ bool HexBinController::isHexFile(const CString& fileName) {
 	return false;
 }
 
+void HexBinController::read(const CString& fileName){
+	if (isHexFile(fileName)) {
+		_hex.read();
+	} else {
+		//_bin.parse();
+	}
+}
+
+void HexBinController::readHex() { _hex.read(); }
+void HexBinController::readBin() { /*_bin.parse();*/ }
+
 void HexBinController::parse(const CString& fileName) {
 	
 	if (isHexFile(fileName)) {
-		_hex.read();
-		//_hex.parse();
+		_hex.parse();
 	} else {
 		_bin.parse();
 	}

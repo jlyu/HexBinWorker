@@ -380,6 +380,11 @@ bool IntelHex::read() {
 	if (_pHexFileHandler == NULL) return false;
 
 	char *lineBuffer = new char[sizeof(char) * 128];
+	if (lineBuffer == NULL ) {  
+		printf("Apply for memory failed.!\n");  
+        return false;  
+    } 
+
 	while (fscanf(_pHexFileHandler, "%s", lineBuffer) != EOF) {
 		_inStr += lineBuffer;
 		_inStr += "\r\n";
@@ -389,36 +394,37 @@ bool IntelHex::read() {
 }
 
 
-void IntelHex::parse() {
+bool IntelHex::parse() {
 
-    char *lineBuffer = new char[sizeof(char) * 100];        //存储hex文件的一行内容  
+	if (_inStr.empty()) {
+		return false;
+	}
 
-    if (lineBuffer == NULL ) {  
-		printf("Apply for memory failed.!\n");  
-        return;  
-    }  
+	char *pWritableCopy = new char[_inStr.size() + 1];
+	std::copy(_inStr.begin(), _inStr.end(), pWritableCopy);
+	pWritableCopy[_inStr.size()] = '\0';
 
-	if (!openHexFile(_fileName)) return;
-
-
-	while (fscanf(_pHexFileHandler, "%s", lineBuffer) != EOF) {
-		printf("%s\n", lineBuffer);
-
+	char* lineBuffer;
+	lineBuffer = strtok(pWritableCopy, "\r\n");
+	
+	while (lineBuffer != NULL) {
+		
+		// Parse hex line
 		bool checkPass = checkLine(lineBuffer);
 		if (checkPass) {
 			bool isVerify = matchLine(lineBuffer);
 			if (!isVerify)
 			{
-				delete [] lineBuffer;
-				return;
+				// wrong hex format, reading aborted
+				delete [] pWritableCopy;
+				return false;
 			}
-			_hexEditField += lineBuffer;
-			_hexEditField += "\r\n";
-			
 		}
+		lineBuffer = strtok (NULL, "\r\n");
 	}
 
-	delete [] lineBuffer;
+	delete [] pWritableCopy;
+	return true;
 }
 
 
