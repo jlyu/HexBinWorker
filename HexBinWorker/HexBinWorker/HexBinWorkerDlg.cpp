@@ -196,7 +196,6 @@ void CHexBinWorkerDlg::OnBnClickedOk()
 
 void CHexBinWorkerDlg::OnBnClickedHexToBin()
 {
-
 	_hbController.parseHex();  //TODO: input hex content here
 	showTextField();
 }
@@ -204,10 +203,10 @@ void CHexBinWorkerDlg::OnBnClickedHexToBin()
 void CHexBinWorkerDlg::OnBnClickedBinToHex()
 {
 	//_hbController.writeToHexFile();
-	//_hbController.parseHex();
+	_hbController.parseBin();
 
 	//showFilePath();
-	//showTextField();
+	showTextField();
 }
 
 void CHexBinWorkerDlg::OnBnClickedSave()

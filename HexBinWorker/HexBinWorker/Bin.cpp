@@ -25,112 +25,110 @@ bool Bin::read() {
 	BYTE* pBuffer = new BYTE[bufferSize];
 
 	fseek(_pBinFileHandler, 0, SEEK_END);
-	long dataSize = ftell(_pBinFileHandler);
+	_dataSize = ftell(_pBinFileHandler);
 	fseek(_pBinFileHandler, 0, SEEK_SET);
-	if (dataSize > bufferSize) {
+	if (_dataSize > bufferSize) {
 		return false;
 	}
 
-	fread(pBuffer, 1, dataSize, _pBinFileHandler);
+	fread(pBuffer, 1, _dataSize, _pBinFileHandler);
 
 	char ch[3];
-	for (int i=0; i< dataSize; i++) {
+	for (int i=0; i< _dataSize; i++) {
 		sprintf(ch, "%02X", pBuffer[i]);
 		_inStr += ch;
-		_inStr += " ";
+		//_inStr += " ";
 
-		if (i % RECORD_LENGTH == RECORD_LENGTH - 1) {
-			_inStr += "\r\n";
-		}
+		//if (i % RECORD_LENGTH == RECORD_LENGTH - 1) {
+		//	_inStr += "\r\n";
+		//}
 	}
 
 	return true;
 }
 
-void Bin::parse() {
+bool Bin::parse() {
 
-	const int bufferSize = 65536;
-	BYTE* pBuffer = new BYTE[bufferSize];
+	if (_inStr.empty()) {
+		return false;
+	}
+
+	// TODO: verify inStr [0-9A-Za-z]
+	//       trim all space and enter char
+	if (_inStr.size() != 2 * _dataSize) {
+		return false;
+	}
+
+	// begin parse
+	char *inStrCopy = new char[_inStr.size()+1];
+	std::copy(_inStr.begin(), _inStr.end(), inStrCopy); 
+	inStrCopy[_inStr.size()] = '\0';
+
+	BYTE dbSum, dbLen;
 	CString bufferLine  = _T("");
 	CString bufferBlock = _T("");
 
-	long lStartAddr = 0x00; //TODO
-	BYTE dbSum, dbLen;
-	
-	
-  
-    if (pBuffer == NULL) {  
-		printf("Apply for memory failed.!\n");  
-        return;  
-    }  
-
-	if (!openBinFile(_fileName)) return;
-	fseek(_pBinFileHandler, 0, SEEK_END);
-	long dataSize = ftell(_pBinFileHandler);
-	fseek(_pBinFileHandler, 0, SEEK_SET);
-
-	if (dataSize > bufferSize) {
-		return;
-	}
-
-	fread(pBuffer, 1, dataSize, _pBinFileHandler);
-
-
-	printf(":02%04X04", lStartAddr);
-	bufferLine.Format(_T(":02%04X040000"), lStartAddr);
+	// the 1st Line
+	bufferLine.Format(_T(":02%04X040000"), _startAddr);
 	bufferBlock += bufferLine;
-
-	dbSum = 02 + (BYTE)(lStartAddr>>8) + (BYTE)lStartAddr + 04;
+	dbSum = 02 + (BYTE)(_startAddr>>8) + (BYTE)_startAddr + 04;
 	dbSum = ~dbSum + 1;
-	printf("%02X\r\n", dbSum);
+	// printf("%02X\r\n", dbSum);
 	bufferLine.Format(_T("%02X\r\n"), dbSum);
 	bufferBlock += bufferLine;
 
-	for (int l = 0; l < dataSize; l++) {
-		if (l%16 == 0) {
-			dbLen = static_cast<BYTE>((dataSize - l >= 16) ? 16 : dataSize - l);
-			printf(":%02X%04X00", dbLen, l);
+	// the part of datas
+	for (int l = 0; l < _dataSize; l++) {
+		if (l % 16 == 0) {
+			dbLen = static_cast<BYTE>((_dataSize - l >= 16) ? 16 : _dataSize - l);
+			// printf(":%02X%04X00", dbLen, l);
 			bufferLine.Format(_T(":%02X%04X00"), dbLen, l);
 			bufferBlock += bufferLine;
 
 			dbSum = dbLen + (BYTE)(l>>8) + (BYTE)l + 00;
 		}
-		printf("%02X", pBuffer[l]);
-		bufferLine.Format(_T("%02X"), pBuffer[l]);
+		// printf("%02X", inStrCopy[l]);
+		bufferLine.Format(_T("%02X"), inStrCopy[l]);
 		bufferBlock += bufferLine;
 
-		dbSum += pBuffer[l];
-		if (l%16 == dbLen-1) {
+		dbSum += inStrCopy[l];
+		if (l % 16 == dbLen-1) {
 			dbSum = ~dbSum + 1;
-			printf("%02X\r\n", dbSum);
+			//printf("%02X\r\n", dbSum);
 			bufferLine.Format(_T("%02X\r\n"), dbSum);
 			bufferBlock += bufferLine;
 		}
 	}
 
-	printf(":00000001FF");
+	// the last line
+	//printf(":00000001FF");
 	bufferBlock += CString(_T(":00000001FF"));
 
-	/*while (fscanf(_pBinFileHandler, "%s", lineBuffer) != EOF) {
-		printf("%s\n", lineBuffer);
-		
-		_binEditField += lineBuffer;
-		_binEditField += "\r\n";
-	}*/
+	_outStr = CT2A(bufferBlock);
+	delete [] inStrCopy;
 
-	//delete(lineBuffer);
-	_binEditField = CT2A(bufferBlock);
-	delete [] pBuffer;
+	return true;
 }
 
-	// text
+
+// -MARK: text
+string Bin::getBin() {
+
+	string resultStr = "";
+	const int inStrSize = _inStr.size();
+	for (int i=0; i<inStrSize; i+=2) {
+		resultStr += _inStr[i];
+		resultStr += _inStr[i+1];
+		resultStr += " ";
+
+		if ( (i/2) % RECORD_LENGTH == RECORD_LENGTH -1) {
+			resultStr += "\r\n";
+		}
+	}
+	return resultStr;
+}
 string Bin::getHex() {
 	return _outStr;
-}
-
-
-string Bin::getBin() {
-	return _inStr;
 }
 
 

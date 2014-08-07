@@ -11,7 +11,10 @@ private:
 	CString _fileName;
 	FILE* _pBinFileHandler;
 
-	string _inStr;
+	long _startAddr; 
+	long _dataSize;
+
+	string _inStr;  // without formatting
 	string _outStr;
 	
 	bool openBinFile(const CString& binFileName);
@@ -25,6 +28,9 @@ public:
 		
 		_inStr = "";
 		_outStr = "";
+
+		_startAddr = 0x00;
+		_dataSize = 0;
 	}
 
 	~Bin(void) {
@@ -37,12 +43,12 @@ public:
 	FILE* getFileWriteHandler();
 
 	bool read();
-	void parse();
+	bool parse();
 
 	// text
-	string getHex();
 	string getBin();
-
+	string getHex();
+	
 
 	string _binEditField;
 	string getEditFieldText();
