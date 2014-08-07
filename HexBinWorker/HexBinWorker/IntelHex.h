@@ -83,6 +83,8 @@ public:
 	}
 
 	bool read();
+
+	bool parse(string& inStr);
 	bool parse();
 
 	// text

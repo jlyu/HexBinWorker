@@ -159,6 +159,13 @@ void CHexBinWorkerDlg::showTextField() {
 	GetDlgItem(IDC_HEXFILEFIELD)->SetWindowText(hexText);
 	GetDlgItem(IDC_BINFILEFIELD)->SetWindowText(binText);
 }
+void CHexBinWorkerDlg::getTextField(string& hexText, string& binText) {
+	CString hexTextCStr, binTextCStr;
+	GetDlgItem(IDC_HEXFILEFIELD)->GetWindowText(hexTextCStr);
+	GetDlgItem(IDC_BINFILEFIELD)->GetWindowText(binTextCStr);
+	hexText = CT2A(hexTextCStr);
+	binText = CT2A(binTextCStr);
+}
 
 void CHexBinWorkerDlg::showFilePath() {
 	// clear
@@ -196,16 +203,19 @@ void CHexBinWorkerDlg::OnBnClickedOk()
 
 void CHexBinWorkerDlg::OnBnClickedHexToBin()
 {
-	_hbController.parseHex();  //TODO: input hex content here
+	string hexText, binText;
+	getTextField(hexText, binText);
+
+	bool succeed = _hbController.parseHex(hexText);
+	if (!succeed) {
+		MessageBox(_T("Hex 文件无法解析到 Bin 文件，格式错误"));
+	}
 	showTextField();
 }
 
 void CHexBinWorkerDlg::OnBnClickedBinToHex()
 {
-	//_hbController.writeToHexFile();
 	_hbController.parseBin();
-
-	//showFilePath();
 	showTextField();
 }
 
@@ -213,7 +223,6 @@ void CHexBinWorkerDlg::OnBnClickedSave()
 {
 	//_hexFile.writeToBinFile(); //TODO: add fileNAME
 	//MessageBox(_T("saved"), NULL);
-
 }
 
 

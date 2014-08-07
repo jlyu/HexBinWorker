@@ -58,15 +58,15 @@ void HexBinController::read(const CString& fileName){
 void HexBinController::readHex() { _hex.read(); }
 void HexBinController::readBin() { /*_bin.parse();*/ }
 
-void HexBinController::parse(const CString& fileName) {
+bool HexBinController::parse(const CString& fileName) {
 	
 	if (isHexFile(fileName)) {
-		_hex.parse();
+		return _hex.parse();
 	} else {
-		_bin.parse();
+		return _bin.parse();
 	}
 }
-void HexBinController::parseHex() { _hex.parse(); }
+bool HexBinController::parseHex(string& inStr) { return _hex.parse(inStr); }
 void HexBinController::parseBin() { _bin.parse(); }
 
 void HexBinController::getText(CString& hexText, CString& binText) {

@@ -25,8 +25,8 @@ public:
 	void readHex();
 	void readBin();
 
-	void parse(const CString& fileName);
-	void parseHex();
+	bool parse(const CString& fileName);
+	bool parseHex(string& inStr);
 	void parseBin();
 
 	bool isHexFile(const CString& fileName); 

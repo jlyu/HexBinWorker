@@ -6,7 +6,6 @@
 bool Bin::openBinFile(const CString& binFileName) {
 
 	CT2A asciiFileName(binFileName);
-	//_pBinFileHandler = fopen(asciiFileName, "r");
 	fopen_s(&_pBinFileHandler, asciiFileName, "r");
 
 	if(_pBinFileHandler == NULL) {  
@@ -148,7 +147,6 @@ FILE* Bin::getFileWriteHandler() {
 	fopen_s(&_pBinFileHandler, asciiFileName, "wb");
 	return _pBinFileHandler;
 }
-
 
 void Bin::writeToHexFile(FILE* fileHandler) {
 

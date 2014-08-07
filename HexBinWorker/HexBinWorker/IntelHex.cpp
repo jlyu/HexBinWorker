@@ -397,6 +397,15 @@ bool IntelHex::read() {
 
 	return true;
 }
+
+bool IntelHex::parse(string& inStr) {
+	if (!inStr.empty()) {
+		_inStr = inStr;
+	} 
+		
+	return parse();
+}
+
 bool IntelHex::parse() {
 
 	if (_inStr.empty()) {
