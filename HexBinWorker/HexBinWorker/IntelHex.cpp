@@ -429,6 +429,7 @@ bool IntelHex::parse() {
 	delete [] pWritableCopy;
 	return true;
 }
+
 string IntelHex::getHex() {
 	return _inStr;
 }

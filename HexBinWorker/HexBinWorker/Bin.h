@@ -39,6 +39,10 @@ public:
 	bool read();
 	void parse();
 
+	// text
+	string getHex();
+	string getBin();
+
 
 	string _binEditField;
 	string getEditFieldText();

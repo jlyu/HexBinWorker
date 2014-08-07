@@ -37,6 +37,11 @@ bool Bin::read() {
 	for (int i=0; i< dataSize; i++) {
 		sprintf(ch, "%02X", pBuffer[i]);
 		_inStr += ch;
+		_inStr += " ";
+
+		if (i % RECORD_LENGTH == RECORD_LENGTH - 1) {
+			_inStr += "\r\n";
+		}
 	}
 
 	return true;
@@ -118,6 +123,15 @@ void Bin::parse() {
 	delete [] pBuffer;
 }
 
+	// text
+string Bin::getHex() {
+	return _outStr;
+}
+
+
+string Bin::getBin() {
+	return _inStr;
+}
 
 
 string Bin::getEditFieldText() {

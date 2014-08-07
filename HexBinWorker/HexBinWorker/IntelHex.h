@@ -8,8 +8,7 @@
 
 using namespace std;
 
-//const int FLASH_VOLUME = 64; // KB
-//const int RECORD_LENGTH = 16;
+
 
 class IntelHex
 {
@@ -65,6 +64,7 @@ private:
 
 
 public:
+
 	IntelHex(void) { _pHexFileHandler = NULL; }
 	IntelHex(const CString& hexFileName) {
 		

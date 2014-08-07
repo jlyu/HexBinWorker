@@ -74,7 +74,8 @@ void HexBinController::getText(CString& hexText, CString& binText) {
 		hexText = _hex.getHex().c_str();
 		binText = _hex.getBin().c_str();
 	} else if (_processType == PROCESS_BIN) {
-
+		hexText = _bin.getHex().c_str();
+		binText = _bin.getBin().c_str();
 	}
 }
 void HexBinController::getFilePath(CString& hexPath, CString& binPath) {
