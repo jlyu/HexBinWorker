@@ -17,6 +17,7 @@ bool Bin::openBinFile(const CString& binFileName) {
 }
 
 bool Bin::read() {
+
 	if (!openBinFile(_fileName)) { return false; }
 	if (_pBinFileHandler == NULL) { return false; }
 
@@ -32,8 +33,11 @@ bool Bin::read() {
 
 	fread(pBuffer, 1, dataSize, _pBinFileHandler);
 
-	//sprintf_s(ch, 3, "%s", b);
-	//_outStr += ch;
+	char ch[3];
+	for (int i=0; i< dataSize; i++) {
+		sprintf(ch, "%02X", pBuffer[i]);
+		_inStr += ch;
+	}
 
 	return true;
 }

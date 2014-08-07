@@ -52,7 +52,7 @@ void HexBinController::read(const CString& fileName){
 	if (isHexFile(fileName)) {
 		_hex.read();
 	} else {
-		//_bin.parse();
+		_bin.read();
 	}
 }
 void HexBinController::readHex() { _hex.read(); }
