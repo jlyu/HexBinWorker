@@ -32,13 +32,15 @@ public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedSave();
 	afx_msg void OnBnClickedHexToBin();
+	afx_msg void OnBnClickedBinToHex();
+
+	void showTextField();
+	void showFilePath();
+	void getTextField(string& hexText, string& binText);
+
+	void findAvailableCom();
+
 
 private:
 	HexBinController _hbController;
-
-public:
-	void showTextField();
-	void getTextField(string& hexText, string& binText);
-	void showFilePath();
-	afx_msg void OnBnClickedBinToHex();
 };

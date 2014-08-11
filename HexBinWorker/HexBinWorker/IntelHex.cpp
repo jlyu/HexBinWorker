@@ -472,8 +472,7 @@ string IntelHex::getFilePath() {
 FILE* IntelHex::getFileWriteHandler() {
 	CString fileNameCopy = _fileName;
 	fileNameCopy.Insert(_fileName.GetLength()-4, _T("_"));
-	CT2A asciiFileName(fileNameCopy); //avoid to overwriting original hex file 
-	//_pHexFileHandler = fopen(asciiFileName, "wb");
+	CT2A asciiFileName(fileNameCopy); //avoid to overwriting original hex file // TODO
 	fopen_s(&_pHexFileHandler, asciiFileName, "wb");
 	return _pHexFileHandler;
 }

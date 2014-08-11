@@ -98,6 +98,7 @@ BOOL CHexBinWorkerDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	// TODO: 在此添加额外的初始化代码
+	findAvailableCom();
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -226,7 +227,26 @@ void CHexBinWorkerDlg::OnBnClickedSave()
 }
 
 
+// to be settled
+void CHexBinWorkerDlg::findAvailableCom() {
+	HANDLE hCom;
 
+	// find com number [COM1-16]
+	const int comSerialSize = 16;
+	vector<CString> availableComSerial;
+	//availableComSerial.resize(comSerialSize);
+	for (int iComNumber = 1; iComNumber <= comSerialSize; iComNumber++) {
+		CString comNumber;
+		comNumber.Format(_T("COM%d"), iComNumber);
 
+		hCom = CreateFile(comNumber, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, NULL);
+		if (hCom != INVALID_HANDLE_VALUE) {
+			availableComSerial.push_back(comNumber);
+		}
+
+		CloseHandle(hCom);
+	}
+
+}
 
 
