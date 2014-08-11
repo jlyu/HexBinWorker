@@ -2,6 +2,7 @@
 // HexBinWorkerDlg.h : 头文件
 #pragma once
 #include "HexBinController.h"
+#include "CnComm.h"
 
 
 // CHexBinWorkerDlg 对话框
@@ -38,9 +39,15 @@ public:
 	void showFilePath();
 	void getTextField(string& hexText, string& binText);
 
-	void findAvailableCom();
+	// to be settled..
+	CnComm _hCom;
 
+	void findAvailableCom();
+	void showAvailableCom(const vector<CString> &aCom);
+	afx_msg void OnBnClickedBtnOpencom();
 
 private:
 	HexBinController _hbController;
+public:
+	
 };

@@ -63,6 +63,7 @@ BEGIN_MESSAGE_MAP(CHexBinWorkerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_SAVE, &CHexBinWorkerDlg::OnBnClickedSave)
 	ON_BN_CLICKED(IDC_HEX_TO_BIN, &CHexBinWorkerDlg::OnBnClickedHexToBin)
 	ON_BN_CLICKED(IDC_BIN_TO_HEX, &CHexBinWorkerDlg::OnBnClickedBinToHex)
+	ON_BN_CLICKED(IDC_BTN_OPENCOM, &CHexBinWorkerDlg::OnBnClickedBtnOpencom)
 END_MESSAGE_MAP()
 
 
@@ -229,8 +230,8 @@ void CHexBinWorkerDlg::OnBnClickedSave()
 
 // to be settled
 void CHexBinWorkerDlg::findAvailableCom() {
-	HANDLE hCom;
 
+	HANDLE hCom;
 	// find com number [COM1-16]
 	const int comSerialSize = 16;
 	vector<CString> availableComSerial;
@@ -247,6 +248,53 @@ void CHexBinWorkerDlg::findAvailableCom() {
 		CloseHandle(hCom);
 	}
 
+
+	showAvailableCom(availableComSerial);
 }
 
 
+void CHexBinWorkerDlg::showAvailableCom(const vector<CString> &aCom) {
+	const int availableComSize = aCom.size();
+	if (availableComSize == 0) {
+		((CComboBox *)GetDlgItem(IDC_COMBO_COM))->EnableWindow(FALSE);
+		MessageBox(_T("没有侦测到可用的串口"));
+	}
+
+	((CComboBox *)GetDlgItem(IDC_COMBO_COM))->EnableWindow(TRUE);
+	for (int i=0; i<availableComSize; i++) {
+		((CComboBox *)GetDlgItem(IDC_COMBO_COM))->AddString(aCom[i]);
+	}
+
+	int comCount = ((CComboBox *)GetDlgItem((IDC_COMBO_COM)))->GetCount();
+	((CComboBox *)GetDlgItem(IDC_COMBO_COM))->SetCurSel(comCount - 1);
+}
+
+void CHexBinWorkerDlg::OnBnClickedBtnOpencom() {
+	
+	CString comSerialStr;
+	int currentComSerial = ((CComboBox *)GetDlgItem(IDC_COMBO_COM))->GetCurSel();
+	((CComboBox *)GetDlgItem(IDC_COMBO_COM))->GetLBText(currentComSerial, comSerialStr);
+
+	CString comNumberCStr = comSerialStr.Mid(3);
+	int comNumber = _ttoi(comNumberCStr);
+
+	// open com: USB port
+	bool isSuccess = _hCom.Open(comNumber);
+	if (!isSuccess)	{
+		CString messageCStr(_T("无法打开串口：COM") + comNumberCStr);
+		MessageBox(messageCStr);
+		return;
+	}
+
+	_hCom.SetState(115200, 8, NOPARITY, ONESTOPBIT);
+	
+	_hCom.Write("02FD");
+
+	char *revData = new char[6];
+	_hCom.Read(&revData, 6);
+
+	string revDataStr = revData;
+
+	delete [] revData;
+	
+}

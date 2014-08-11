@@ -209,6 +209,8 @@ public:
 		
 		return SetState(szSetStr);
 	}
+	
+	
 	//读取串口 dwBufferLength个字符到 Buffer 返回实际读到的字符数 可读任意数据
 	DWORD Read(LPVOID Buffer, DWORD dwBufferLength, DWORD dwWaitTime = 10)
 	{
@@ -231,7 +233,7 @@ public:
 		
 		dwBufferLength = dwBufferLength > Stat.cbInQue ? Stat.cbInQue :dwBufferLength;
 		
-		if (!::ReadFile(_hCommHandle, Buffer, dwBufferLength, &uReadLength,&_ReadOverlapped))
+		if (!::ReadFile(_hCommHandle, Buffer, dwBufferLength, &uReadLength, &_ReadOverlapped))
 		{
 			if (::GetLastError() == ERROR_IO_PENDING)
 			{
@@ -250,13 +252,14 @@ public:
 		return uReadLength;
 	}
 	//读取串口 dwBufferLength - 1 个字符到 szBuffer 返回ANSI C 模式字符串指针 适合一般字符通讯
-	
 	char *ReadString(char *szBuffer, DWORD dwBufferLength, DWORD dwWaitTime =20)
 	{
 		unsigned long uReadLength = Read(szBuffer, dwBufferLength - 1,dwWaitTime);
 		szBuffer[uReadLength] = '\0';
 		return szBuffer;
 	}
+
+
 	//写串口 可写任意数据 "abcd" or "\x0\x1\x2"
 	DWORD Write(LPVOID Buffer, DWORD dwBufferLength)
 	{
@@ -283,6 +286,8 @@ public:
 		
 		return Write((void*)szBuffer, strlen(szBuffer));
     }
+
+
     //读串口 同步应用
     DWORD ReadSync(LPVOID Buffer, DWORD dwBufferLength)
     {
@@ -432,7 +437,9 @@ public:
 		ltoa(_dwPort, p, 10);
 		strcat(_szCommStr, p);
 	}
-	
+
+
+
   protected:
 	  volatile DWORD _dwPort; //串口号
 	  volatile HANDLE _hCommHandle; //串口句柄
@@ -493,15 +500,15 @@ public:
 	  //打开串口
 	  virtual bool OpenCommPort()
 	  {
-		  if (IsOpen())
+		  if (IsOpen()) {
 			  Close();
+		  }
 
-		  CString szCommCStr;
-		  szCommCStr.Format(_T("%s"), _szCommStr);
-
-		  _hCommHandle = ::CreateFile(szCommCStr, GENERIC_READ | GENERIC_WRITE, 0, NULL,
-			  OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | _dwIOMode,NULL);
+		  wchar_t wszComm[20] = { '\0' };
+		  mbstowcs(wszComm, _szCommStr, 20);
 		  
+		  _hCommHandle = ::CreateFile(wszComm, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | _dwIOMode, NULL);
+
 		  if (_fAutoBeginThread)
 		  {
 			  if (IsOpen() && BeginThread())
