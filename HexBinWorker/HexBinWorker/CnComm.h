@@ -233,7 +233,8 @@ public:
 		
 		dwBufferLength = dwBufferLength > Stat.cbInQue ? Stat.cbInQue :dwBufferLength;
 		
-		if (!::ReadFile(_hCommHandle, Buffer, dwBufferLength, &uReadLength, &_ReadOverlapped))
+		bool canRead = ::ReadFile(_hCommHandle, Buffer, dwBufferLength, &uReadLength, &_ReadOverlapped);
+		if (!canRead)
 		{
 			if (::GetLastError() == ERROR_IO_PENDING)
 			{
@@ -273,11 +274,11 @@ public:
 		
 		unsigned long uWriteLength = 0;
 		
-		if (!::WriteFile(_hCommHandle, Buffer, dwBufferLength, &uWriteLength,&_WriteOverlapped))
+		if (!::WriteFile(_hCommHandle, Buffer, dwBufferLength, &uWriteLength, &_WriteOverlapped))
 			if (::GetLastError() != ERROR_IO_PENDING)
 				uWriteLength = 0;
 			
-			return uWriteLength;
+		return uWriteLength;
     }
     //写串口 写ANSI C 模式字符串指针 
     DWORD Write(const char *szBuffer)
@@ -345,6 +346,7 @@ public:
 		
 		return Write(szBuffer);
     }
+
     //关闭串口 同时也关闭关联线程
     virtual void Close()
     {

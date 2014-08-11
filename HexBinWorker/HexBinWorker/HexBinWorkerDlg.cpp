@@ -47,7 +47,7 @@ END_MESSAGE_MAP()
 
 // CHexBinWorkerDlg ¶Ô»°¿ò
 CHexBinWorkerDlg::CHexBinWorkerDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CHexBinWorkerDlg::IDD, pParent)
+	: CDialogEx(CHexBinWorkerDlg::IDD, pParent), _hCom(false, 0)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -286,15 +286,28 @@ void CHexBinWorkerDlg::OnBnClickedBtnOpencom() {
 		return;
 	}
 
-	_hCom.SetState(115200, 8, NOPARITY, ONESTOPBIT);
+	_hCom.SetState(115200, 8, EVENPARITY, ONESTOPBIT);
 	
-	_hCom.Write("02FD");
+	
+	//while (true)
+	//{
+		//char *revData = new char[3];
+		BYTE *revData = new BYTE[65536];	
 
-	char *revData = new char[6];
-	_hCom.Read(&revData, 6);
+		_hCom.Write("\x00\xFF", 2);
+		//_hCom.Reads(revData, 16);
+		_hCom.Read(revData, 65535);
+		//revData[2] = '\0';
 
-	string revDataStr = revData;
+		
+		CString revCStr;
+		revCStr.Format(_T("%02X"), revData);
 
-	delete [] revData;
+		delete [] revData;
+
+	
+	//}
+	
+	_hCom.Close();
 	
 }
