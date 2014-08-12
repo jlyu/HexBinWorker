@@ -3,7 +3,6 @@
 #include <map>
 #include <list>
 #include <vector>
-
 #include "defineV.h"
 
 using namespace std;
@@ -99,10 +98,7 @@ public:
 	string getFilePath();
 	FILE* getFileWriteHandler();
 	string _hexEditField;
-	//string _binEditField;
-	//string getEditFieldText();
 	
-	//string getBinEditFieldText();
 
 };
 

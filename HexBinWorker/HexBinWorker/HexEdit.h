@@ -65,7 +65,6 @@ public:
 	void AppendData(LPBYTE p, int addlen);
 	int GetData(LPBYTE p, int len);
 	void SetData(LPBYTE p, int len);
-	void setData(string data);
 	CSize GetSel(void);
 	void SetSel(int s, int e);
 	void SetBPR(int bpr);

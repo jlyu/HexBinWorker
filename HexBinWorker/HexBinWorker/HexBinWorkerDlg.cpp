@@ -102,6 +102,11 @@ BOOL CHexBinWorkerDlg::OnInitDialog()
 	// TODO: 在此添加额外的初始化代码
 	findAvailableCom();
 
+	
+	_editFont.CreateFont(-12, 0,0,0,0,0,0,0,0,0,0,0,0, _T("Consolas"));
+	GetDlgItem(IDC_HEXFILEFIELD)->SetFont(&_editFont);
+	GetDlgItem(IDC_BINFILEFIELD)->SetFont(&_editFont);
+
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 void CHexBinWorkerDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -164,8 +169,11 @@ void CHexBinWorkerDlg::showTextField() {
 
 	//set hexEdit 
 	//void SetData(LPBYTE p, int len);
-	string binTextStr = CT2A(binText);
-	_hexEdit.setData(binTextStr);
+	BYTE* pDatas = NULL;
+	int dataSize = 0;
+	_hbController.getBinDatas(pDatas, dataSize);
+	
+	_hexEdit.SetData(pDatas, dataSize);
 
 }
 void CHexBinWorkerDlg::getTextField(string& hexText, string& binText) {

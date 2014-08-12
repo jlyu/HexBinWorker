@@ -21,7 +21,7 @@ bool Bin::read() {
 	if (_pBinFileHandler == NULL) { return false; }
 
 	const int bufferSize = FLASH_VOLUME * 64;
-	BYTE* pBuffer = new BYTE[bufferSize];
+	_inDatas = new BYTE[bufferSize];
 
 	fseek(_pBinFileHandler, 0, SEEK_END);
 	_dataSize = ftell(_pBinFileHandler);
@@ -30,17 +30,12 @@ bool Bin::read() {
 		return false;
 	}
 
-	fread(pBuffer, 1, _dataSize, _pBinFileHandler);
+	fread(_inDatas, 1, _dataSize, _pBinFileHandler);
 
 	char ch[3];
 	for (int i=0; i< _dataSize; i++) {
-		sprintf(ch, "%02X", pBuffer[i]);
+		sprintf(ch, "%02X", _inDatas[i]);
 		_inStr += ch;
-		//_inStr += " ";
-
-		//if (i % RECORD_LENGTH == RECORD_LENGTH - 1) {
-		//	_inStr += "\r\n";
-		//}
 	}
 
 	return true;
@@ -113,20 +108,20 @@ bool Bin::parse() {
 // -MARK: text
 string Bin::getBin() {
 
-	//string resultStr = "";
-	//const int inStrSize = _inStr.size();
-	//for (int i=0; i<inStrSize; i+=2) {
-	//	resultStr += _inStr[i];
-	//	resultStr += _inStr[i+1];
-	//	resultStr += " ";
+	string resultStr = "";
+	const int inStrSize = _inStr.size();
+	for (int i=0; i<inStrSize; i+=2) {
+		resultStr += _inStr[i];
+		resultStr += _inStr[i+1];
+		resultStr += " ";
 
-	//	if ( (i/2) % RECORD_LENGTH == RECORD_LENGTH -1) {
-	//		resultStr += "\r\n";
-	//	}
-	//}
-	//return resultStr;
-	return _inStr;
+		if ( (i/2) % RECORD_LENGTH == RECORD_LENGTH -1) {
+			resultStr += "\r\n";
+		}
+	}
+	return resultStr;
 }
+
 string Bin::getHex() {
 	return _outStr;
 }

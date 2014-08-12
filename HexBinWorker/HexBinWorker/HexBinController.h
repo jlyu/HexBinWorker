@@ -38,7 +38,7 @@ public:
 	void getText(CString& hexText, CString& binText);
 	void getHexText(CString& hexText) {}
 	void getBinText(CString& binText);
-	
+	void getBinDatas(BYTE* &datas, int &dataSize);
 
 
 	// write

@@ -32,11 +32,11 @@ CHexEdit::CHexEdit()
 #endif
 	m_length		= 0x40;
 	m_topindex		= 0;
-	m_bpr			= 8;	
+	m_bpr			= 16;	
 	m_lpp			= 1;
 
 	m_bShowHex		= TRUE;
-	m_bShowAscii	= TRUE;
+	m_bShowAscii	= FALSE;
 	m_bShowAddress	= TRUE;
 	m_bAddressIsWide= TRUE;	
 
@@ -1311,6 +1311,10 @@ CSize CHexEdit::GetSel()
 
 void CHexEdit::SetData(LPBYTE p, int len)
 {
+	if (p == NULL) {
+		return;
+	}
+
 	free(m_pData);
 	
 	m_pData = (LPBYTE) malloc(len);
@@ -1323,29 +1327,6 @@ void CHexEdit::SetData(LPBYTE p, int len)
 	m_currentMode = EDIT_HIGH;
 	m_topindex = 0;
 	m_bUpdate = TRUE;
-}
-
-void CHexEdit::setData(string dataStr) {
-
-	const int dataSize = dataStr.size();
-
-	BYTE *pDatas = new BYTE[dataSize/2];
-
-	int dataIndex = 0;
-	typedef string::const_iterator cIter;
-	for (cIter i = dataStr.begin() ; i < dataStr.end(); i += 2) {
-
-		const string hexStr = string(i, i+2);
-		//BYTE decByte = (BYTE)strtol(hexStr.c_str(), NULL, 16);  // hex -> dec
-
-		pDatas[dataIndex] = (BYTE)strtol(hexStr.c_str(), NULL, 16);
-		dataIndex++;
-	}
-
-	SetData(pDatas, dataSize);
-
-	delete [] pDatas;
-	
 }
 
 int CHexEdit::GetData(LPBYTE p, int len)

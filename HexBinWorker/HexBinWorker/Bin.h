@@ -11,22 +11,32 @@ private:
 	CString _fileName;
 	FILE* _pBinFileHandler;
 
-	long _startAddr; 
-	long _dataSize;
-
+	// -in
 	string _inStr;  // without formatting
+	BYTE *_inDatas;
+	long _dataSize;
+	long _startAddr; 
+	
+
+	// -out
 	string _outStr;
 	
 	bool openBinFile(const CString& binFileName);
 
 public:
-	Bin(void) { _pBinFileHandler = NULL; } 
+	Bin(void) { 
+		_pBinFileHandler = NULL;
+		_inDatas = NULL;
+	}
+
 	Bin(CString& binFileName) {
 
 		_fileName = binFileName;
 		_pBinFileHandler = NULL;
 		
 		_inStr = "";
+		_inDatas = NULL;
+
 		_outStr = "";
 
 		_startAddr = 0x00;
@@ -38,6 +48,11 @@ public:
 			fclose(_pBinFileHandler);
 			_pBinFileHandler = NULL;
 		}
+
+		if (_inDatas != NULL) {
+			delete [] _inDatas;
+			_inDatas = NULL;
+		}
 	}
 
 	FILE* getFileWriteHandler();
@@ -47,6 +62,10 @@ public:
 
 	// text
 	string getBin();
+	void   getDatas(BYTE* &datas, int &dataSize) { 
+		datas = _inDatas;
+		dataSize =  _dataSize; 
+	}
 	string getHex();
 	
 

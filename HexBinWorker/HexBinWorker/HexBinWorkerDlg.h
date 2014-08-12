@@ -48,6 +48,10 @@ public:
 	afx_msg void OnBnClickedBtnOpencom();
 
 private:
+	// -UI
+	CFont _editFont;
+
+	// -Controller
 	HexBinController _hbController;
 	CHexEdit _hexEdit;
 

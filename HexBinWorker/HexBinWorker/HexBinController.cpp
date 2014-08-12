@@ -72,7 +72,7 @@ void HexBinController::parseBin() { _bin.parse(); }
 void HexBinController::getText(CString& hexText, CString& binText) {
 	if (_processType == PROCESS_HEX) {
 		hexText = _hex.getHex().c_str();
-		binText = _hex.getBin().c_str();
+		//binText = _hex.getBin().c_str();
 	} else if (_processType == PROCESS_BIN) {
 		hexText = _bin.getHex().c_str();
 		binText = _bin.getBin().c_str();
@@ -87,7 +87,9 @@ void HexBinController::getFilePath(CString& hexPath, CString& binPath) {
 void HexBinController::getBinText(CString& binText) {
 	binText = _hex.getBin().c_str();
 }
-
+void HexBinController::getBinDatas(BYTE* &datas, int &dataSize) {
+	_bin.getDatas(datas, dataSize);
+}
 
 // MARK: write
 void HexBinController::writeToBinFile() {
