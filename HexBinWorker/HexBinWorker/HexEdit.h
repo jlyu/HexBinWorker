@@ -83,7 +83,7 @@ protected:
 	void		SelInsert(int s, int l);
 	void		SelDelete(int s, int e);
 	inline void NormalizeSel(void);
-	afx_msg void OnContextMenu(CWnd*, CPoint point);
+
 	//{{AFX_MSG(CHexEdit)
 	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
@@ -92,19 +92,27 @@ protected:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-	afx_msg UINT OnGetDlgCode();
+	
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
-	afx_msg void OnEditClear();
-	afx_msg void OnEditCopy();
-	afx_msg void OnEditCut();
+
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+
+	// del
+	//afx_msg void OnContextMenu(CWnd*, CPoint point);
+	//afx_msg void OnEditClear();
+	//afx_msg void OnEditCut();
 	//afx_msg void OnEditPaste();
-	afx_msg void OnEditSelectAll();
-	afx_msg void OnEditUndo();
+	//afx_msg void OnEditSelectAll();
+	//afx_msg void OnEditUndo();
+	//afx_msg UINT OnGetDlgCode() { return DLGC_WANTALLKEYS; }
+	//afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
+
+	// todo
+	//afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnEditCopy();
 	//}}AFX_MSG
 
 	DECLARE_MESSAGE_MAP()

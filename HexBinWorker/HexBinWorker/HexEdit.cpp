@@ -82,12 +82,12 @@ BEGIN_MESSAGE_MAP(CHexEdit, CEdit)
 	ON_WM_MOUSEMOVE()
 	ON_WM_LBUTTONUP()
 	ON_WM_KEYDOWN()
-	ON_COMMAND(ID_EDIT_CLEAR, OnEditClear)
+//	ON_COMMAND(ID_EDIT_CLEAR, OnEditClear)
 	ON_COMMAND(ID_EDIT_COPY, OnEditCopy)
-	ON_COMMAND(ID_EDIT_CUT, OnEditCut)
+//	ON_COMMAND(ID_EDIT_CUT, OnEditCut)
 //	ON_COMMAND(ID_EDIT_PASTE, OnEditPaste)
-	ON_COMMAND(ID_EDIT_SELECT_ALL, OnEditSelectAll)
-	ON_COMMAND(ID_EDIT_UNDO, OnEditUndo)
+//	ON_COMMAND(ID_EDIT_SELECT_ALL, OnEditSelectAll)
+//	ON_COMMAND(ID_EDIT_UNDO, OnEditUndo)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -434,11 +434,6 @@ void CHexEdit::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	nSBCode;nPos; pScrollBar;
 }
 
-UINT CHexEdit::OnGetDlgCode() 
-{
-	return DLGC_WANTALLKEYS;
-}
-
 BOOL CHexEdit::PreCreateWindow(CREATESTRUCT& cs) 
 {
 	cs.style |= WS_HSCROLL|WS_VSCROLL;
@@ -472,68 +467,10 @@ void CHexEdit::SetOptions(BOOL a, BOOL h, BOOL c, BOOL w)
 void CHexEdit::SetBPR(int bpr)
 {
 	m_bpr = bpr;
-	m_bUpdate		= TRUE;
+	m_bUpdate = TRUE;
 }
 
-void CHexEdit::OnLButtonDown(UINT nFlags, CPoint point) 
-{
-	SetFocus();
-	if(!m_pData)
-		return;
 
-	if(nFlags & MK_SHIFT)
-	{
-		m_selStart = m_currentAddress;
-	}
-	CPoint pt = CalcPos(point.x, point.y);
-	if(pt.x > -1)
-	{
-		m_editPos = pt;
-		pt.x *= m_nullWidth;
-		pt.y *= m_lineHeight;
-		
-		if(pt.x == 0 && m_bShowAddress)
-			CreateAddressCaret();
-		else
-			CreateEditCaret();
-
-		SetCaretPos(pt);
-		if(nFlags & MK_SHIFT)
-		{
-			m_selEnd = m_currentAddress;
-			if(m_currentMode == EDIT_HIGH || m_currentMode == EDIT_LOW)
-				m_selEnd++;
-			RedrawWindow();
-		}
-	}
-	if(!(nFlags & MK_SHIFT))
-	{
-		if(DragDetect(/*this->m_hWnd,*/ point))
-		{
-			m_selStart = m_currentAddress;
-			m_selEnd   = m_selStart;
-			SetCapture();
-		}
-		else
-		{
-			BOOL bsel = m_selStart != 0xffffffff;
-
-			m_selStart = 0xffffffff;
-			m_selEnd   = 0xffffffff;
-			if(bsel)
-				RedrawWindow();
-		}
-	}
-	if(!IsSelected())
-	{
-		ShowCaret();
-	}
-}
-
-void CHexEdit::OnLButtonDblClk(UINT nFlags, CPoint point) 
-{
-	nFlags; point;
-}
 
 CPoint CHexEdit::CalcPos(int x, int y)
 {
@@ -589,44 +526,7 @@ void CHexEdit::CreateEditCaret()
 	CreateSolidCaret(m_nullWidth, m_lineHeight);
 }
 
-void CHexEdit::OnMouseMove(UINT nFlags, CPoint point) 
-{
-	if(!m_pData)
-		return;
 
-	if(nFlags & MK_LBUTTON && m_selStart != 0xffffffff)
-	{
-		CRect rc;
-		GetClientRect(&rc);
-		if(!rc.PtInRect(point))
-		{
-			if(point.y < 0)
-			{
-				OnVScroll(SB_LINEUP, 0, NULL);
-				point.y = 0;
-			}
-			else if(point.y > rc.Height())
-			{
-				OnVScroll(SB_LINEDOWN, 0, NULL);
-				point.y = rc.Height() -1;
-			}
-		}
-
-		int	 seo = m_selEnd;
-		CPoint pt = CalcPos(point.x, point.y);
-		if(pt.x > -1)
-		{
-			m_selEnd = m_currentAddress;
-			if(m_currentMode == EDIT_HIGH || m_currentMode == EDIT_LOW)
-				m_selEnd++;
-		}
-		if(IsSelected())
-			DestroyCaret();
-
-		if(seo != m_selEnd)
-			RedrawWindow();
-	}
-}
 
 void CHexEdit::UpdateScrollbars()
 {
@@ -655,52 +555,43 @@ void CHexEdit::UpdateScrollbars()
 	::SetScrollInfo(this->m_hWnd, SB_HORZ, &si, TRUE);
 }
 
-
 inline BOOL CHexEdit::IsSelected()
 {
 	return m_selStart != 0xffffffff;
 }
 
-void CHexEdit::OnLButtonUp(UINT nFlags, CPoint point) 
-{
-	if(IsSelected())
-		ReleaseCapture();
 
-	CWnd::OnLButtonUp(nFlags, point);
-}
 
 void CHexEdit::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
-	nFlags;nRepCnt;
-	if(!m_pData)
+
+	if(m_pData == NULL) {
 		return;
-	if(nChar == '\t')
+	}
+
+	if(nChar == '\t') {
 		return;
-	if(GetKeyState(VK_CONTROL) & 0x80000000)
-	{
-		switch(nChar)
-		{
+	}
+
+	if(GetKeyState(VK_CONTROL) & 0x80000000) {
+		switch(nChar) { 
 			case 0x03:
-				if(IsSelected())
+				if(IsSelected()) // 光标选中时支持复制
 					OnEditCopy();
 				return;
-			case 0x16:
-				//OnEditPaste();
+			case 0x16:  // 不应支持黏贴
 				return;
-			case 0x18:
-				if(IsSelected())
-					OnEditCut();
-				return;
+			case 0x18:  // 不应支持剪切
+				return;  
 			case 0x1a:
-				OnEditUndo();
+				// 未实现redo  OnEditUndo();
 				return;
 		}
 	}
 
-	if(nChar == 0x08)
-	{
-		if(m_currentAddress > 0)
-		{
+	if(nChar == 0x08) {
+
+		if(m_currentAddress > 0) {
 			m_currentAddress--;
 			SelDelete(m_currentAddress, m_currentAddress+1);
 			RepositionCaret(m_currentAddress);
@@ -710,14 +601,12 @@ void CHexEdit::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 	}
 
 	SetSel(-1, -1);
-	switch(m_currentMode)
-	{
+	switch(m_currentMode) {
 		case EDIT_NONE:
 			return;
 		case EDIT_HIGH:
 		case EDIT_LOW:
-			if((nChar >= '0' && nChar <= '9') || (nChar >= 'a' && nChar <= 'f'))
-			{
+			if((nChar >= '0' && nChar <= '9') || (nChar >= 'a' && nChar <= 'f')) {
 				UINT b = nChar - '0';
 				if(b > 9) 
 					b = 10 + nChar - 'a';
@@ -743,8 +632,6 @@ void CHexEdit::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CHexEdit::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
-	nFlags;	nRepCnt;
-
 	BOOL bShift = GetKeyState(VK_SHIFT) & 0x80000000;
 	BOOL bac = m_bNoAddressChange;
 	m_bNoAddressChange = TRUE;
@@ -945,7 +832,7 @@ void CHexEdit::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		case VK_DELETE:
 			if(IsSelected())
 			{
-				OnEditClear();
+				//OnEditClear();
 			}
 			else
 			{
@@ -1091,54 +978,6 @@ void CHexEdit::ScrollIntoView(int p)
 	}
 }
 
-void CHexEdit::OnContextMenu(CWnd*, CPoint point)
-{
-
-	{
-		if (point.x == -1 && point.y == -1)
-		{
-			CRect rect;
-			GetClientRect(rect);
-			ClientToScreen(rect);
-
-			point = rect.TopLeft();
-			point.Offset(5, 5);
-		}
-
-		//CMenu menu;
-		//VERIFY(menu.LoadMenu(CG_IDR_POPUP_HEX_EDIT));
-
-		//CMenu* pPopup = menu.GetSubMenu(0);
-		//ASSERT(pPopup != NULL);
-
-		//pPopup->EnableMenuItem(ID_EDIT_UNDO, MF_GRAYED|MF_DISABLED|MF_BYCOMMAND);
-		//if(!IsSelected())
-		//{
-		//	pPopup->EnableMenuItem(ID_EDIT_CLEAR, MF_GRAYED|MF_DISABLED|MF_BYCOMMAND);
-		//	pPopup->EnableMenuItem(ID_EDIT_CUT, MF_GRAYED|MF_DISABLED|MF_BYCOMMAND);
-		//	pPopup->EnableMenuItem(ID_EDIT_COPY, MF_GRAYED|MF_DISABLED|MF_BYCOMMAND);
-		//}
-		//{
-		//	COleDataObject	obj;	
-		//	if (obj.AttachClipboard()) 
-		//	{
-		//		if(!obj.IsDataAvailable(CF_TEXT) && !obj.IsDataAvailable(RegisterClipboardFormat("BinaryData")))
-		//			pPopup->EnableMenuItem(ID_EDIT_PASTE, MF_GRAYED|MF_DISABLED|MF_BYCOMMAND);
-		//	}
-		//}
-
-		//pPopup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, point.x, point.y,
-		//	this);
-	}
-}
-
-void CHexEdit::OnEditClear() 
-{
-	m_currentAddress = m_selStart;
-	SelDelete(m_selStart, m_selEnd);
-	RepositionCaret(m_currentAddress);
-	RedrawWindow();
-}
 
 void CHexEdit::OnEditCopy() 
 {
@@ -1198,73 +1037,6 @@ void CHexEdit::OnEditCopy()
 			pSource->CacheGlobalData(CF_TEXT, hMema);	
 	}
 	pSource->SetClipboard();
-}
-
-void CHexEdit::OnEditCut() 
-{
-	OnEditCopy();
-	SelDelete(m_selStart, m_selEnd);
-	RedrawWindow();
-}
-
-//void CHexEdit::OnEditPaste() 
-//{
-//	COleDataObject	obj;	
-//	if (obj.AttachClipboard()) 
-//	{
-//		HGLOBAL hmem = NULL;
-//		if (obj.IsDataAvailable(RegisterClipboardFormat(_T("BinaryData")))) 
-//		{
-//			hmem = obj.GetGlobalData(RegisterClipboardFormat(_T("BinaryData")));
-//		}	
-//		else if (obj.IsDataAvailable(CF_TEXT)) 
-//		{
-//			hmem = obj.GetGlobalData(CF_TEXT);
-//		}
-//		if(hmem)
-//		{
-//			LPBYTE	p = (BYTE*)::GlobalLock(hmem);
-//			DWORD	dwLen = ::GlobalSize(hmem);
-//			int		insert;
-//			int		oa = m_currentAddress;
-//			
-//			NormalizeSel();
-//			if(m_selStart == 0xffffffff)
-//			{
-//				if(m_currentMode == EDIT_LOW)
-//					m_currentAddress++;
-//				insert = m_currentAddress;
-//				SelInsert(m_currentAddress, dwLen);
-//			}
-//			else
-//			{
-//				insert = m_selStart;
-//				SelDelete(m_selStart, m_selEnd);
-//				SelInsert(insert, dwLen);
-//				SetSel(-1, -1);
-//			}
-//
-//			memcpy(m_pData+insert, p, dwLen);
-//
-//			m_currentAddress = oa;
-//			RedrawWindow();
-//			::GlobalUnlock(hmem);
-//		}
-//	}
-//}
-
-void CHexEdit::OnEditSelectAll() 
-{
-	m_selStart = 0;
-	m_selEnd = m_length;
-	DestroyCaret();
-	RedrawWindow();
-}
-
-void CHexEdit::OnEditUndo() 
-{
-	// TODO: Add your command handler code here
-	
 }
 
 void CHexEdit::NormalizeSel()
@@ -1364,4 +1136,109 @@ void CHexEdit::Clear()
 	m_selEnd	= 0xffffffff;
 	
 	m_bUpdate=TRUE;
+}
+
+
+// -MARK: Action
+//void CHexEdit::OnMouseMove(UINT nFlags, CPoint point) 
+//{
+//	if(!m_pData)
+//		return;
+//
+//	if(nFlags & MK_LBUTTON && m_selStart != 0xffffffff)
+//	{
+//		CRect rc;
+//		GetClientRect(&rc);
+//		if(!rc.PtInRect(point))
+//		{
+//			if(point.y < 0)
+//			{
+//				OnVScroll(SB_LINEUP, 0, NULL);
+//				point.y = 0;
+//			}
+//			else if(point.y > rc.Height())
+//			{
+//				OnVScroll(SB_LINEDOWN, 0, NULL);
+//				point.y = rc.Height() -1;
+//			}
+//		}
+//
+//		int	 seo = m_selEnd;
+//		CPoint pt = CalcPos(point.x, point.y);
+//		if(pt.x > -1)
+//		{
+//			m_selEnd = m_currentAddress;
+//			if(m_currentMode == EDIT_HIGH || m_currentMode == EDIT_LOW)
+//				m_selEnd++;
+//		}
+//		if(IsSelected())
+//			DestroyCaret();
+//
+//		if(seo != m_selEnd)
+//			RedrawWindow();
+//	}
+//}
+
+void CHexEdit::OnLButtonDown(UINT nFlags, CPoint point) 
+{
+	SetFocus();
+	if(!m_pData)
+		return;
+
+	if(nFlags & MK_SHIFT)
+	{
+		m_selStart = m_currentAddress;
+	}
+	CPoint pt = CalcPos(point.x, point.y);
+	if(pt.x > -1)
+	{
+		m_editPos = pt;
+		pt.x *= m_nullWidth;
+		pt.y *= m_lineHeight;
+		
+		if(pt.x == 0 && m_bShowAddress)
+			CreateAddressCaret();
+		else
+			CreateEditCaret();
+
+		SetCaretPos(pt);
+		if(nFlags & MK_SHIFT)
+		{
+			m_selEnd = m_currentAddress;
+			if(m_currentMode == EDIT_HIGH || m_currentMode == EDIT_LOW)
+				m_selEnd++;
+			RedrawWindow();
+		}
+	}
+	if(!(nFlags & MK_SHIFT))
+	{
+		if(DragDetect(/*this->m_hWnd,*/ point))
+		{
+			m_selStart = m_currentAddress;
+			m_selEnd   = m_selStart;
+			SetCapture();
+		}
+		else
+		{
+			BOOL bsel = m_selStart != 0xffffffff;
+
+			m_selStart = 0xffffffff;
+			m_selEnd   = 0xffffffff;
+			if(bsel)
+				RedrawWindow();
+		}
+	}
+	if(!IsSelected())
+	{
+		ShowCaret();
+	}
+}
+
+
+void CHexEdit::OnLButtonUp(UINT nFlags, CPoint point) 
+{
+	//if(IsSelected())
+	//	ReleaseCapture();
+
+	CWnd::OnLButtonUp(nFlags, point);
 }
