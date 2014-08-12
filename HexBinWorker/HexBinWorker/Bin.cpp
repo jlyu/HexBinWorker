@@ -113,18 +113,19 @@ bool Bin::parse() {
 // -MARK: text
 string Bin::getBin() {
 
-	string resultStr = "";
-	const int inStrSize = _inStr.size();
-	for (int i=0; i<inStrSize; i+=2) {
-		resultStr += _inStr[i];
-		resultStr += _inStr[i+1];
-		resultStr += " ";
+	//string resultStr = "";
+	//const int inStrSize = _inStr.size();
+	//for (int i=0; i<inStrSize; i+=2) {
+	//	resultStr += _inStr[i];
+	//	resultStr += _inStr[i+1];
+	//	resultStr += " ";
 
-		if ( (i/2) % RECORD_LENGTH == RECORD_LENGTH -1) {
-			resultStr += "\r\n";
-		}
-	}
-	return resultStr;
+	//	if ( (i/2) % RECORD_LENGTH == RECORD_LENGTH -1) {
+	//		resultStr += "\r\n";
+	//	}
+	//}
+	//return resultStr;
+	return _inStr;
 }
 string Bin::getHex() {
 	return _outStr;

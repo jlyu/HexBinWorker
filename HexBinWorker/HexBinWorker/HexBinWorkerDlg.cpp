@@ -164,8 +164,8 @@ void CHexBinWorkerDlg::showTextField() {
 
 	//set hexEdit 
 	//void SetData(LPBYTE p, int len);
-
-	// _hexEdit.SetData();
+	string binTextStr = CT2A(binText);
+	_hexEdit.setData(binTextStr);
 
 }
 void CHexBinWorkerDlg::getTextField(string& hexText, string& binText) {
