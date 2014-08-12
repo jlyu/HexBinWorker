@@ -1,8 +1,9 @@
 
 // HexBinWorkerDlg.h : 头文件
 #pragma once
-#include "HexBinController.h"
 #include "CnComm.h"
+#include "HexBinController.h"
+#include "HexEdit.h"
 
 
 // CHexBinWorkerDlg 对话框
@@ -48,6 +49,7 @@ public:
 
 private:
 	HexBinController _hbController;
-public:
+	CHexEdit _hexEdit;
+
 	
 };

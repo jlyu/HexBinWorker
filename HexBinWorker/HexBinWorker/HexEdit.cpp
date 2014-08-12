@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "HexEditCtrl.h"
+#include "HexEdit.h"
 #include <ctype.h>
 #include <afxole.h>
 #include <afxdisp.h>
@@ -55,7 +55,7 @@ CHexEdit::CHexEdit()
 	m_selStart	= 0xffffffff;
 	m_selEnd	= 0xffffffff;
 
-	m_Font.CreateFont(-12, 0,0,0,0,0,0,0,0,0,0,0,0, "Courier New");
+	m_Font.CreateFont(-12, 0,0,0,0,0,0,0,0,0,0,0,0, _T("Consolas"));
 
 	AfxOleInit();
 }
@@ -85,7 +85,7 @@ BEGIN_MESSAGE_MAP(CHexEdit, CEdit)
 	ON_COMMAND(ID_EDIT_CLEAR, OnEditClear)
 	ON_COMMAND(ID_EDIT_COPY, OnEditCopy)
 	ON_COMMAND(ID_EDIT_CUT, OnEditCut)
-	ON_COMMAND(ID_EDIT_PASTE, OnEditPaste)
+//	ON_COMMAND(ID_EDIT_PASTE, OnEditPaste)
 	ON_COMMAND(ID_EDIT_SELECT_ALL, OnEditSelectAll)
 	ON_COMMAND(ID_EDIT_UNDO, OnEditUndo)
 	//}}AFX_MSG_MAP
@@ -134,7 +134,7 @@ void CHexEdit::OnPaint()
 		if(m_bUpdate)
 		{
 			dc.GetCharWidth('0', '0', &m_nullWidth);
-			CSize sz = dc.GetTextExtent("0", 1);
+			CSize sz = dc.GetTextExtent(_T("0"), 1);
 			m_lineHeight = sz.cy;
 			
 			m_offHex	= m_bShowAddress ? (m_bAddressIsWide ? m_nullWidth * 9 : m_nullWidth * 5) : 0;
@@ -172,7 +172,8 @@ void CHexEdit::OnPaint()
 			for(int	 i = m_topindex; (i < m_length) && (rcd.TopLeft().y < height); i+= m_bpr)
 			{
 				sprintf(buf, fmt, i);
-				dc.DrawText(buf, w, rcd, DT_LEFT|DT_TOP|DT_SINGLELINE|DT_NOPREFIX);
+				CString bufCStr(buf);
+				dc.DrawText(bufCStr, w, rcd, DT_LEFT|DT_TOP|DT_SINGLELINE|DT_NOPREFIX);
 				rcd.TopLeft().y += m_lineHeight;
 			}
 		}
@@ -196,7 +197,8 @@ void CHexEdit::OnPaint()
 					char* p = &buf[0];
 					TOHEX(m_pData[i], p);
 					*p++ = ' ';
-					dc.TextOut(x, y, buf, 3);
+					CString bufCStr(buf);
+					dc.TextOut(x, y, bufCStr, 3);
 					x += m_nullWidth * 3;
 					n++;
 					if(n == m_bpr)
@@ -213,7 +215,8 @@ void CHexEdit::OnPaint()
 					char* p = &buf[0];
 					TOHEX(m_pData[i], p);
 					*p++ = ' ';
-					dc.TextOut(x, y, buf, 3);
+					CString bufCStr(buf);
+					dc.TextOut(x, y, bufCStr, 3);
 					x += m_nullWidth * 3;
 					n++;
 					if(n == m_bpr)
@@ -230,7 +233,8 @@ void CHexEdit::OnPaint()
 					char* p = &buf[0];
 					TOHEX(m_pData[i], p);
 					*p++ = ' ';
-					dc.TextOut(x, y, buf, 3);
+					CString bufCStr(buf);
+					dc.TextOut(x, y, bufCStr, 3);
 					x += m_nullWidth * 3;
 					n++;
 					if(n == m_bpr)
@@ -258,7 +262,8 @@ void CHexEdit::OnPaint()
 						 n++;
 					}
 
-					dc.DrawText(buf, m_bpr*3, rcd, DT_LEFT|DT_TOP|DT_SINGLELINE|DT_NOPREFIX);
+					CString bufCStr(buf);
+					dc.DrawText(bufCStr, m_bpr*3, rcd, DT_LEFT|DT_TOP|DT_SINGLELINE|DT_NOPREFIX);
 					rcd.TopLeft().y += m_lineHeight;
 				}
 			}
@@ -279,7 +284,8 @@ void CHexEdit::OnPaint()
 				for(i = m_topindex; (i < selStart) && (y < height); i++)
 				{
 					buf[0] = isprint(m_pData[i]) ? m_pData[i] : '.';
-					dc.TextOut(x, y, buf, 1);
+					CString bufCStr(buf);
+					dc.TextOut(x, y, bufCStr, 1);
 					x += m_nullWidth;
 					n++;
 					if(n == m_bpr)
@@ -294,7 +300,8 @@ void CHexEdit::OnPaint()
 				for(; (i < selEnd) && (y < height); i++)
 				{
 					buf[0] = isprint(m_pData[i]) ? m_pData[i] : '.';
-					dc.TextOut(x, y, buf, 1);
+					CString bufCStr(buf);
+					dc.TextOut(x, y, bufCStr, 1);
 					x += m_nullWidth;
 					n++;
 					if(n == m_bpr)
@@ -309,7 +316,8 @@ void CHexEdit::OnPaint()
 				for(; (i < m_length) && y < height; i++)
 				{
 					buf[0] = isprint(m_pData[i]) ? m_pData[i] : '.';
-					dc.TextOut(x, y, buf, 1);
+					CString bufCStr(buf);
+					dc.TextOut(x, y, bufCStr, 1);
 					x += m_nullWidth;
 					n++;
 					if(n == m_bpr)
@@ -330,7 +338,8 @@ void CHexEdit::OnPaint()
 						*p++ = isprint(m_pData[i]) ? m_pData[i] : '.';
 						i++;
 					}
-					dc.DrawText(buf, n, rcd, DT_LEFT|DT_TOP|DT_SINGLELINE|DT_NOPREFIX);
+					CString bufCStr(buf);
+					dc.DrawText(bufCStr, n, rcd, DT_LEFT|DT_TOP|DT_SINGLELINE|DT_NOPREFIX);
 					rcd.TopLeft().y += m_lineHeight;
 				}
 			}
@@ -676,7 +685,7 @@ void CHexEdit::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 					OnEditCopy();
 				return;
 			case 0x16:
-				OnEditPaste();
+				//OnEditPaste();
 				return;
 			case 0x18:
 				if(IsSelected())
@@ -1096,30 +1105,30 @@ void CHexEdit::OnContextMenu(CWnd*, CPoint point)
 			point.Offset(5, 5);
 		}
 
-		CMenu menu;
-		VERIFY(menu.LoadMenu(CG_IDR_POPUP_HEX_EDIT));
+		//CMenu menu;
+		//VERIFY(menu.LoadMenu(CG_IDR_POPUP_HEX_EDIT));
 
-		CMenu* pPopup = menu.GetSubMenu(0);
-		ASSERT(pPopup != NULL);
+		//CMenu* pPopup = menu.GetSubMenu(0);
+		//ASSERT(pPopup != NULL);
 
-		pPopup->EnableMenuItem(ID_EDIT_UNDO, MF_GRAYED|MF_DISABLED|MF_BYCOMMAND);
-		if(!IsSelected())
-		{
-			pPopup->EnableMenuItem(ID_EDIT_CLEAR, MF_GRAYED|MF_DISABLED|MF_BYCOMMAND);
-			pPopup->EnableMenuItem(ID_EDIT_CUT, MF_GRAYED|MF_DISABLED|MF_BYCOMMAND);
-			pPopup->EnableMenuItem(ID_EDIT_COPY, MF_GRAYED|MF_DISABLED|MF_BYCOMMAND);
-		}
-		{
-			COleDataObject	obj;	
-			if (obj.AttachClipboard()) 
-			{
-				if(!obj.IsDataAvailable(CF_TEXT) && !obj.IsDataAvailable(RegisterClipboardFormat("BinaryData")))
-					pPopup->EnableMenuItem(ID_EDIT_PASTE, MF_GRAYED|MF_DISABLED|MF_BYCOMMAND);
-			}
-		}
+		//pPopup->EnableMenuItem(ID_EDIT_UNDO, MF_GRAYED|MF_DISABLED|MF_BYCOMMAND);
+		//if(!IsSelected())
+		//{
+		//	pPopup->EnableMenuItem(ID_EDIT_CLEAR, MF_GRAYED|MF_DISABLED|MF_BYCOMMAND);
+		//	pPopup->EnableMenuItem(ID_EDIT_CUT, MF_GRAYED|MF_DISABLED|MF_BYCOMMAND);
+		//	pPopup->EnableMenuItem(ID_EDIT_COPY, MF_GRAYED|MF_DISABLED|MF_BYCOMMAND);
+		//}
+		//{
+		//	COleDataObject	obj;	
+		//	if (obj.AttachClipboard()) 
+		//	{
+		//		if(!obj.IsDataAvailable(CF_TEXT) && !obj.IsDataAvailable(RegisterClipboardFormat("BinaryData")))
+		//			pPopup->EnableMenuItem(ID_EDIT_PASTE, MF_GRAYED|MF_DISABLED|MF_BYCOMMAND);
+		//	}
+		//}
 
-		pPopup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, point.x, point.y,
-			this);
+		//pPopup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, point.x, point.y,
+		//	this);
 	}
 }
 
@@ -1160,7 +1169,7 @@ void CHexEdit::OnEditCopy()
 		
 		::GlobalUnlock(hMema);
 		
-		pSource->CacheGlobalData(RegisterClipboardFormat("BinaryData"), hMemb);	
+		pSource->CacheGlobalData(RegisterClipboardFormat(_T("BinaryData")), hMemb);	
 		pSource->CacheGlobalData(CF_TEXT, hMema);	
 	}
 	else
@@ -1185,7 +1194,7 @@ void CHexEdit::OnEditCopy()
 				*p = '.';
 			::GlobalUnlock(hMema);
 			
-			pSource->CacheGlobalData(RegisterClipboardFormat("BinaryData"), hMemb);	
+			pSource->CacheGlobalData(RegisterClipboardFormat(_T("BinaryData")), hMemb);	
 			pSource->CacheGlobalData(CF_TEXT, hMema);	
 	}
 	pSource->SetClipboard();
@@ -1198,51 +1207,51 @@ void CHexEdit::OnEditCut()
 	RedrawWindow();
 }
 
-void CHexEdit::OnEditPaste() 
-{
-	COleDataObject	obj;	
-	if (obj.AttachClipboard()) 
-	{
-		HGLOBAL hmem = NULL;
-		if (obj.IsDataAvailable(RegisterClipboardFormat("BinaryData"))) 
-		{
-			hmem = obj.GetGlobalData(RegisterClipboardFormat("BinaryData"));
-		}	
-		else if (obj.IsDataAvailable(CF_TEXT)) 
-		{
-			hmem = obj.GetGlobalData(CF_TEXT);
-		}
-		if(hmem)
-		{
-			LPBYTE	p = (BYTE*)::GlobalLock(hmem);
-			DWORD	dwLen = ::GlobalSize(hmem);
-			int		insert;
-			int		oa = m_currentAddress;
-			
-			NormalizeSel();
-			if(m_selStart == 0xffffffff)
-			{
-				if(m_currentMode == EDIT_LOW)
-					m_currentAddress++;
-				insert = m_currentAddress;
-				SelInsert(m_currentAddress, dwLen);
-			}
-			else
-			{
-				insert = m_selStart;
-				SelDelete(m_selStart, m_selEnd);
-				SelInsert(insert, dwLen);
-				SetSel(-1, -1);
-			}
-
-			memcpy(m_pData+insert, p, dwLen);
-
-			m_currentAddress = oa;
-			RedrawWindow();
-			::GlobalUnlock(hmem);
-		}
-	}
-}
+//void CHexEdit::OnEditPaste() 
+//{
+//	COleDataObject	obj;	
+//	if (obj.AttachClipboard()) 
+//	{
+//		HGLOBAL hmem = NULL;
+//		if (obj.IsDataAvailable(RegisterClipboardFormat(_T("BinaryData")))) 
+//		{
+//			hmem = obj.GetGlobalData(RegisterClipboardFormat(_T("BinaryData")));
+//		}	
+//		else if (obj.IsDataAvailable(CF_TEXT)) 
+//		{
+//			hmem = obj.GetGlobalData(CF_TEXT);
+//		}
+//		if(hmem)
+//		{
+//			LPBYTE	p = (BYTE*)::GlobalLock(hmem);
+//			DWORD	dwLen = ::GlobalSize(hmem);
+//			int		insert;
+//			int		oa = m_currentAddress;
+//			
+//			NormalizeSel();
+//			if(m_selStart == 0xffffffff)
+//			{
+//				if(m_currentMode == EDIT_LOW)
+//					m_currentAddress++;
+//				insert = m_currentAddress;
+//				SelInsert(m_currentAddress, dwLen);
+//			}
+//			else
+//			{
+//				insert = m_selStart;
+//				SelDelete(m_selStart, m_selEnd);
+//				SelInsert(insert, dwLen);
+//				SetSel(-1, -1);
+//			}
+//
+//			memcpy(m_pData+insert, p, dwLen);
+//
+//			m_currentAddress = oa;
+//			RedrawWindow();
+//			::GlobalUnlock(hmem);
+//		}
+//	}
+//}
 
 void CHexEdit::OnEditSelectAll() 
 {

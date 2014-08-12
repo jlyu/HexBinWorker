@@ -1,5 +1,7 @@
-/////////////////////////////////////////////////////////////////////////////
-// CHexEdit window
+#pragma once
+#include <iostream>
+
+using namespace std;
 
 class CHexEdit : public CEdit
 {
@@ -63,6 +65,7 @@ public:
 	void AppendData(LPBYTE p, int addlen);
 	int GetData(LPBYTE p, int len);
 	void SetData(LPBYTE p, int len);
+	//void setData(CString data);
 	CSize GetSel(void);
 	void SetSel(int s, int e);
 	void SetBPR(int bpr);
@@ -100,7 +103,7 @@ protected:
 	afx_msg void OnEditClear();
 	afx_msg void OnEditCopy();
 	afx_msg void OnEditCut();
-	afx_msg void OnEditPaste();
+	//afx_msg void OnEditPaste();
 	afx_msg void OnEditSelectAll();
 	afx_msg void OnEditUndo();
 	//}}AFX_MSG

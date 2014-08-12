@@ -54,6 +54,7 @@ CHexBinWorkerDlg::CHexBinWorkerDlg(CWnd* pParent /*=NULL*/)
 void CHexBinWorkerDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_HEXEDIT, _hexEdit);
 }
 BEGIN_MESSAGE_MAP(CHexBinWorkerDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
@@ -160,6 +161,12 @@ void CHexBinWorkerDlg::showTextField() {
 	_hbController.getText(hexText, binText);
 	GetDlgItem(IDC_HEXFILEFIELD)->SetWindowText(hexText);
 	GetDlgItem(IDC_BINFILEFIELD)->SetWindowText(binText);
+
+	//set hexEdit 
+	//void SetData(LPBYTE p, int len);
+
+	// _hexEdit.SetData();
+
 }
 void CHexBinWorkerDlg::getTextField(string& hexText, string& binText) {
 	CString hexTextCStr, binTextCStr;
@@ -181,7 +188,6 @@ void CHexBinWorkerDlg::showFilePath() {
 	GetDlgItem(IDC_BIN_PATH)->SetWindowText(binPath);
 }
 
-
 void CHexBinWorkerDlg::OnBnClickedOk()
 {
 	// Open
@@ -201,7 +207,6 @@ void CHexBinWorkerDlg::OnBnClickedOk()
 		showFilePath();
 	}
 }
-
 
 void CHexBinWorkerDlg::OnBnClickedHexToBin()
 {
@@ -228,14 +233,14 @@ void CHexBinWorkerDlg::OnBnClickedSave()
 }
 
 
-// to be settled
+// contents will need to be rearranged
 void CHexBinWorkerDlg::findAvailableCom() {
 
 	HANDLE hCom;
 	// find com number [COM1-16]
 	const int comSerialSize = 16;
 	vector<CString> availableComSerial;
-	//availableComSerial.resize(comSerialSize);
+	
 	for (int iComNumber = 1; iComNumber <= comSerialSize; iComNumber++) {
 		CString comNumber;
 		comNumber.Format(_T("COM%d"), iComNumber);
@@ -251,7 +256,6 @@ void CHexBinWorkerDlg::findAvailableCom() {
 
 	showAvailableCom(availableComSerial);
 }
-
 
 void CHexBinWorkerDlg::showAvailableCom(const vector<CString> &aCom) {
 	const int availableComSize = aCom.size();
@@ -292,16 +296,21 @@ void CHexBinWorkerDlg::OnBnClickedBtnOpencom() {
 	//while (true)
 	//{
 		//char *revData = new char[3];
-		BYTE *revData = new BYTE[65536];	
+		BYTE *revData = new BYTE[15];	
 
 		_hCom.Write("\x00\xFF", 2);
 		//_hCom.Reads(revData, 16);
-		_hCom.Read(revData, 65535);
+		_hCom.Read(revData, 15);
 		//revData[2] = '\0';
 
+		CString bufferCStr, bufferBlock;
+		for (int i=0; i<15; i++) {
+			bufferCStr.Format(_T("%02X"), revData[i]);
+			bufferBlock += bufferCStr;
+		}
 		
-		CString revCStr;
-		revCStr.Format(_T("%02X"), revData);
+		//CString revCStr;
+		//revCStr.Format(_T("%02X"), revData);
 
 		delete [] revData;
 

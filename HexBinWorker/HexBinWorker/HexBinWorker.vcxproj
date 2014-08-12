@@ -105,6 +105,7 @@
     <ClInclude Include="HexBinController.h" />
     <ClInclude Include="HexBinWorker.h" />
     <ClInclude Include="HexBinWorkerDlg.h" />
+    <ClInclude Include="HexEdit.h" />
     <ClInclude Include="IntelHex.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -115,6 +116,7 @@
     <ClCompile Include="HexBinController.cpp" />
     <ClCompile Include="HexBinWorker.cpp" />
     <ClCompile Include="HexBinWorkerDlg.cpp" />
+    <ClCompile Include="HexEdit.cpp" />
     <ClCompile Include="IntelHex.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

@@ -53,6 +53,9 @@
     <ClInclude Include="CnComm.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="HexEdit.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HexBinWorker.cpp">
@@ -71,6 +74,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="HexBinController.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="HexEdit.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
