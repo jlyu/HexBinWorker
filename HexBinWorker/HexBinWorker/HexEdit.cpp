@@ -6,7 +6,7 @@
 #include <ctype.h>
 #include <afxole.h>
 #include <afxdisp.h>
-#include "resource.h"
+//#include "resource.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -16,21 +16,16 @@ static char THIS_FILE[] = __FILE__;
 
 
 char hextable[16] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
-#define TOHEX(a, b)	{*b++ = hextable[a >> 4];*b++ = hextable[a&0xf];}
+#define TOHEX(a, b)	{*b++ = hextable[a>>4]; *b++ = hextable[a&0xf];}
 /////////////////////////////////////////////////////////////////////////////
 // CHexEdit
 
 CHexEdit::CHexEdit()
 {
-#if !defined(DEMO)
+
 	m_pData			= NULL;		
-	m_length		= 0;		
-#else
-	m_pData			= (LPBYTE)malloc(0x40);
-	for(int i = 0; i < 0x40; i++)
-		m_pData[i] = i;
-#endif
-	m_length		= 0x40;
+	m_length		= 0;
+	
 	m_topindex		= 0;
 	m_bpr			= 16;	
 	m_lpp			= 1;
@@ -91,184 +86,224 @@ BEGIN_MESSAGE_MAP(CHexEdit, CEdit)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
-/////////////////////////////////////////////////////////////////////////////
-// CHexEdit message handlers
 
+// -MARK: CHexEdit message handlers
 
-void CHexEdit::OnPaint() 
-{
-	CPaintDC pdc(this); // device context for painting
+void CHexEdit::UpdateScrollbars() {
+	SCROLLINFO si;
+
+	si.cbSize = sizeof(SCROLLINFO);
+	si.fMask = SIF_ALL;
+	si.nMin = 0;
+	si.nMax = (m_length / m_bpr) - 1;
+	si.nPage = m_lpp;
+	si.nPos = m_topindex / m_bpr;
+
+	::SetScrollInfo(this->m_hWnd, SB_VERT, &si, TRUE);
+	if(si.nMax > (int)si.nPage)
+		::EnableScrollBar(this->m_hWnd, SB_VERT, ESB_ENABLE_BOTH);
 
 	CRect rc;
-	GetClientRect(rc);
+	GetClientRect(&rc);
+
+	si.nMin = 0;
+	si.nMax =((m_bShowAddress ? (m_bAddressIsWide ? 8 : 4) : 0) +
+			  (m_bShowHex ? m_bpr * 3 : 0) +
+			  (m_bShowAscii ? m_bpr : 0) ) * m_nullWidth;
+	si.nPage = 1;
+	si.nPos = 0;
+	::SetScrollInfo(this->m_hWnd, SB_HORZ, &si, TRUE);
+}
+void CHexEdit::updateCharSize() {
 	
-	CDC	dc;
-	dc.CreateCompatibleDC(CDC::FromHandle(pdc.m_ps.hdc));
-	CBitmap bm;
-
-	bm.CreateCompatibleBitmap(CDC::FromHandle(pdc.m_ps.hdc), rc.Width(), rc.Height());
-	dc.SelectObject(bm);
-
-	CBrush b;
-	b.CreateSolidBrush(RGB(0xff,0xff,0xff));
-	dc.FillRect(rc, &b);
-
-	ASSERT(m_currentAddress >= 0);
-	ASSERT(m_topindex >= 0);
-
-	dc.SelectObject(m_Font);
-	int		height		= 0;
-	char	buf[256];
-
-	int x = rc.TopLeft().x;
-	int y = rc.TopLeft().y;
-
-	dc.SetBoundsRect(&rc, DCB_DISABLE);
-
-	int	 i;
-	int	 n = 0;
-
-	if(m_pData)
+	if(m_bUpdate)
 	{
-		if(m_bUpdate)
+		m_offHex	= m_bShowAddress ? (m_bAddressIsWide ? m_nullWidth * 9 : m_nullWidth * 5) : 0;
+		m_offAscii	= m_bShowAddress ? (m_bAddressIsWide ? m_nullWidth * 9 : m_nullWidth * 5) : 0;
+		m_offAscii += m_bShowHex	 ? (m_bpr * 3 * m_nullWidth) : 0;
+
+		m_bHalfPage = FALSE;
+		if(m_lpp * m_bpr > m_length)
 		{
-			dc.GetCharWidth('0', '0', &m_nullWidth);
-			CSize sz = dc.GetTextExtent(_T("0"), 1);
-			m_lineHeight = sz.cy;
-			
-			m_offHex	= m_bShowAddress ? (m_bAddressIsWide ? m_nullWidth * 9 : m_nullWidth * 5) : 0;
-			m_offAscii	= m_bShowAddress ? (m_bAddressIsWide ? m_nullWidth * 9 : m_nullWidth * 5) : 0;
-			m_offAscii += m_bShowHex	 ? (m_bpr * 3 * m_nullWidth) : 0;
-
-			m_lpp = rc.Height() / m_lineHeight;
-			m_bHalfPage = FALSE;
-			if(m_lpp * m_bpr > m_length)
+			m_lpp = (m_length + (m_bpr/2)) / m_bpr ;
+			if(m_length % m_bpr != 0)
 			{
-				m_lpp = (m_length + (m_bpr/2)) / m_bpr ;
-				if(m_length % m_bpr != 0)
-				{
-					m_bHalfPage = TRUE;
-					m_lpp++;
-				}
+				m_bHalfPage = TRUE;
+				m_lpp++;
 			}
-			m_bUpdate = FALSE;
-			UpdateScrollbars();
 		}
+		m_bUpdate = FALSE;
+		UpdateScrollbars();
+	}
+}
+void CHexEdit::OnPaint() 
+{
+	// init view
 
-		TRACE("%i %i\n", m_topindex, m_selStart);
+	CDC	dc;
+	CPaintDC pdc(this); // device context for painting
+	dc.CreateCompatibleDC(CDC::FromHandle(pdc.m_ps.hdc));
+
+	CRect rect;
+	GetClientRect(rect);
+	const int rectWidth = rect.Width();
+	const int rectHeight = rect.Height();
+	
+	CBitmap bitMap;
+	bitMap.CreateCompatibleBitmap(CDC::FromHandle(pdc.m_ps.hdc), rectWidth, rectHeight);
+	dc.SelectObject(bitMap);
+
+	CBrush brush;
+	brush.CreateSolidBrush(RGB(0xff,0xff,0xff));
+
+	dc.FillRect(rect, &brush);
+	dc.SelectObject(m_Font);
+	dc.SetBoundsRect(&rect, DCB_DISABLE);
+
+	ASSERT(m_topindex >= 0);
+	ASSERT(m_currentAddress >= 0);
+	//TRACE("%i %i\n", m_topindex, m_selStart);
+
+	bool needPaint = (m_pData != NULL);
+	if (!needPaint) {
+		pdc.BitBlt(0, 0, rectWidth, rectHeight, &dc, 0, 0, SRCCOPY);
+		return;
+	}
+
+
+	// update ?
+
+	if (m_bUpdate) {
+		CSize sz = dc.GetTextExtent(_T("0"), 1);
+		m_lineHeight = sz.cy;
+		m_lpp = rectHeight / m_lineHeight;
+		dc.GetCharWidth('0', '0', &m_nullWidth);
+		updateCharSize();
+	}
+
+
+
+	// show contents in EditView
+	if (m_length == 0) {
+		return;
+	}
+
+	int height = (rectHeight / m_lineHeight) * m_lineHeight;  // ??
+	char buf[256];
+
+	int x = rect.TopLeft().x;
+	int y = rect.TopLeft().y;
+	int	i = 0;
+	int	n = 0;
+	
+	if(m_bShowAddress) {
+		char formatter[8] = {'%','0','8','l','X'};
+		formatter[2] = m_bAddressIsWide ? '8' : '4';
+
+		int wideAddressInt = m_bAddressIsWide ? 8 : 4;
+
+		CRect newRect = rect;
+		newRect.TopLeft().x = m_offAddress;
+
+		for(i = m_topindex; (i < m_length) && (newRect.TopLeft().y < height); i+= m_bpr) {
+			sprintf(buf, formatter, i);
+			CString bufCStr(buf);
+			dc.DrawText(bufCStr, wideAddressInt, newRect, DT_LEFT|DT_TOP|DT_SINGLELINE|DT_NOPREFIX);
+			newRect.TopLeft().y += m_lineHeight;
+		}
+	}
+
+	// 显示 datas 部分
+	if(m_bShowHex) {
 		
-		height = rc.Height() / m_lineHeight;
-		height *= m_lineHeight;
+		CRect newRect = rect;
+		newRect.TopLeft().x = m_offHex;
 
-		if(m_bShowAddress)
-		{
-			char fmt[8] = {'%','0','8','l','X'};
-			fmt[2] = m_bAddressIsWide ? '8' : '4';
-			int w = m_bAddressIsWide ? 8 : 4;
-			y = 0;
-			CRect rcd = rc;
-			rcd.TopLeft().x = m_offAddress;
-			for(int	 i = m_topindex; (i < m_length) && (rcd.TopLeft().y < height); i+= m_bpr)
+		if(m_selStart != 0xffffffff && (m_currentMode == EDIT_HIGH || m_currentMode == EDIT_LOW)) {
+
+			int	 selStart = m_selStart, selEnd = m_selEnd;
+			if(selStart > selEnd)
+				selStart ^= selEnd ^= selStart ^= selEnd;
+
+			for(int i = m_topindex; (i < selStart) && (y < height); i++)
 			{
-				sprintf(buf, fmt, i);
+				char* p = &buf[0];
+				TOHEX(m_pData[i], p);
+				*p++ = ' ';
 				CString bufCStr(buf);
-				dc.DrawText(bufCStr, w, rcd, DT_LEFT|DT_TOP|DT_SINGLELINE|DT_NOPREFIX);
-				rcd.TopLeft().y += m_lineHeight;
-			}
-		}
-
-		// 显示 datas 部分
-		if(m_bShowHex)
-		{
-			y = 0;
-			CRect rcd = rc;
-			rcd.TopLeft().x = x = m_offHex;
-
-
-
-			if(m_selStart != 0xffffffff && (m_currentMode == EDIT_HIGH || m_currentMode == EDIT_LOW))
-			{
-
-				int	 selStart = m_selStart, selEnd = m_selEnd;
-				if(selStart > selEnd)
-					selStart ^= selEnd ^= selStart ^= selEnd;
-
-				for(i = m_topindex; (i < selStart) && (y < height); i++)
+				dc.TextOut(x, y, bufCStr, 3);
+				x += m_nullWidth * 3;
+				n++;
+				if(n == m_bpr)
 				{
-					char* p = &buf[0];
-					TOHEX(m_pData[i], p);
-					*p++ = ' ';
-					CString bufCStr(buf);
-					dc.TextOut(x, y, bufCStr, 3);
-					x += m_nullWidth * 3;
-					n++;
-					if(n == m_bpr)
-					{
-						n = 0;
-						x = m_offHex;
-						y += m_lineHeight;
-					}
-				}
-				dc.SetTextColor(GetSysColor(COLOR_HIGHLIGHTTEXT));
-				dc.SetBkColor(GetSysColor(COLOR_HIGHLIGHT));
-				for(; (i < selEnd) && (i < m_length) && (y < height); i++)
-				{
-					char* p = &buf[0];
-					TOHEX(m_pData[i], p);
-					*p++ = ' ';
-					CString bufCStr(buf);
-					dc.TextOut(x, y, bufCStr, 3);
-					x += m_nullWidth * 3;
-					n++;
-					if(n == m_bpr)
-					{
-						n = 0;
-						x = m_offHex;
-						y += m_lineHeight;
-					}
-				}
-				dc.SetTextColor(GetSysColor(COLOR_WINDOWTEXT));
-				dc.SetBkColor(GetSysColor(COLOR_WINDOW));
-				for(; (i < m_length) && (y < height); i++)
-				{
-					char* p = &buf[0];
-					TOHEX(m_pData[i], p);
-					*p++ = ' ';
-					CString bufCStr(buf);
-					dc.TextOut(x, y, bufCStr, 3);
-					x += m_nullWidth * 3;
-					n++;
-					if(n == m_bpr)
-					{
-						n = 0;
-						x = m_offHex;
-						y += m_lineHeight;
-					}
+					n = 0;
+					x = m_offHex;
+					y += m_lineHeight;
 				}
 			}
-			else
+			dc.SetTextColor(GetSysColor(COLOR_HIGHLIGHTTEXT));
+			dc.SetBkColor(GetSysColor(COLOR_HIGHLIGHT));
+			for(; (i < selEnd) && (i < m_length) && (y < height); i++)
 			{
-				for(int	 i = m_topindex; (i < m_length) && (rcd.TopLeft().y < height);)
+				char* p = &buf[0];
+				TOHEX(m_pData[i], p);
+				*p++ = ' ';
+				CString bufCStr(buf);
+				dc.TextOut(x, y, bufCStr, 3);
+				x += m_nullWidth * 3;
+				n++;
+				if(n == m_bpr)
 				{
-					char* p = &buf[0];
-					for(int	 n = 0; (n < m_bpr) && (i < m_length); n++)
-					{
-						TOHEX(m_pData[i], p);
-						*p++ = ' ';
-						i++;
-					}
-					while(n < m_bpr)
-					{
-						*p++ = ' ';	*p++ = ' ';	*p++ = ' ';
-						 n++;
-					}
+					n = 0;
+					x = m_offHex;
+					y += m_lineHeight;
+				}
+			}
+			dc.SetTextColor(GetSysColor(COLOR_WINDOWTEXT));
+			dc.SetBkColor(GetSysColor(COLOR_WINDOW));
+			for(; (i < m_length) && (y < height); i++)
+			{
+				char* p = &buf[0];
+				TOHEX(m_pData[i], p);
+				*p++ = ' ';
+				CString bufCStr(buf);
+				dc.TextOut(x, y, bufCStr, 3);
+				x += m_nullWidth * 3;
+				n++;
+				if(n == m_bpr)
+				{
+					n = 0;
+					x = m_offHex;
+					y += m_lineHeight;
+				}
+			}
 
-					CString bufCStr(buf);
-					dc.DrawText(bufCStr, m_bpr*3, rcd, DT_LEFT|DT_TOP|DT_SINGLELINE|DT_NOPREFIX);
-					rcd.TopLeft().y += m_lineHeight;
+		} else {
+
+			int charCountForLine = 0;
+			CString bufferLine, buffer;
+
+			for(int	 i = m_topindex; (i < m_length) && (newRect.TopLeft().y < height); i++) {
+				
+				buffer.Format(_T("%02X"), m_pData[i]);
+				bufferLine += buffer;
+				bufferLine += _T(" ");
+				charCountForLine++;
+
+
+				if ( (i % m_bpr == m_bpr - 1)||(i == m_length - 1) ){
+					
+					dc.DrawText(bufferLine, charCountForLine * 3, newRect, DT_LEFT|DT_TOP|DT_SINGLELINE|DT_NOPREFIX);
+					newRect.TopLeft().y += m_lineHeight;
+					charCountForLine = 0;
+					bufferLine = _T("");
 				}
 			}
 		}
+	}
+
+
+
 		/*if(m_bShowAscii)
 		{
 			y = 0;
@@ -345,9 +380,12 @@ void CHexEdit::OnPaint()
 				}
 			}
 		}*/
-	}
-	pdc.BitBlt(0, 0, rc.Width(), rc.Height(), &dc, 0, 0, SRCCOPY);
+	
+
+	pdc.BitBlt(0, 0, rect.Width(), rect.Height(), &dc, 0, 0, SRCCOPY);
 }
+
+
 
 void CHexEdit::OnSetFocus(CWnd* pOldWnd) 
 {
@@ -473,8 +511,6 @@ void CHexEdit::SetBPR(int bpr)
 	m_bUpdate = TRUE;
 }
 
-
-
 CPoint CHexEdit::CalcPos(int x, int y)
 {
 	y /= m_lineHeight;
@@ -531,32 +567,7 @@ void CHexEdit::CreateEditCaret()
 
 
 
-void CHexEdit::UpdateScrollbars()
-{
-	SCROLLINFO si;
 
-	si.cbSize = sizeof(SCROLLINFO);
-	si.fMask = SIF_ALL;
-	si.nMin = 0;
-	si.nMax = (m_length / m_bpr) - 1;
-	si.nPage = m_lpp;
-	si.nPos = m_topindex / m_bpr;
-
-	::SetScrollInfo(this->m_hWnd, SB_VERT, &si, TRUE);
-	if(si.nMax > (int)si.nPage)
-		::EnableScrollBar(this->m_hWnd, SB_VERT, ESB_ENABLE_BOTH);
-
-	CRect rc;
-	GetClientRect(&rc);
-
-	si.nMin = 0;
-	si.nMax =((m_bShowAddress ? (m_bAddressIsWide ? 8 : 4) : 0) +
-			  (m_bShowHex ? m_bpr * 3 : 0) +
-			  (m_bShowAscii ? m_bpr : 0) ) * m_nullWidth;
-	si.nPage = 1;
-	si.nPos = 0;
-	::SetScrollInfo(this->m_hWnd, SB_HORZ, &si, TRUE);
-}
 
 inline BOOL CHexEdit::IsSelected()
 {
@@ -1143,6 +1154,8 @@ void CHexEdit::Clear()
 
 
 // -MARK: Action
+
+
 //void CHexEdit::OnMouseMove(UINT nFlags, CPoint point) 
 //{
 //	if(!m_pData)
@@ -1236,8 +1249,6 @@ void CHexEdit::OnLButtonDown(UINT nFlags, CPoint point)
 		ShowCaret();
 	}
 }
-
-
 void CHexEdit::OnLButtonUp(UINT nFlags, CPoint point) 
 {
 	//if(IsSelected())

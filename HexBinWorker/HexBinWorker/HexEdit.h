@@ -8,14 +8,16 @@ class CHexEdit : public CEdit
 // Construction
 public:
 	CHexEdit();
+	virtual ~CHexEdit();
 
 	enum EDITMODE{	
-			EDIT_NONE,
-			EDIT_ASCII,
-			EDIT_HIGH,
-			EDIT_LOW
-	} ;
-// Attributes
+		EDIT_NONE,
+		EDIT_ASCII,
+		EDIT_HIGH,
+		EDIT_LOW
+	};
+
+
 public:
 	LPBYTE		m_pData;			
 	int			m_length;			
@@ -26,7 +28,7 @@ public:
 	int			m_selStart;			
 	int			m_selEnd;			
 
-	int			m_bpr;				
+	int			m_bpr; // 卧槽。我猜是显示个数				
 	int			m_lpp;				
 	BOOL		m_bShowAddress;
 	BOOL		m_bShowAscii;
@@ -47,15 +49,13 @@ public:
 
 	CPoint		m_editPos;
 
-// Operations
-public:
 
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CHexEdit)
-	public:
+public:
 	virtual BOOL Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID, CCreateContext* pContext = NULL);
-	protected:
+protected:
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 	//}}AFX_VIRTUAL
 
@@ -69,7 +69,7 @@ public:
 	void SetSel(int s, int e);
 	void SetBPR(int bpr);
 	void SetOptions(BOOL a, BOOL h, BOOL c, BOOL w);
-	virtual ~CHexEdit();
+	
 
 protected:
 	void		ScrollIntoView(int p);
@@ -83,6 +83,9 @@ protected:
 	void		SelInsert(int s, int l);
 	void		SelDelete(int s, int e);
 	inline void NormalizeSel(void);
+	// modified methods
+	void updateCharSize();
+
 
 	//{{AFX_MSG(CHexEdit)
 	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
