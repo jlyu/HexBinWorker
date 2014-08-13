@@ -89,14 +89,8 @@ protected:
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
 	afx_msg void OnPaint();
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
-	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-	
-	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
-
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
-
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 
@@ -109,6 +103,10 @@ protected:
 	//afx_msg void OnEditUndo();
 	//afx_msg UINT OnGetDlgCode() { return DLGC_WANTALLKEYS; }
 	//afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
+	//afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	//afx_msg void OnSize(UINT nType, int cx, int cy);
+	//afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+
 
 	// todo
 	//afx_msg void OnMouseMove(UINT nFlags, CPoint point);

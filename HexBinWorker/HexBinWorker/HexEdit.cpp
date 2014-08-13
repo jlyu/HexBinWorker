@@ -118,16 +118,15 @@ void CHexEdit::OnPaint()
 
 	dc.SelectObject(m_Font);
 	int		height		= 0;
-	int		x,y;
 	char	buf[256];
 
-	x = rc.TopLeft().x;
-	y = rc.TopLeft().y;
+	int x = rc.TopLeft().x;
+	int y = rc.TopLeft().y;
 
 	dc.SetBoundsRect(&rc, DCB_DISABLE);
 
-					int	 i;
-				int	 n = 0;
+	int	 i;
+	int	 n = 0;
 
 	if(m_pData)
 	{
@@ -177,6 +176,8 @@ void CHexEdit::OnPaint()
 				rcd.TopLeft().y += m_lineHeight;
 			}
 		}
+
+		// œ‘ æ datas ≤ø∑÷
 		if(m_bShowHex)
 		{
 			y = 0;
@@ -268,7 +269,7 @@ void CHexEdit::OnPaint()
 				}
 			}
 		}
-		if(m_bShowAscii)
+		/*if(m_bShowAscii)
 		{
 			y = 0;
 			CRect rcd = rc;
@@ -343,7 +344,7 @@ void CHexEdit::OnPaint()
 					rcd.TopLeft().y += m_lineHeight;
 				}
 			}
-		}
+		}*/
 	}
 	pdc.BitBlt(0, 0, rc.Width(), rc.Height(), &dc, 0, 0, SRCCOPY);
 }
@@ -356,9 +357,11 @@ void CHexEdit::OnSetFocus(CWnd* pOldWnd)
 			CreateAddressCaret();
 		else
 			CreateEditCaret();
+
 		SetCaretPos(m_editPos);
 		ShowCaret();
 	}
+
 	CWnd::OnSetFocus(pOldWnd);
 }
 
@@ -368,10 +371,10 @@ void CHexEdit::OnKillFocus(CWnd* pNewWnd)
 	CWnd::OnKillFocus(pNewWnd);
 }
 
-void CHexEdit::OnSize(UINT nType, int cx, int cy) 
-{
-	CEdit::OnSize(nType, cx, cy);
-}
+//void CHexEdit::OnSize(UINT nType, int cx, int cy) 
+//{
+//	CEdit::OnSize(nType, cx, cy);
+//}
 
 void CHexEdit::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 {
@@ -429,10 +432,10 @@ void CHexEdit::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	RepositionCaret(m_currentAddress);
 }
 
-void CHexEdit::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
-{
-	nSBCode;nPos; pScrollBar;
-}
+//void CHexEdit::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
+//{
+//	nSBCode;nPos; pScrollBar;
+//}
 
 BOOL CHexEdit::PreCreateWindow(CREATESTRUCT& cs) 
 {
@@ -449,11 +452,11 @@ BOOL CHexEdit::Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwSty
 	return bRet;
 }
 
-BOOL CHexEdit::OnEraseBkgnd(CDC* pDC) 
-{
-	pDC;
-	return TRUE;
-}
+//BOOL CHexEdit::OnEraseBkgnd(CDC* pDC) 
+//{
+//	pDC;
+//	return TRUE;
+//}
 
 void CHexEdit::SetOptions(BOOL a, BOOL h, BOOL c, BOOL w)
 {
