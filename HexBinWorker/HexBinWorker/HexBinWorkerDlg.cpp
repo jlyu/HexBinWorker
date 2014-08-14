@@ -263,8 +263,7 @@ void CHexBinWorkerDlg::OnBnClickedHexToBin()
 	showHexEditText();
 	showBinEditText();
 }
-void CHexBinWorkerDlg::OnBnClickedBinToHex()
-{
+void CHexBinWorkerDlg::OnBnClickedBinToHex() {
 	BYTE* pDatas = NULL;
 	int dataSize = 0;
 

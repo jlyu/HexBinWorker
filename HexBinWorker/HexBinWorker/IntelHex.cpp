@@ -61,8 +61,12 @@ void IntelHex::hexBlocksToOutDatas() {
 	typedef list<HexBlock>::reverse_iterator ListRevIter;
 	ListRevIter rIter = _hexBlocks.rbegin();
 
-	_outDatas = rIter->datas;
 	_dataSize = rIter->validLength;
+
+	// copy the 1st datasBlock only
+	for (int i=0; i<_dataSize; i++) {
+		_outDatas[i] = rIter->datas[i];  // _outDatas = rIter->datas;
+	}
 
 }
 
