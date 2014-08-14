@@ -20,12 +20,11 @@ bool Bin::read() {
 	if (!openBinFile(_fileName)) { return false; }
 	if (_pBinFileHandler == NULL) { return false; }
 
-	const int bufferSize = FLASH_VOLUME * 64;
-	_inDatas = new BYTE[bufferSize];
-
 	fseek(_pBinFileHandler, 0, SEEK_END);
 	_dataSize = ftell(_pBinFileHandler);
 	fseek(_pBinFileHandler, 0, SEEK_SET);
+
+	const int bufferSize = FLASH_VOLUME * 64;
 	if (_dataSize > bufferSize) {
 		return false;
 	}
@@ -46,17 +45,20 @@ bool Bin::parse() {
 	if (_inStr.empty()) {
 		return false;
 	}
-
-	// TODO: verify inStr [0-9A-Za-z]
-	//       trim all space and enter char
-	if (_inStr.size() != 2 * _dataSize) {
+	if (_inDatas == NULL) {
 		return false;
 	}
 
-	// begin parse
-	char *inStrCopy = new char[_inStr.size()+1];
-	std::copy(_inStr.begin(), _inStr.end(), inStrCopy); 
-	inStrCopy[_inStr.size()] = '\0';
+	//// TODO: verify inStr [0-9A-Za-z]
+	////       trim all space and enter char
+	////if (_inStr.size() != 2 * _dataSize) {
+	////	return false;
+	////}
+
+	//// begin parse
+	//char *inStrCopy = new char[_inStr.size()+1];
+	//std::copy(_inStr.begin(), _inStr.end(), inStrCopy); 
+	//inStrCopy[_inStr.size()] = '\0';
 
 	BYTE dbSum, dbLen;
 	CString bufferLine  = _T("");
@@ -82,10 +84,10 @@ bool Bin::parse() {
 			dbSum = dbLen + (BYTE)(l>>8) + (BYTE)l + 00;
 		}
 		// printf("%02X", inStrCopy[l]);
-		bufferLine.Format(_T("%02X"), inStrCopy[l]);
+		bufferLine.Format(_T("%02X"), _inDatas[l]);
 		bufferBlock += bufferLine;
 
-		dbSum += inStrCopy[l];
+		dbSum += _inDatas[l];
 		if (l % 16 == dbLen-1) {
 			dbSum = ~dbSum + 1;
 			//printf("%02X\r\n", dbSum);
@@ -99,7 +101,7 @@ bool Bin::parse() {
 	bufferBlock += CString(_T(":00000001FF"));
 
 	_outStr = CT2A(bufferBlock);
-	delete [] inStrCopy;
+	//delete [] inStrCopy;
 
 	return true;
 }

@@ -35,7 +35,9 @@ public:
 		_pBinFileHandler = NULL;
 		
 		_inStr = "";
-		_inDatas = NULL;
+
+		const int bufferSize = FLASH_VOLUME * 64;
+		_inDatas = new BYTE[bufferSize];
 
 		_outStr = "";
 
@@ -60,12 +62,14 @@ public:
 	bool read();
 	bool parse();
 
-	// text
-	string getBin();
+	// getter / setter
 	void   getDatas(BYTE* &datas, int &dataSize) { 
 		datas = _inDatas;
 		dataSize =  _dataSize; 
 	}
+
+	// text
+	string getBin();
 	string getHex();
 	
 

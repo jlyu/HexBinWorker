@@ -156,32 +156,61 @@ HCURSOR CHexBinWorkerDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+//void CHexBinWorkerDlg::getHexEditText() {
+//}
 
-void CHexBinWorkerDlg::showTextField() {
+void CHexBinWorkerDlg::showHexEditText() {
 	// clear
 	GetDlgItem(IDC_HEXFILEFIELD)->SetWindowText(_T(""));
-	GetDlgItem(IDC_BINFILEFIELD)->SetWindowText(_T(""));
 
-	CString hexText, binText;
-	_hbController.getText(hexText, binText);
+	CString hexText;
+	_hbController.getHexText(hexText);
 	GetDlgItem(IDC_HEXFILEFIELD)->SetWindowText(hexText);
-	GetDlgItem(IDC_BINFILEFIELD)->SetWindowText(binText);
-
-	//set hexEdit 
-	//void SetData(LPBYTE p, int len);
+}
+void CHexBinWorkerDlg::showBinEditText() {
 	BYTE* pDatas = NULL;
 	int dataSize = 0;
 	_hbController.getBinDatas(pDatas, dataSize);
-	
 	_hexEdit.SetData(pDatas, dataSize);
+}
 
+void CHexBinWorkerDlg::getHexEditText(string& hexText){
+	CString hexTextCStr;
+	GetDlgItem(IDC_HEXFILEFIELD)->GetWindowText(hexTextCStr);
+	hexText = CT2A(hexTextCStr);
+}
+
+
+
+void CHexBinWorkerDlg::showTextField() {
+	//// clear
+	//GetDlgItem(IDC_HEXFILEFIELD)->SetWindowText(_T(""));
+
+	////GetDlgItem(IDC_BINFILEFIELD)->SetWindowText(_T(""));
+
+	//BYTE* pDatas = NULL;
+	//int dataSize = 0;
+	//_hbController.getBinDatas(pDatas, dataSize);
+
+
+	//_hexEdit.SetData(pDatas, dataSize);
+
+	//CString hexText, binText;
+	//_hbController.getText(hexText, binText);
+	//GetDlgItem(IDC_HEXFILEFIELD)->SetWindowText(hexText);
+	////GetDlgItem(IDC_BINFILEFIELD)->SetWindowText(binText);
 }
 void CHexBinWorkerDlg::getTextField(string& hexText, string& binText) {
-	CString hexTextCStr, binTextCStr;
-	GetDlgItem(IDC_HEXFILEFIELD)->GetWindowText(hexTextCStr);
-	GetDlgItem(IDC_BINFILEFIELD)->GetWindowText(binTextCStr);
-	hexText = CT2A(hexTextCStr);
-	binText = CT2A(binTextCStr);
+	//CString hexTextCStr, binTextCStr;
+	//GetDlgItem(IDC_HEXFILEFIELD)->GetWindowText(hexTextCStr);
+	//GetDlgItem(IDC_BINFILEFIELD)->GetWindowText(binTextCStr);
+	//hexText = CT2A(hexTextCStr);
+	//binText = CT2A(binTextCStr);
+
+	//BYTE* pDatas = NULL;
+	//int dataSize = 0;
+	//_hbController.getBinDatas(pDatas, dataSize);
+	//_hexEdit.GetData(pDatas, dataSize);
 }
 
 void CHexBinWorkerDlg::showFilePath() {
@@ -211,25 +240,32 @@ void CHexBinWorkerDlg::OnBnClickedOk()
 		_hbController.read(filePathName);
 
 		// Show 
-		showTextField();
+		showHexEditText();
+		showBinEditText();
+
 		showFilePath();
 	}
 }
 
 void CHexBinWorkerDlg::OnBnClickedHexToBin()
 {
-	string hexText, binText;
-	getTextField(hexText, binText);
+	string hexText;
+	getHexEditText(hexText);
 
 	bool succeed = _hbController.parseHex(hexText);
 	if (!succeed) {
 		MessageBox(_T("Hex 文件无法解析到 Bin 文件，格式错误"));
 	}
-	showTextField();
+
+	showHexEditText();
+	showBinEditText();
 }
 
 void CHexBinWorkerDlg::OnBnClickedBinToHex()
 {
+	string hexText, binText;
+	getTextField(hexText, binText);
+
 	_hbController.parseBin();
 	showTextField();
 }

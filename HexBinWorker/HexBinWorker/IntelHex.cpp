@@ -463,6 +463,13 @@ string IntelHex::getBin() {
 	return _outStr;
 }
 
+void IntelHex::getBin(BYTE* &outDatas, int &dataSize) {
+	typedef list<HexBlock>::reverse_iterator ListRevIter;
+	ListRevIter rIter = _hexBlocks.rbegin();
+	outDatas = rIter->datas; // TODO:
+	dataSize = rIter->validLength;
+}
+
 
 string IntelHex::getFilePath() {
 	string filePathStr = CT2A(_fileName);

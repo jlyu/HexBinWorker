@@ -36,9 +36,16 @@ public:
 
 	// text
 	void getText(CString& hexText, CString& binText);
-	void getHexText(CString& hexText) {}
+	
 	void getBinText(CString& binText);
+
+	// redo text
+	void getHexText(CString& hexText);
+
+
+	// getter / setter
 	void getBinDatas(BYTE* &datas, int &dataSize);
+	void getHexDatas(BYTE* &datas, int &dataSize);
 
 
 	// write

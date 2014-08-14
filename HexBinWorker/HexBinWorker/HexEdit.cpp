@@ -243,7 +243,7 @@ void CHexEdit::OnPaint()
 			}
 			dc.SetTextColor(GetSysColor(COLOR_HIGHLIGHTTEXT));
 			dc.SetBkColor(GetSysColor(COLOR_HIGHLIGHT));
-			for(; (i < selEnd) && (i < m_length) && (y < height); i++)
+			for( ; (i < selEnd) && (i < m_length) && (y < height); i++)
 			{
 				char* p = &buf[0];
 				TOHEX(m_pData[i], p);
@@ -1117,8 +1117,13 @@ void CHexEdit::SetData(LPBYTE p, int len)
 
 int CHexEdit::GetData(LPBYTE p, int len)
 {
-	memcpy(p, m_pData, min(len, m_length));
+	memcpy(p, m_pData, m_length);
 	return m_length;
+}
+
+string CHexEdit::getData(LPBYTE p, int len){
+	int newLen = GetData(p, len);
+	return "TODO:";
 }
 
 void CHexEdit::AppendData(LPBYTE p, int addlen)

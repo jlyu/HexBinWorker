@@ -88,7 +88,24 @@ void HexBinController::getBinText(CString& binText) {
 	binText = _hex.getBin().c_str();
 }
 void HexBinController::getBinDatas(BYTE* &datas, int &dataSize) {
-	_bin.getDatas(datas, dataSize);
+	if (_processType == PROCESS_HEX) {
+
+		_hex.getBin(datas, dataSize);
+
+	} else if (_processType == PROCESS_BIN) {
+
+		_bin.getDatas(datas, dataSize);
+	}
+	
+}
+
+void HexBinController::getHexDatas(BYTE* &datas, int &dataSize) {
+	_hex.getBin(datas, dataSize);
+}
+
+// MARK: redo text
+void HexBinController::getHexText(CString& hexText) {
+	hexText = _hex.getHex().c_str();
 }
 
 // MARK: write

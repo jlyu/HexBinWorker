@@ -29,18 +29,30 @@ protected:
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
-	DECLARE_MESSAGE_MAP()
-public:
+
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedSave();
 	afx_msg void OnBnClickedHexToBin();
 	afx_msg void OnBnClickedBinToHex();
+	DECLARE_MESSAGE_MAP()
+
+public:
 
 	void showTextField();
 	void showFilePath();
 	void getTextField(string& hexText, string& binText);
 
-	// to be settled..
+	// redo Edit Text 
+	
+	void showHexEditText();
+	void getHexEditText(string& hexText);
+
+	//void getBinEditText();
+	void showBinEditText();
+
+
+
+	// to be rearraged..
 	CnComm _hCom;
 
 	void findAvailableCom();

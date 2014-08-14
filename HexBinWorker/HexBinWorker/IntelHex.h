@@ -55,29 +55,51 @@ private:
 	CString _fileName;
 	FILE* _pHexFileHandler;
 
-
+	// -in
 	string _inStr;
-	string _outStr;
+
+	// -out
+	string _outStr;  // TODO: del
+	BYTE *_outDatas;
+	long _dataSize;
+	long _startAddr;
 
 	list<HexBlock> _hexBlocks;
 
 
 public:
 
-	IntelHex(void) { _pHexFileHandler = NULL; }
+	IntelHex(void) { 
+		_pHexFileHandler = NULL; 
+
+		const int bufferSize = FLASH_VOLUME * 64;
+		_outDatas = new BYTE[bufferSize];
+	}
+
 	IntelHex(const CString& hexFileName) {
 		
 		_fileName = hexFileName;
 		_pHexFileHandler = NULL;
 
 		_inStr = "";
+
 		_outStr = "";
+		
+		const int bufferSize = FLASH_VOLUME * 64;
+		_outDatas = new BYTE[bufferSize];
+		_dataSize = 0;
+		_startAddr = 0x00;
 	}
 
 	~IntelHex(void) { 
 		if (_pHexFileHandler != NULL) {
 			fclose(_pHexFileHandler);
 			_pHexFileHandler = NULL;
+		}
+
+		if (_outDatas != NULL) {
+			delete [] _outDatas;
+			_outDatas = NULL;
 		}
 	}
 
@@ -89,6 +111,7 @@ public:
 	// text
 	string getHex();
 	string getBin();
+	void getBin(BYTE* &outDatas, int &dataSize);
 
 
 	// write
