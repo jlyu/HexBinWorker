@@ -34,6 +34,7 @@ protected:
 	afx_msg void OnBnClickedSave();
 	afx_msg void OnBnClickedHexToBin();
 	afx_msg void OnBnClickedBinToHex();
+	afx_msg void OnBnClickedBtnOpencom();
 	DECLARE_MESSAGE_MAP()
 
 public:
@@ -47,17 +48,16 @@ public:
 	void showHexEditText();
 	void getHexEditText(string& hexText);
 
-	//void getBinEditText();
 	void showBinEditText();
+	void getBinEditText(BYTE *pDatas, int dataSize);
 
 
 
 	// to be rearraged..
 	CnComm _hCom;
-
 	void findAvailableCom();
 	void showAvailableCom(const vector<CString> &aCom);
-	afx_msg void OnBnClickedBtnOpencom();
+	
 
 private:
 	// -UI

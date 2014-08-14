@@ -156,12 +156,22 @@ HCURSOR CHexBinWorkerDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-//void CHexBinWorkerDlg::getHexEditText() {
-//}
+void CHexBinWorkerDlg::showFilePath() {
+	// clear
+	GetDlgItem(IDC_HEX_PATH)->SetWindowText(_T(""));
+	GetDlgItem(IDC_BIN_PATH)->SetWindowText(_T(""));
+
+	CString hexPath, binPath;
+	_hbController.getFilePath(hexPath, binPath);
+
+	GetDlgItem(IDC_HEX_PATH)->SetWindowText(hexPath);
+	GetDlgItem(IDC_BIN_PATH)->SetWindowText(binPath);
+}
+
 
 void CHexBinWorkerDlg::showHexEditText() {
-	// clear
-	GetDlgItem(IDC_HEXFILEFIELD)->SetWindowText(_T(""));
+	
+	GetDlgItem(IDC_HEXFILEFIELD)->SetWindowText(_T(""));  // clear
 
 	CString hexText;
 	_hbController.getHexText(hexText);
@@ -171,6 +181,7 @@ void CHexBinWorkerDlg::showBinEditText() {
 	BYTE* pDatas = NULL;
 	int dataSize = 0;
 	_hbController.getBinDatas(pDatas, dataSize);
+
 	_hexEdit.SetData(pDatas, dataSize);
 }
 
@@ -180,6 +191,9 @@ void CHexBinWorkerDlg::getHexEditText(string& hexText){
 	hexText = CT2A(hexTextCStr);
 }
 
+void CHexBinWorkerDlg::getBinEditText(BYTE *pDatas, int dataSize) {
+	_hexEdit.GetData(pDatas, dataSize);
+}
 
 
 void CHexBinWorkerDlg::showTextField() {
@@ -213,17 +227,7 @@ void CHexBinWorkerDlg::getTextField(string& hexText, string& binText) {
 	//_hexEdit.GetData(pDatas, dataSize);
 }
 
-void CHexBinWorkerDlg::showFilePath() {
-	// clear
-	GetDlgItem(IDC_HEX_PATH)->SetWindowText(_T(""));
-	GetDlgItem(IDC_BIN_PATH)->SetWindowText(_T(""));
 
-	CString hexPath, binPath;
-	_hbController.getFilePath(hexPath, binPath);
-
-	GetDlgItem(IDC_HEX_PATH)->SetWindowText(hexPath);
-	GetDlgItem(IDC_BIN_PATH)->SetWindowText(binPath);
-}
 
 void CHexBinWorkerDlg::OnBnClickedOk()
 {
@@ -235,7 +239,7 @@ void CHexBinWorkerDlg::OnBnClickedOk()
 
 		CString filePathName = pHexFileDlg.GetPathName(); 
 
-		// Handle
+		// Process
 		_hbController.init(filePathName);
 		_hbController.read(filePathName);
 
@@ -246,7 +250,6 @@ void CHexBinWorkerDlg::OnBnClickedOk()
 		showFilePath();
 	}
 }
-
 void CHexBinWorkerDlg::OnBnClickedHexToBin()
 {
 	string hexText;
@@ -260,14 +263,17 @@ void CHexBinWorkerDlg::OnBnClickedHexToBin()
 	showHexEditText();
 	showBinEditText();
 }
-
 void CHexBinWorkerDlg::OnBnClickedBinToHex()
 {
-	string hexText, binText;
-	getTextField(hexText, binText);
+	BYTE* pDatas = NULL;
+	int dataSize = 0;
 
+	_hbController.getBinDatas(pDatas, dataSize);
+	getBinEditText(pDatas, dataSize);
 	_hbController.parseBin();
-	showTextField();
+	
+	showHexEditText();
+	showBinEditText();
 }
 
 void CHexBinWorkerDlg::OnBnClickedSave()

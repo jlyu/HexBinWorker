@@ -29,6 +29,10 @@ bool Bin::read() {
 		return false;
 	}
 
+	if (_inDatas == NULL) {
+		_inDatas = new BYTE[bufferSize];
+	}
+	
 	fread(_inDatas, 1, _dataSize, _pBinFileHandler);
 
 	char ch[3];

@@ -52,6 +52,20 @@ bool IntelHex::checkLine(const char *src) {
         return false;  
     }  
 }
+
+void IntelHex::hexBlocksToOutDatas() {
+	if (_outDatas == NULL) {
+		_outDatas = new BYTE[FLASH_VOLUME * 64];
+	}
+
+	typedef list<HexBlock>::reverse_iterator ListRevIter;
+	ListRevIter rIter = _hexBlocks.rbegin();
+
+	_outDatas = rIter->datas;
+	_dataSize = rIter->validLength;
+
+}
+
 bool IntelHex::matchLine(const char *src) {
 	string matchPattern("^:(\\w{2})(\\w{4})(\\w{2})(\\w*)(\\w{2})$");
 	string lineString = src;
@@ -128,8 +142,9 @@ bool IntelHex::matchLine(const char *src) {
 			printf("Hex Recoad IS NOT avaliable format");
 			return false;  
 		}  
+
+
 	return true;
-	
 }
 bool IntelHex::verifyLine(const HexRecord& hexRecord) {
 	// 验证数据长度
@@ -436,8 +451,12 @@ bool IntelHex::parse() {
 	}
 
 	delete [] pWritableCopy;
+
+	hexBlocksToOutDatas();
 	return true;
 }
+
+
 
 string IntelHex::getHex() {
 	return _inStr;
@@ -464,10 +483,8 @@ string IntelHex::getBin() {
 }
 
 void IntelHex::getBin(BYTE* &outDatas, int &dataSize) {
-	typedef list<HexBlock>::reverse_iterator ListRevIter;
-	ListRevIter rIter = _hexBlocks.rbegin();
-	outDatas = rIter->datas; // TODO:
-	dataSize = rIter->validLength;
+	outDatas = _outDatas;
+	dataSize = _dataSize;
 }
 
 

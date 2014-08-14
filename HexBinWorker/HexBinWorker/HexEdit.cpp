@@ -1121,10 +1121,10 @@ int CHexEdit::GetData(LPBYTE p, int len)
 	return m_length;
 }
 
-string CHexEdit::getData(LPBYTE p, int len){
-	int newLen = GetData(p, len);
-	return "TODO:";
-}
+//string CHexEdit::getData(LPBYTE p, int len){
+//	int newLen = GetData(p, len);
+//	return "TODO:";
+//}
 
 void CHexEdit::AppendData(LPBYTE p, int addlen)
 {

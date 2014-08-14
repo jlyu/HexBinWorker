@@ -51,6 +51,7 @@ private:
 
 	void byteToBin(BYTE *pByte, char* pBin);
 
+	void IntelHex::hexBlocksToOutDatas();
 
 	CString _fileName;
 	FILE* _pHexFileHandler;
@@ -71,9 +72,7 @@ public:
 
 	IntelHex(void) { 
 		_pHexFileHandler = NULL; 
-
-		const int bufferSize = FLASH_VOLUME * 64;
-		_outDatas = new BYTE[bufferSize];
+		_outDatas = NULL;
 	}
 
 	IntelHex(const CString& hexFileName) {
@@ -84,9 +83,7 @@ public:
 		_inStr = "";
 
 		_outStr = "";
-		
-		const int bufferSize = FLASH_VOLUME * 64;
-		_outDatas = new BYTE[bufferSize];
+		_outDatas = NULL;
 		_dataSize = 0;
 		_startAddr = 0x00;
 	}
