@@ -3,9 +3,8 @@
 
 using namespace std;
 
-class CHexEdit : public CEdit
-{
-// Construction
+class CHexEdit : public CEdit {
+
 public:
 	CHexEdit();
 	virtual ~CHexEdit();
@@ -59,12 +58,11 @@ protected:
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 	//}}AFX_VIRTUAL
 
-// Implementation
+
 public:
 	void Clear();
 	void AppendData(LPBYTE p, int addlen);
 	void GetData(LPBYTE p, int &len);
-	//string getData(LPBYTE p, int len);
 	void SetData(LPBYTE p, int len);
 	CSize GetSel(void);
 	void SetSel(int s, int e);
@@ -96,6 +94,10 @@ protected:
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point) { return; }
+	afx_msg void OnRButtonDown(UINT nFlags, CPoint point) { return; }
+	afx_msg void OnRButtonUp(UINT nFlags, CPoint point) { return; }
+	afx_msg void OnRButtonDblClk(UINT nFlags, CPoint point) { return; }
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 
 	// del
@@ -106,7 +108,7 @@ protected:
 	//afx_msg void OnEditSelectAll();
 	//afx_msg void OnEditUndo();
 	//afx_msg UINT OnGetDlgCode() { return DLGC_WANTALLKEYS; }
-	//afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
+	
 	//afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	//afx_msg void OnSize(UINT nType, int cx, int cy);
 	//afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);

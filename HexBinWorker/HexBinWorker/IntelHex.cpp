@@ -67,7 +67,7 @@ void IntelHex::hexBlocksToOutDatas() {
 
 	// copy the 1st datasBlock only
 	for (int i=0; i<_dataSize; i++) {
-		_outDatas[i] = rIter->datas[i];  // _outDatas = rIter->datas;
+		_outDatas[i] = rIter->datas[i];
 	}
 
 }
@@ -420,9 +420,8 @@ bool IntelHex::read() {
 }
 
 bool IntelHex::parse(string& inStr) {
-	//if (!inStr.empty()) {
-		_inStr = inStr;
-	//} 
+
+	_inStr = inStr;
 
 	if (!_hexBlocks.empty()) {
 		_hexBlocks.clear();

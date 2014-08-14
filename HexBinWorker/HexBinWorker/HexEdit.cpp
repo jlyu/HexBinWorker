@@ -72,10 +72,15 @@ BEGIN_MESSAGE_MAP(CHexEdit, CEdit)
 	ON_WM_HSCROLL()
 	ON_WM_GETDLGCODE()
 	ON_WM_ERASEBKGND()
+	// Left Mouse Button
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONDBLCLK()
-	ON_WM_MOUSEMOVE()
 	ON_WM_LBUTTONUP()
+	// Right Mouse Button
+	ON_WM_RBUTTONDOWN()
+	ON_WM_RBUTTONDBLCLK()
+	ON_WM_RBUTTONUP()
+	ON_WM_MOUSEMOVE()
 	ON_WM_KEYDOWN()
 //	ON_COMMAND(ID_EDIT_CLEAR, OnEditClear)
 	ON_COMMAND(ID_EDIT_COPY, OnEditCopy)
@@ -409,14 +414,8 @@ void CHexEdit::OnKillFocus(CWnd* pNewWnd)
 	CWnd::OnKillFocus(pNewWnd);
 }
 
-//void CHexEdit::OnSize(UINT nType, int cx, int cy) 
-//{
-//	CEdit::OnSize(nType, cx, cy);
-//}
-
 void CHexEdit::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 {
-	pScrollBar;
 	if(!m_pData)
 		return;
 
@@ -470,11 +469,6 @@ void CHexEdit::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	RepositionCaret(m_currentAddress);
 }
 
-//void CHexEdit::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
-//{
-//	nSBCode;nPos; pScrollBar;
-//}
-
 BOOL CHexEdit::PreCreateWindow(CREATESTRUCT& cs) 
 {
 	cs.style |= WS_HSCROLL|WS_VSCROLL;
@@ -489,12 +483,6 @@ BOOL CHexEdit::Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwSty
 		SetFont(&m_Font);
 	return bRet;
 }
-
-//BOOL CHexEdit::OnEraseBkgnd(CDC* pDC) 
-//{
-//	pDC;
-//	return TRUE;
-//}
 
 void CHexEdit::SetOptions(BOOL a, BOOL h, BOOL c, BOOL w)
 {
@@ -992,7 +980,6 @@ void CHexEdit::ScrollIntoView(int p)
 	}
 }
 
-
 void CHexEdit::OnEditCopy() 
 {
 	COleDataSource*		pSource = new COleDataSource();
@@ -1122,11 +1109,6 @@ void CHexEdit::GetData(LPBYTE p, int &len)
 	len = m_length;
 }
 
-//string CHexEdit::getData(LPBYTE p, int len){
-//	int newLen = GetData(p, len);
-//	return "TODO:";
-//}
-
 void CHexEdit::AppendData(LPBYTE p, int addlen)
 {
 	LPBYTE oldData=m_pData;
@@ -1200,6 +1182,7 @@ void CHexEdit::Clear()
 //			RedrawWindow();
 //	}
 //}
+
 
 void CHexEdit::OnLButtonDown(UINT nFlags, CPoint point) 
 {
