@@ -58,10 +58,14 @@ public:
 	FILE* getFileWriteHandler();
 
 	bool read();
+	bool parse(BYTE *pDatas, int dataSize);
 	bool parse();
 
 	// getter / setter
 	void   getBin(BYTE* &datas, int &dataSize) { 
+		if (_inDatas == NULL) {
+			_inDatas = new BYTE[FLASH_VOLUME * 64];
+		}
 		datas = _inDatas;
 		dataSize =  _dataSize; 
 	}

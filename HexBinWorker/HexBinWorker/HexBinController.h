@@ -6,8 +6,8 @@
 class HexBinController
 {
 	enum ProcessType{
-		PROCESS_HEX,
-		PROCESS_BIN,
+		PROCESS_HEX_TO_BIN,
+		PROCESS_BIN_TO_HEX,
 	};
 
 private:
@@ -27,12 +27,15 @@ public:
 
 	bool parse(const CString& fileName);
 	bool parseHex(string& inStr);
-	void parseBin();
+	void parseBin(BYTE *pDatas, int dataSize);
 
 	bool isHexFile(const CString& fileName); 
 
 	void getFilePath(CString& hexPath, CString& binPath);
 	
+	// type
+	void typeHexToBin() { _processType = PROCESS_HEX_TO_BIN; }
+	void typeBinToHex() { _processType = PROCESS_BIN_TO_HEX; }
 
 	// text
 	void getText(CString& hexText, CString& binText);
@@ -45,7 +48,7 @@ public:
 
 	// getter / setter
 	void getBinDatas(BYTE* &datas, int &dataSize);
-	void getHexDatas(BYTE* &datas, int &dataSize);
+	//void getHexDatas(BYTE* &datas, int &dataSize);
 
 
 	// write

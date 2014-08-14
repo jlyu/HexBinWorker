@@ -44,11 +44,18 @@ bool Bin::read() {
 	return true;
 }
 
+bool Bin::parse(BYTE *pDatas, int dataSize) {
+	_inDatas = pDatas;
+	_dataSize = dataSize;
+	return parse();
+}
+
 bool Bin::parse() {
 
-	if (_inStr.empty()) {
-		return false;
-	}
+	//if (_inStr.empty()) {
+	//	return false;
+	//}
+
 	if (_inDatas == NULL) {
 		return false;
 	}

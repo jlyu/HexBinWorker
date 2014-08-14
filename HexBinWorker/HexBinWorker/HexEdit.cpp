@@ -1101,7 +1101,8 @@ void CHexEdit::SetData(LPBYTE p, int len)
 		return;
 	}
 
-	free(m_pData);
+	//free(m_pData);
+	Clear();
 	
 	m_pData = (LPBYTE) malloc(len);
 	memcpy(m_pData, p, len);
@@ -1115,10 +1116,10 @@ void CHexEdit::SetData(LPBYTE p, int len)
 	m_bUpdate = TRUE;
 }
 
-int CHexEdit::GetData(LPBYTE p, int len)
+void CHexEdit::GetData(LPBYTE p, int &len)
 {
 	memcpy(p, m_pData, m_length);
-	return m_length;
+	len = m_length;
 }
 
 //string CHexEdit::getData(LPBYTE p, int len){

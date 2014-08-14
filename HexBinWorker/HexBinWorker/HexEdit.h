@@ -63,7 +63,7 @@ protected:
 public:
 	void Clear();
 	void AppendData(LPBYTE p, int addlen);
-	int GetData(LPBYTE p, int len);
+	void GetData(LPBYTE p, int &len);
 	//string getData(LPBYTE p, int len);
 	void SetData(LPBYTE p, int len);
 	CSize GetSel(void);

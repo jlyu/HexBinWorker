@@ -54,10 +54,12 @@ bool IntelHex::checkLine(const char *src) {
 }
 
 void IntelHex::hexBlocksToOutDatas() {
-	if (_outDatas == NULL) {
-		_outDatas = new BYTE[FLASH_VOLUME * 64];
-	}
-
+	// renew outDatas
+	if (_outDatas != NULL) {
+		delete [] _outDatas;
+	} 
+	_outDatas = new BYTE[FLASH_VOLUME * 64];
+	
 	typedef list<HexBlock>::reverse_iterator ListRevIter;
 	ListRevIter rIter = _hexBlocks.rbegin();
 
@@ -418,9 +420,13 @@ bool IntelHex::read() {
 }
 
 bool IntelHex::parse(string& inStr) {
-	if (!inStr.empty()) {
+	//if (!inStr.empty()) {
 		_inStr = inStr;
-	} 
+	//} 
+
+	if (!_hexBlocks.empty()) {
+		_hexBlocks.clear();
+	}
 		
 	return parse();
 }

@@ -250,8 +250,9 @@ void CHexBinWorkerDlg::OnBnClickedOk()
 		showFilePath();
 	}
 }
-void CHexBinWorkerDlg::OnBnClickedHexToBin()
-{
+void CHexBinWorkerDlg::OnBnClickedHexToBin() {
+	_hbController.typeHexToBin();
+
 	string hexText;
 	getHexEditText(hexText);
 
@@ -264,12 +265,15 @@ void CHexBinWorkerDlg::OnBnClickedHexToBin()
 	showBinEditText();
 }
 void CHexBinWorkerDlg::OnBnClickedBinToHex() {
+	_hbController.typeBinToHex();
+
 	BYTE* pDatas = NULL;
 	int dataSize = 0;
 
-	_hbController.getBinDatas(pDatas, dataSize);
-	getBinEditText(pDatas, dataSize);
-	_hbController.parseBin();
+	
+	_hbController.getBinDatas(pDatas, dataSize); 
+	_hexEdit.GetData(pDatas, dataSize);
+	_hbController.parseBin(pDatas, dataSize); //TODO:
 	
 	showHexEditText();
 	showBinEditText();

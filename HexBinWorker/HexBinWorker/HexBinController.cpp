@@ -20,7 +20,7 @@ void HexBinController::init(CString& fileName) {
 		
 		binFileName = fileNameStr.c_str();
 		
-		_processType = PROCESS_HEX;
+		_processType = PROCESS_HEX_TO_BIN;
 	} else {
 		binFileName = fileName;
 
@@ -28,7 +28,7 @@ void HexBinController::init(CString& fileName) {
 		fileNameStr.replace(pos, 4, ".hex");
 		
 		hexFileName = fileNameStr.c_str();
-		_processType = PROCESS_BIN;
+		_processType = PROCESS_BIN_TO_HEX;
 	}
 
 	_hex = IntelHex(hexFileName);
@@ -66,14 +66,20 @@ bool HexBinController::parse(const CString& fileName) {
 		return _bin.parse();
 	}
 }
-bool HexBinController::parseHex(string& inStr) { return _hex.parse(inStr); }
-void HexBinController::parseBin() { _bin.parse(); }
+bool HexBinController::parseHex(string& inStr) { 
+	_processType = PROCESS_HEX_TO_BIN;
+	return _hex.parse(inStr); 
+}
+void HexBinController::parseBin(BYTE *pDatas, int dataSize) { 
+	_processType = PROCESS_BIN_TO_HEX;
+	_bin.parse(pDatas, dataSize); 
+}
 
 void HexBinController::getText(CString& hexText, CString& binText) {
-	if (_processType == PROCESS_HEX) {
+	if (_processType == PROCESS_HEX_TO_BIN) {
 		hexText = _hex.getHex().c_str();
 		//binText = _hex.getBin().c_str();
-	} else if (_processType == PROCESS_BIN) {
+	} else if (_processType == PROCESS_BIN_TO_HEX) {
 		hexText = _bin.getHex().c_str();
 		binText = _bin.getBin().c_str();
 	}
@@ -89,26 +95,26 @@ void HexBinController::getBinText(CString& binText) {
 }
 void HexBinController::getBinDatas(BYTE* &datas, int &dataSize) {
 
-	if (_processType == PROCESS_HEX) {
+	if (_processType == PROCESS_HEX_TO_BIN) {
 
 		_hex.getBin(datas, dataSize);
 
-	} else if (_processType == PROCESS_BIN) {
+	} else if (_processType == PROCESS_BIN_TO_HEX) {
 
 		_bin.getBin(datas, dataSize);
 	}
 	
 }
 
-void HexBinController::getHexDatas(BYTE* &datas, int &dataSize) {
-	_hex.getBin(datas, dataSize);
-}
+//void HexBinController::getHexDatas(BYTE* &datas, int &dataSize) {
+//	_hex.getBin(datas, dataSize);
+//}
 
 // MARK: redo text
 void HexBinController::getHexText(CString& hexText) {
-	if (_processType == PROCESS_HEX) {
+	if (_processType ==PROCESS_HEX_TO_BIN) {
 		hexText = _hex.getHex().c_str();
-	} else if (_processType == PROCESS_BIN) {
+	} else if (_processType == PROCESS_BIN_TO_HEX) {
 		hexText = _bin.getHex().c_str();
 	}
 }
