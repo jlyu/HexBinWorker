@@ -48,7 +48,6 @@ BEGIN_MESSAGE_MAP(CHexBinWorkerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_SAVE, &CHexBinWorkerDlg::OnBnClickedSave)
 	ON_BN_CLICKED(IDC_HEX_TO_BIN, &CHexBinWorkerDlg::OnBnClickedHexToBin)
 	ON_BN_CLICKED(IDC_BIN_TO_HEX, &CHexBinWorkerDlg::OnBnClickedBinToHex)
-	//ON_BN_CLICKED(IDC_BTN_OPENCOM, &CHexBinWorkerDlg::OnBnClickedBtnOpencom)
 	ON_BN_CLICKED(IDC_BTN_FILEREPLICATION, &CHexBinWorkerDlg::OnBnClickedBtnFilereplication)
 END_MESSAGE_MAP()
 
@@ -57,7 +56,6 @@ END_MESSAGE_MAP()
 BOOL CHexBinWorkerDlg::OnInitDialog() {
 	CDialogEx::OnInitDialog();
 
-	// IDM_ABOUTBOX 必须在系统命令范围内。
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
@@ -83,7 +81,6 @@ BOOL CHexBinWorkerDlg::OnInitDialog() {
 	// TODO: 在此添加额外的初始化代码
 	findAvailableCom();
 
-	
 	_editFont.CreateFont(-12, 0,0,0,0,0,0,0,0,0,0,0,0, _T("Consolas"));
 	GetDlgItem(IDC_HEXFILEFIELD)->SetFont(&_editFont);
 	GetDlgItem(IDC_BINFILEFIELD)->SetFont(&_editFont);
@@ -98,9 +95,7 @@ void CHexBinWorkerDlg::OnSysCommand(UINT nID, LPARAM lParam) {
 		CDialogEx::OnSysCommand(nID, lParam);
 	}
 }
-// 如果向对话框添加最小化按钮，则需要下面的代码
-//  来绘制该图标。对于使用文档/视图模型的 MFC 应用程序，
-//  这将由框架自动完成。
+
 void CHexBinWorkerDlg::OnPaint()
 {
 	if (IsIconic())
@@ -337,5 +332,21 @@ void CHexBinWorkerDlg::OnBnClickedBtnOpencom() {
 
 void CHexBinWorkerDlg::OnBnClickedBtnFilereplication()
 {
-	// TODO: 在此添加控件通知处理程序代码
+    // get COM Serial Number
+    CString comSerialStr;
+	int currentComSerial = ((CComboBox *)GetDlgItem(IDC_COMBO_COM))->GetCurSel();
+	((CComboBox *)GetDlgItem(IDC_COMBO_COM))->GetLBText(currentComSerial, comSerialStr);
+    CString comNumberCStr = comSerialStr.Mid(3);
+	int comNumber = _ttoi(comNumberCStr);
+
+    // open COM
+    bool openOK = _comController.openCom(comNumber);
+    if (!openOK) {
+        CString errMessage;
+        errMessage.Format(_T("无法打开串口：COM%d"), comNumber);
+        MessageBox(errMessage);
+    }
+
+    //
+	_comController.getCommand();
 }
