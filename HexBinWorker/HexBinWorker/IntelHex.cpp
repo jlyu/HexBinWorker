@@ -2,7 +2,6 @@
 #include "IntelHex.h"
 #include <string>
 #include <regex> 
-
 using namespace std;
 
 /*
@@ -22,9 +21,6 @@ using namespace std;
 8bit 二进制转16进制
 
 */
-
-
-
 bool IntelHex::openHexFile(CString& hexFileName) {
 
 	CT2A asciiFileName(hexFileName);
@@ -52,108 +48,27 @@ bool IntelHex::checkLine(const char *src) {
         return false;  
     }  
 }
-
-void IntelHex::hexBlocksToOutDatas() {
-	// renew outDatas
-	if (_outDatas != NULL) {
-		delete [] _outDatas;
-	} 
-	_outDatas = new BYTE[FLASH_VOLUME * 64];
-	
-	typedef list<HexBlock>::reverse_iterator ListRevIter;
-	ListRevIter rIter = _hexBlocks.rbegin();
-
-	_dataSize = rIter->validLength;
-
-	// copy the 1st datasBlock only
-	for (int i=0; i<_dataSize; i++) {
-		_outDatas[i] = rIter->datas[i];
-	}
-
-}
-
-bool IntelHex::matchLine(const char *src) {
+bool IntelHex::matchLine(const char *src, HexRecord& hexRecord) {
 	string matchPattern("^:(\\w{2})(\\w{4})(\\w{2})(\\w*)(\\w{2})$");
 	string lineString = src;
 	std::regex_constants::syntax_option_type optionType = std::regex_constants::icase;
 	std::regex regExpress(matchPattern, optionType);
 	std::smatch matchResult;
 
-	if(std::regex_match(lineString, matchResult, regExpress))  
-    {  
-		HexRecord hexRecord;
+	if(std::regex_match(lineString, matchResult, regExpress)) {  
+		//HexRecord record;
 		hexRecord.dataLength = string(matchResult[1].first, matchResult[1].second);
 		hexRecord.startAddress = string(matchResult[2].first, matchResult[2].second);
 		hexRecord.recordType = string(matchResult[3].first, matchResult[3].second);
 		hexRecord.data = string(matchResult[4].first, matchResult[4].second);
 		hexRecord.sumCheck = string(matchResult[5].first, matchResult[5].second);
 		hexRecord.origRecord = lineString;
-
-		// 检验行
-		bool isPass = verifyLine(hexRecord);
-		if (!isPass) { return false; }
-			
-		unsigned int recordTypeInt = hexToDec(hexRecord.recordType);
-
-		switch (recordTypeInt)
-		{
-			case 0: {
-				if (_hexBlocks.empty()) {
-					HexBlock newHexBlock = HexBlock();
-					_hexBlocks.push_front(newHexBlock);
-				}
-
-				list<HexBlock>::iterator hexBlocksIterator = _hexBlocks.begin();
-				const int startAddr = hexToDec(hexRecord.startAddress);
-				const int dataLength = hexToDec(hexRecord.dataLength);
-
-				vector<BYTE> splitedData;
-				splitHexData(hexRecord.data, splitedData);
-
-				for (int i = startAddr; i < startAddr + dataLength; i++) {
-					hexBlocksIterator->datas[i] = splitedData[i-startAddr];
-				}
-				
-				const int dataValidLength = hexBlocksIterator->validLength;
-				if (startAddr > dataValidLength) {
-					hexBlocksIterator->validLength += startAddr - dataValidLength;
-				}
-				hexBlocksIterator->validLength += dataLength;
-				
-				break;
-			}
-			case 1: { //end of file
-				return true;
-				break;
-			}
-			case 2: {
-				break;
-			}
-			case 4: {
-				HexBlock newHexBlock = HexBlock();
-
-				// parse type 04 here
-
-
-				_hexBlocks.push_front(newHexBlock);
-				break;
-			}
-			case 5: {
-				break;
-			}
-
-			}
-		} else {  
-		
-			printf("Hex Recoad IS NOT avaliable format");
-			return false;  
-		}  
-
-
-	return true;
+		return true;
+	}
+	return false;
 }
 bool IntelHex::verifyLine(const HexRecord& hexRecord) {
-	// 验证数据长度
+	// verify length of datas
 	const unsigned int dateSize = hexRecord.data.size();
 	unsigned int dataLength = hexToDec(hexRecord.dataLength);
 
@@ -161,7 +76,7 @@ bool IntelHex::verifyLine(const HexRecord& hexRecord) {
 		return false;
 	}
 	
-	// 校验和
+	// verify sumcheck
 	const int origRecordSize = hexRecord.origRecord.size();
 	unsigned int sumCheck = 0;
 	string origRecordCopy = hexRecord.origRecord;
@@ -182,6 +97,96 @@ bool IntelHex::verifyLine(const HexRecord& hexRecord) {
 
 	return true;
 }
+void IntelHex::splitHexData(const string& inData, vector<BYTE>& outData) {
+
+	typedef string::const_iterator cIter;
+	for (cIter i = inData.begin() ; i < inData.end(); i += 2) {
+
+		const string hexStr = string(i, i+2);
+		BYTE decByte = (BYTE)strtol(hexStr.c_str(), NULL, 16);  // hex -> dec
+		outData.push_back(decByte);
+	}
+}
+bool IntelHex::appendDatas(const HexRecord& hexRecord){
+	unsigned int recordTypeInt = hexToDec(hexRecord.recordType);
+
+	switch (recordTypeInt)
+	{
+		case 0: {
+			if (_hexBlocks.empty()) {
+				HexBlock newHexBlock = HexBlock();
+				_hexBlocks.push_front(newHexBlock);
+			}
+
+			list<HexBlock>::iterator hexBlocksIterator = _hexBlocks.begin();
+			const int startAddr = hexToDec(hexRecord.startAddress);
+			const int dataLength = hexToDec(hexRecord.dataLength);
+
+			vector<BYTE> splitedData;
+			splitHexData(hexRecord.data, splitedData);
+
+			for (int i = startAddr; i < startAddr + dataLength; i++) {
+				hexBlocksIterator->datas[i] = splitedData[i-startAddr];
+			}
+				
+			const int dataValidLength = hexBlocksIterator->validLength;
+			if (startAddr > dataValidLength) {
+				hexBlocksIterator->validLength += startAddr - dataValidLength;
+			}
+			hexBlocksIterator->validLength += dataLength;
+				
+			break;
+		}
+		case 1: { //end of file
+			return true;
+			break;
+		}
+		case 2: {
+			break;
+		}
+		case 4: {
+			HexBlock newHexBlock = HexBlock();
+			// TODO: parse type 04 here
+			// ...
+			_hexBlocks.push_front(newHexBlock);
+			break;
+		}
+		case 5: {
+			break;
+		}
+
+	} 
+
+	return true;
+}
+
+
+
+
+void IntelHex::hexBlocksToOutDatas() {
+	// renew outDatas
+	if (_outDatas != NULL) {
+		delete [] _outDatas;
+	} 
+	_outDatas = new BYTE[FLASH_VOLUME * 64];
+	
+	typedef list<HexBlock>::reverse_iterator ListRevIter;
+	ListRevIter rIter = _hexBlocks.rbegin();
+
+	if (rIter == _hexBlocks.rend()) {
+		return; 
+	}
+
+	_dataSize = rIter->validLength;
+
+	// copy the 1st datasBlock only
+	for (int i=0; i<_dataSize; i++) {
+		_outDatas[i] = rIter->datas[i];
+	}
+
+}	
+
+
 void IntelHex::hexStringToByte(const char* src, const int srcLen, BYTE* dst) {
     
     for (int i = 0; i < srcLen; i += 2)
@@ -233,31 +238,22 @@ void IntelHex::byteToHexString(BYTE* source, char* dest, int sourceLen)
     }
     return ;
 }
-void IntelHex::splitHexData(const string& inData, vector<BYTE>& outData) {
 
-	typedef string::const_iterator cIter;
-	for (cIter i = inData.begin() ; i < inData.end(); i += 2) {
-
-		const string hexStr = string(i, i+2);
-		BYTE decByte = (BYTE)strtol(hexStr.c_str(), NULL, 16);  // hex -> dec
-		outData.push_back(decByte);
-	}
-}
-void IntelHex::hexStringToDec() {
-	// 字符串 -> 16进制表示
-	//const int fileLines = fileContent.size();
-	//for (int i=0; i<fileLines; i++) {
-	//	//typedef string::iterator Iter;
-	//	//string dataCopy = fileLines.hexR
-	//	//for (Iter i = fileLines..begin()+1 ; i < origRecordCopy.end() - 2; i += 2) {
-	//	//string hexStr = string(i, i+2);
-
-	//	//HexRecord.datas.push_back();
-
-	//	//string hexData = "0x" + fileContent[i].hexRecord.data;
-	//	//long n = strtol(data.c_str(), NULL, 16);
-	//}
-}
+//void IntelHex::hexStringToDec() {
+//	// 字符串 -> 16进制表示
+//	//const int fileLines = fileContent.size();
+//	//for (int i=0; i<fileLines; i++) {
+//	//	//typedef string::iterator Iter;
+//	//	//string dataCopy = fileLines.hexR
+//	//	//for (Iter i = fileLines..begin()+1 ; i < origRecordCopy.end() - 2; i += 2) {
+//	//	//string hexStr = string(i, i+2);
+//
+//	//	//HexRecord.datas.push_back();
+//
+//	//	//string hexData = "0x" + fileContent[i].hexRecord.data;
+//	//	//long n = strtol(data.c_str(), NULL, 16);
+//	//}
+//}
 unsigned int IntelHex::hexToDec(const string& str) {
 	
 	unsigned int result = 0;
@@ -414,7 +410,6 @@ bool IntelHex::parse(string& inStr) {
 		
 	return parse();
 }
-
 bool IntelHex::parse() {
 
 	if (_inStr.empty()) {
@@ -428,29 +423,57 @@ bool IntelHex::parse() {
 	char* lineBuffer;
 	lineBuffer = strtok(pWritableCopy, "\r\n");
 	
-	while (lineBuffer != NULL) {
+
+	// parse hex file each line
+	bool parseError = false;
+	while (lineBuffer != NULL) { 
 		
-		// Parse hex line
-		bool checkPass = checkLine(lineBuffer);
-		if (checkPass) {
-			bool isVerify = matchLine(lineBuffer);
-			if (!isVerify)
-			{
-				// wrong hex format, reading aborted
-				delete [] pWritableCopy;
-				return false;
-			}
+		bool checkLineOK = checkLine(lineBuffer);
+		if (!checkLineOK) {
+			parseError = true;
+			break;
 		}
+
+		HexRecord hexRecord;
+		bool matchLineOK = matchLine(lineBuffer, hexRecord);
+		if (!matchLineOK) {
+			parseError = true;
+			break;
+		}
+
+		bool verifyLineOK = verifyLine(hexRecord);
+		if (!verifyLineOK) {
+			parseError = true;
+			break;
+		}	
+
+		bool appendDatasOK = appendDatas(hexRecord);
+		if (!appendDatasOK)	{
+			parseError = true;
+			break;
+		}
+
 		lineBuffer = strtok (NULL, "\r\n");
 	}
 
+
 	delete [] pWritableCopy;
 
-	hexBlocksToOutDatas();
-	return true;
+	if (parseError) {
+		_hexBlocks.clear();
+		return false;
+	} else {
+		hexBlocksToOutDatas();
+		return true;
+	}
 }
 
-
+//bool IntelHex::verify() {
+//
+//
+//
+//	return false;
+//}
 
 string IntelHex::getHex() {
 	return _inStr;

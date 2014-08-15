@@ -34,6 +34,7 @@ public:
 	bool parseHex(string& inStr);
 	void parseBin(BYTE *pDatas, int dataSize);
 	
+	//bool verifyHex();
 
 	// text
 	//void getText(CString& hexText, CString& binText);
@@ -47,7 +48,7 @@ public:
 
 
 	// write
-	void writeHex();
+	bool writeHex();
 	void writeToBinFile();
 	void writeToHexFile();
 

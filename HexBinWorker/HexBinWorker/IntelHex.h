@@ -31,10 +31,11 @@ private:
 
 	bool openHexFile(CString& hexFileName);
 	bool checkLine(const char *src);
-	bool matchLine(const char *src);
+	bool matchLine(const char *src, HexRecord& hexRecord);
 	bool verifyLine(const HexRecord& hexRecord);
+	bool appendDatas(const HexRecord& hexRecord);
 
-	void hexStringToDec();
+	//void hexStringToDec();
 	unsigned int hexToDec(const string& str);
 
 	bool formatParse(const char *src, const int lineNo);
@@ -97,6 +98,8 @@ public:
 
 	bool parse(string& inStr);
 	bool parse();
+
+	//bool verify(); // check hex file format
 
 	// getter 
 	//   text 

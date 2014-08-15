@@ -110,8 +110,8 @@ void HexBinController::setHexData(string hexData) {
 
 
 // MARK: write
-void HexBinController::writeHex() {
-	_hex.write();
+bool HexBinController::writeHex() {
+	return _hex.write();
 }
 
 void HexBinController::writeToBinFile() {

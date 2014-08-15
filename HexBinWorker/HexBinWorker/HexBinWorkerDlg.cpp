@@ -221,12 +221,19 @@ void CHexBinWorkerDlg::OnBnClickedSave() {
 
 	string hexText;
 	getHexEditText(hexText);
-	_hbController.setHexData(hexText);
-	// TODO: hex file verify check ?
-	_hbController.writeHex();
 	
+	bool verifyOK = _hbController.parseHex(hexText);
+	if (!verifyOK) {
+		MessageBox(_T("Hex 文件格式错误，中止保存"));
+		return;
+	}
 
-	MessageBox(_T("hex and bin files have been saved."), NULL);
+	bool writeHexOK = _hbController.writeHex();
+	if (writeHexOK) {
+		MessageBox(_T("hex file has been saved."), NULL);
+	} else {
+		MessageBox(_T("保存Hex文件失败"));
+	}
 }
 
 
