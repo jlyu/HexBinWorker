@@ -1,58 +1,42 @@
-
-// HexBinWorkerDlg.cpp : 实现文件
-//
-
 #include "stdafx.h"
 #include "HexBinWorker.h"
 #include "HexBinWorkerDlg.h"
 #include "afxdialogex.h"
-
 #include <iostream>
 #include <fstream>
-
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
-
-// 用于应用程序“关于”菜单项的 CAboutDlg 对话框
-
+// MARK: About Dialog 
 class CAboutDlg : public CDialogEx
 {
 public:
 	CAboutDlg();
-
-// 对话框数据
 	enum { IDD = IDD_ABOUTBOX };
 
-	protected:
+protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持
 
-// 实现
 protected:
 	DECLARE_MESSAGE_MAP()
 };
-
-CAboutDlg::CAboutDlg() : CDialogEx(CAboutDlg::IDD)
-{
+CAboutDlg::CAboutDlg() : CDialogEx(CAboutDlg::IDD) {
 }
-void CAboutDlg::DoDataExchange(CDataExchange* pDX)
-{
+void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
 	CDialogEx::DoDataExchange(pDX);
 }
-
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
-// CHexBinWorkerDlg 对话框
+
+// MARK: CHexBinWorkerDlg 
 CHexBinWorkerDlg::CHexBinWorkerDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CHexBinWorkerDlg::IDD, pParent), _hCom(false, 0)
-{
+	: CDialogEx(CHexBinWorkerDlg::IDD, pParent), _hCom(false, 0) {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
-void CHexBinWorkerDlg::DoDataExchange(CDataExchange* pDX)
-{
+void CHexBinWorkerDlg::DoDataExchange(CDataExchange* pDX) {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_HEXEDIT, _hexEdit);
 }
@@ -68,13 +52,9 @@ BEGIN_MESSAGE_MAP(CHexBinWorkerDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CHexBinWorkerDlg 消息处理程序
-
-BOOL CHexBinWorkerDlg::OnInitDialog()
-{
+// CHexBinWorkerDlg Message Process
+BOOL CHexBinWorkerDlg::OnInitDialog() {
 	CDialogEx::OnInitDialog();
-
-	// 将“关于...”菜单项添加到系统菜单中。
 
 	// IDM_ABOUTBOX 必须在系统命令范围内。
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
@@ -109,22 +89,17 @@ BOOL CHexBinWorkerDlg::OnInitDialog()
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
-void CHexBinWorkerDlg::OnSysCommand(UINT nID, LPARAM lParam)
-{
-	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
-	{
+void CHexBinWorkerDlg::OnSysCommand(UINT nID, LPARAM lParam) {
+	if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
 		CAboutDlg dlgAbout;
 		dlgAbout.DoModal();
-	}
-	else
-	{
+	} else {
 		CDialogEx::OnSysCommand(nID, lParam);
 	}
 }
 // 如果向对话框添加最小化按钮，则需要下面的代码
 //  来绘制该图标。对于使用文档/视图模型的 MFC 应用程序，
 //  这将由框架自动完成。
-
 void CHexBinWorkerDlg::OnPaint()
 {
 	if (IsIconic())
@@ -149,13 +124,14 @@ void CHexBinWorkerDlg::OnPaint()
 		CDialogEx::OnPaint();
 	}
 }
-//当用户拖动最小化窗口时系统调用此函数取得光标
-//显示。
+//当用户拖动最小化窗口时系统调用此函数取得光标显示
 HCURSOR CHexBinWorkerDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+// Mark: -User Interaction
 void CHexBinWorkerDlg::showFilePath() {
 	// clear
 	GetDlgItem(IDC_HEX_PATH)->SetWindowText(_T(""));
@@ -167,8 +143,6 @@ void CHexBinWorkerDlg::showFilePath() {
 	GetDlgItem(IDC_HEX_PATH)->SetWindowText(hexPath);
 	GetDlgItem(IDC_BIN_PATH)->SetWindowText(binPath);
 }
-
-
 void CHexBinWorkerDlg::showHexEditText() {
 	
 	GetDlgItem(IDC_HEXFILEFIELD)->SetWindowText(_T(""));  // clear
@@ -184,51 +158,16 @@ void CHexBinWorkerDlg::showBinEditText() {
 
 	_hexEdit.SetData(pDatas, dataSize);
 }
-
 void CHexBinWorkerDlg::getHexEditText(string& hexText){
 	CString hexTextCStr;
 	GetDlgItem(IDC_HEXFILEFIELD)->GetWindowText(hexTextCStr);
 	hexText = CT2A(hexTextCStr);
 }
-
 void CHexBinWorkerDlg::getBinEditText(BYTE *pDatas, int dataSize) {
 	_hexEdit.GetData(pDatas, dataSize);
 }
 
-
-void CHexBinWorkerDlg::showTextField() {
-	//// clear
-	//GetDlgItem(IDC_HEXFILEFIELD)->SetWindowText(_T(""));
-
-	////GetDlgItem(IDC_BINFILEFIELD)->SetWindowText(_T(""));
-
-	//BYTE* pDatas = NULL;
-	//int dataSize = 0;
-	//_hbController.getBinDatas(pDatas, dataSize);
-
-
-	//_hexEdit.SetData(pDatas, dataSize);
-
-	//CString hexText, binText;
-	//_hbController.getText(hexText, binText);
-	//GetDlgItem(IDC_HEXFILEFIELD)->SetWindowText(hexText);
-	////GetDlgItem(IDC_BINFILEFIELD)->SetWindowText(binText);
-}
-void CHexBinWorkerDlg::getTextField(string& hexText, string& binText) {
-	//CString hexTextCStr, binTextCStr;
-	//GetDlgItem(IDC_HEXFILEFIELD)->GetWindowText(hexTextCStr);
-	//GetDlgItem(IDC_BINFILEFIELD)->GetWindowText(binTextCStr);
-	//hexText = CT2A(hexTextCStr);
-	//binText = CT2A(binTextCStr);
-
-	//BYTE* pDatas = NULL;
-	//int dataSize = 0;
-	//_hbController.getBinDatas(pDatas, dataSize);
-	//_hexEdit.GetData(pDatas, dataSize);
-}
-
-
-
+// MARK: -Button
 void CHexBinWorkerDlg::OnBnClickedOk()
 {
 	// Open
@@ -278,7 +217,6 @@ void CHexBinWorkerDlg::OnBnClickedBinToHex() {
 	showHexEditText();
 	showBinEditText();
 }
-
 void CHexBinWorkerDlg::OnBnClickedSave()
 {
 	//_hexFile.writeToBinFile(); //TODO: add fileNAME
