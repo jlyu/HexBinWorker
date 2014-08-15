@@ -527,7 +527,7 @@ bool IntelHex::write() {
 	_pHexFileHandler = getFileWriteHandler();
 
 	if (_pHexFileHandler == NULL) {
-		TRACE("Open file error.\n");
+		TRACE("Open Hex file error.\n");
 		return false;
 	}
 	

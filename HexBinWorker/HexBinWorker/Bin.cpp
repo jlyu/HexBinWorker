@@ -149,12 +149,39 @@ string Bin::getFilePath() {
 	return filePathStr;
 }
 
+
+// MARK: - Write
 FILE* Bin::getFileWriteHandler() {
+	if (_pBinFileHandler != NULL) {
+		fclose(_pBinFileHandler);
+		_pBinFileHandler = NULL;
+	}
 
 	CT2A asciiFileName(_fileName);
-	//_pBinFileHandler = fopen(asciiFileName, "wb");
 	fopen_s(&_pBinFileHandler, asciiFileName, "wb");
 	return _pBinFileHandler;
+}
+
+bool Bin::write() {
+
+	_pBinFileHandler = getFileWriteHandler();
+
+	if (_pBinFileHandler == NULL) {
+		TRACE("Open Bin file error.\n");
+		return false;
+	}
+
+	//start to write  
+	//typedef list<HexBlock>::reverse_iterator ListRevIter;
+	//for(ListRevIter rIter = _hexBlocks.rbegin(); rIter != _hexBlocks.rend(); rIter++) {
+	//int validLength = rIter->validLength;
+	fwrite(_inDatas, 1, _dataSize, _pBinFileHandler);
+	//}
+
+	fclose(_pBinFileHandler);
+	_pBinFileHandler = NULL;
+
+	return true;
 }
 
 void Bin::writeToHexFile(FILE* fileHandler) {
@@ -163,7 +190,6 @@ void Bin::writeToHexFile(FILE* fileHandler) {
         printf("Open hex file error.\n");  
         return;  
     }
-
 
 	fwrite(_binEditField.c_str(), 1, _binEditField.length(), fileHandler);
 

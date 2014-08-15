@@ -49,6 +49,7 @@ public:
 
 	// write
 	bool writeHex();
+	bool writeBin();
 	void writeToBinFile();
 	void writeToHexFile();
 

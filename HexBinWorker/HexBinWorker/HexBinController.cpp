@@ -114,6 +114,10 @@ bool HexBinController::writeHex() {
 	return _hex.write();
 }
 
+bool HexBinController::writeBin() {
+	return _bin.write();
+}
+
 void HexBinController::writeToBinFile() {
 
 	FILE* pFileHandler = _bin.getFileWriteHandler();

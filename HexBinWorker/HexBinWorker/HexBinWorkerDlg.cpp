@@ -218,21 +218,30 @@ void CHexBinWorkerDlg::OnBnClickedBinToHex() {
 	showBinEditText();
 }
 void CHexBinWorkerDlg::OnBnClickedSave() {
-
+	// refresh hex data
 	string hexText;
 	getHexEditText(hexText);
 	
 	bool verifyOK = _hbController.parseHex(hexText);
 	if (!verifyOK) {
-		MessageBox(_T("Hex 文件格式错误，中止保存"));
+		MessageBox(_T("检测到 Hex 文件格式存在错误，中止全部保存"));
 		return;
 	}
 
+	// refreash bin data
+	BYTE* pDatas = NULL;
+	int dataSize = 0;
+	_hbController.getBinDatas(pDatas, dataSize);
+	getBinEditText(pDatas, dataSize);
+
+	// save
 	bool writeHexOK = _hbController.writeHex();
-	if (writeHexOK) {
-		MessageBox(_T("hex file has been saved."), NULL);
+	bool writeBinOK = _hbController.writeBin();
+
+	if (writeHexOK && writeBinOK) {
+		MessageBox(_T("Intex Hex 和对应 Bin 文件保存成功"), NULL);
 	} else {
-		MessageBox(_T("保存Hex文件失败"));
+		MessageBox(_T("保存失败"));
 	}
 }
 

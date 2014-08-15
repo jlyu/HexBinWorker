@@ -79,7 +79,8 @@ public:
 	string getEditFieldText();
 	string getFilePath();
 
-	//output
+	// write
+	bool write();
 	void writeToHexFile(FILE* fileHandler);
 };
 
