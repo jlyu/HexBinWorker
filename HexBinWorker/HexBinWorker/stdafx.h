@@ -4,6 +4,10 @@
 // 特定于项目的包含文件
 
 #pragma once
+#pragma warning (disable: 4258)
+#define _SCL_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+
 
 #ifndef _SECURE_ATL
 #define _SECURE_ATL 1

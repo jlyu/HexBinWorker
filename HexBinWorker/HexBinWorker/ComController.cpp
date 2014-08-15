@@ -8,4 +8,5 @@ ComController::ComController(void):
 
 
 ComController::~ComController(void) {
+
 }

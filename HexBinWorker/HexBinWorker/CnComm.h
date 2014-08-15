@@ -436,7 +436,7 @@ public:
 		
 		_dwPort = dwPort;
 		strcpy(_szCommStr, "\\\\.\\COM");
-		ltoa(_dwPort, p, 10);
+		_ltoa(_dwPort, p, 10);
 		strcat(_szCommStr, p);
 	}
 
