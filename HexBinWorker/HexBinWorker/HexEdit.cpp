@@ -1,12 +1,13 @@
 // HexEdit.cpp : Defines the class behaviors for the application.
 //
 
-#include "stdafx.h"
-#include "HexEdit.h"
+
 #include <ctype.h>
 #include <afxole.h>
 #include <afxdisp.h>
-//#include "resource.h"
+#include "stdafx.h"
+#include "HexEdit.h"
+#include "GlobalDefine.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -15,8 +16,7 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 
-char hextable[16] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
-#define TOHEX(a, b)	{*b++ = hextable[a>>4]; *b++ = hextable[a&0xf];}
+
 /////////////////////////////////////////////////////////////////////////////
 // CHexEdit
 

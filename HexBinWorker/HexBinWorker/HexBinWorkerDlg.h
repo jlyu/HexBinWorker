@@ -4,13 +4,12 @@
 #include "HexEdit.h"
 
 
-// CHexBinWorkerDlg 对话框
+// CHexBinWorkerDlg
 class CHexBinWorkerDlg : public CDialogEx {
 
 public:
 	CHexBinWorkerDlg(CWnd* pParent = NULL);	
 
-// 对话框数据
 	enum { IDD = IDD_HEXBINWORKER_DIALOG };
 
 protected:
@@ -58,6 +57,4 @@ private:
 	// -Controller
 	HexBinController _hbController;
 	CHexEdit _hexEdit;
-
-	
 };

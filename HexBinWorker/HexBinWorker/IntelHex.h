@@ -3,7 +3,7 @@
 #include <map>
 #include <list>
 #include <vector>
-#include "defineV.h"
+#include "GlobalDefine.h"
 using namespace std;
 
 
@@ -34,20 +34,10 @@ private:
 	bool matchLine(const char *src, HexRecord& hexRecord);
 	bool verifyLine(const HexRecord& hexRecord);
 	bool appendDatas(const HexRecord& hexRecord);
-
-	//void hexStringToDec();
 	unsigned int hexToDec(const string& str);
-
-	bool formatParse(const char *src, const int lineNo);
-	bool hexFormatParse(const char *src, char *dst);
-
-	void hexStringToByte(const char* src, const int srcLen, BYTE* dst);
-	void byteToHexString(BYTE* source, char* dest, int sourceLen);
 	void splitHexData(const string& inData, vector<BYTE>& outData);
+	void hexBlocksToOutDatas();
 
-	void byteToBin(BYTE *pByte, char* pBin);
-
-	void IntelHex::hexBlocksToOutDatas();
 
 	CString _fileName;
 	FILE* _pHexFileHandler;
@@ -56,14 +46,11 @@ private:
 	string _inStr;
 
 	// -out
-	string _outStr;  // TODO: del
 	BYTE *_outDatas;
 	long _dataSize;
 	long _startAddr;
 
 	list<HexBlock> _hexBlocks;
-
-	//string _hexEditField;
 
 public:
 	IntelHex(void) { 
@@ -77,7 +64,6 @@ public:
 
 		_inStr = "";
 
-		_outStr = "";
 		_outDatas = NULL;
 		_dataSize = 0;
 		_startAddr = 0x00;
@@ -95,25 +81,19 @@ public:
 	}
 
 	bool read();
-
 	bool parse(string& inStr);
 	bool parse();
 
-	//bool verify(); // check hex file format
-
 	// getter 
-	//   text 
 	string getHex();
-	string getBin();
 	void getBin(BYTE* &outDatas, int &dataSize);
-	//   other
 	string getFilePath();
-	FILE* getFileWriteHandler();
-
+	
 	// setter
 	void setHex(string &inStr) { _inStr = inStr; }
 
 	// write
+	FILE* getFileWriteHandler();
 	bool write();
 	void writeToBinFile(FILE* fileHandler);
 };

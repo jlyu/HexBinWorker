@@ -1,12 +1,10 @@
 #pragma once
 #include <iostream>
-
-#include "defineV.h"
-
+#include "GlobalDefine.h"
 using namespace std;
 
-class Bin
-{
+
+class Bin {
 private:
 	CString _fileName;
 	FILE* _pBinFileHandler;
@@ -17,7 +15,6 @@ private:
 	long _dataSize;
 	long _startAddr; 
 	
-
 	// -out
 	string _outStr;
 	
@@ -27,8 +24,8 @@ public:
 	Bin(void) { 
 		_pBinFileHandler = NULL;
 		_inDatas = NULL;
+		_dataSize = 0;
 	}
-
 	Bin(CString& binFileName) {
 
 		_fileName = binFileName;
@@ -42,7 +39,6 @@ public:
 		_startAddr = 0x00;
 		_dataSize = 0;
 	}
-
 	~Bin(void) {
 		if (_pBinFileHandler != NULL) {
 			fclose(_pBinFileHandler);
@@ -54,8 +50,6 @@ public:
 			_inDatas = NULL;
 		}
 	}
-
-	FILE* getFileWriteHandler();
 
 	bool read();
 	bool parse(BYTE *pDatas, int dataSize);
@@ -69,17 +63,12 @@ public:
 		datas = _inDatas;
 		dataSize =  _dataSize; 
 	}
-
-	// text
 	string getBin();
 	string getHex();
-	
-
-	string _binEditField;
-	string getEditFieldText();
 	string getFilePath();
 
 	// write
+	FILE* getFileWriteHandler();
 	bool write();
 	void writeToHexFile(FILE* fileHandler);
 };

@@ -101,7 +101,7 @@
   <ItemGroup>
     <ClInclude Include="Bin.h" />
     <ClInclude Include="CnComm.h" />
-    <ClInclude Include="defineV.h" />
+    <ClInclude Include="GlobalDefine.h" />
     <ClInclude Include="HexBinController.h" />
     <ClInclude Include="HexBinWorker.h" />
     <ClInclude Include="HexBinWorkerDlg.h" />

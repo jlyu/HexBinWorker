@@ -2,8 +2,19 @@
 #include "HexBinController.h"
 
 
+// MARK: init
+bool HexBinController::isHexFile(const CString& fileName) {
 
+	CString fileExtension = PathFindExtension(fileName);
+	fileExtension.MakeLower();
 
+	if (fileExtension == _T(".hex"))
+	{
+		return true;
+	}
+
+	return false;
+}
 void HexBinController::init(CString& fileName) {
 	CString hexFileName; 
 	CString binFileName;
@@ -33,19 +44,8 @@ void HexBinController::init(CString& fileName) {
 	_bin = Bin(binFileName);
 }
 
-bool HexBinController::isHexFile(const CString& fileName) {
 
-	CString fileExtension = PathFindExtension(fileName);
-	fileExtension.MakeLower();
-
-	if (fileExtension == _T(".hex"))
-	{
-		return true;
-	}
-
-	return false;
-}
-
+// MARK: read
 void HexBinController::read(const CString& fileName){
 	if (isHexFile(fileName)) {
 		_hex.read();
@@ -53,9 +53,9 @@ void HexBinController::read(const CString& fileName){
 		_bin.read();
 	}
 }
-void HexBinController::readHex() { _hex.read(); }
-void HexBinController::readBin() { /*_bin.parse();*/ }
 
+
+// MARK: parse
 bool HexBinController::parse(const CString& fileName) {
 	
 	if (isHexFile(fileName)) {
@@ -74,10 +74,7 @@ void HexBinController::parseBin(BYTE *pDatas, int dataSize) {
 }
 
 
-// MARK: text
-void HexBinController::getBinText(CString& binText) {
-	binText = _hex.getBin().c_str();
-}
+// MARK: getter/setter 
 void HexBinController::getHexText(CString& hexText) {
 	if (_processType ==PROCESS_HEX_TO_BIN) {
 		hexText = _hex.getHex().c_str();
@@ -89,9 +86,6 @@ void HexBinController::getFilePath(CString& hexPath, CString& binPath) {
 	hexPath = _hex.getFilePath().c_str();
 	binPath = _bin.getFilePath().c_str();
 }
-
-
-// MARK: getter/setter
 void HexBinController::getBinDatas(BYTE* &datas, int &dataSize) {
 
 	if (_processType == PROCESS_HEX_TO_BIN) {
@@ -113,11 +107,9 @@ void HexBinController::setHexData(string hexData) {
 bool HexBinController::writeHex() {
 	return _hex.write();
 }
-
 bool HexBinController::writeBin() {
 	return _bin.write();
 }
-
 void HexBinController::writeToBinFile() {
 
 	FILE* pFileHandler = _bin.getFileWriteHandler();
@@ -125,7 +117,6 @@ void HexBinController::writeToBinFile() {
 
 }
 void HexBinController::writeToHexFile() {
-
 	FILE* pFileHandler = _hex.getFileWriteHandler();
 	_bin.writeToHexFile(pFileHandler);
 }

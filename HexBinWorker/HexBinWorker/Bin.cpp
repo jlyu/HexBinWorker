@@ -2,23 +2,26 @@
 #include "Bin.h"
 
 
-
 bool Bin::openBinFile(const CString& binFileName) {
 
 	CT2A asciiFileName(binFileName);
 	fopen_s(&_pBinFileHandler, asciiFileName, "r");
 
 	if(_pBinFileHandler == NULL) {  
-        printf("Open file error.\n");  
+        TRACE("Open BIN file error.\n");  
         return false;  
     }  
 	return true;
 }
-
 bool Bin::read() {
 
-	if (!openBinFile(_fileName)) { return false; }
-	if (_pBinFileHandler == NULL) { return false; }
+	if (!openBinFile(_fileName)) { 
+		return false; 
+	}
+	if (_pBinFileHandler == NULL) { 
+		return false; 
+	}
+
 
 	fseek(_pBinFileHandler, 0, SEEK_END);
 	_dataSize = ftell(_pBinFileHandler);
@@ -49,27 +52,11 @@ bool Bin::parse(BYTE *pDatas, int dataSize) {
 	_dataSize = dataSize;
 	return parse();
 }
-
 bool Bin::parse() {
-
-	//if (_inStr.empty()) {
-	//	return false;
-	//}
 
 	if (_inDatas == NULL) {
 		return false;
 	}
-
-	//// TODO: verify inStr [0-9A-Za-z]
-	////       trim all space and enter char
-	////if (_inStr.size() != 2 * _dataSize) {
-	////	return false;
-	////}
-
-	//// begin parse
-	//char *inStrCopy = new char[_inStr.size()+1];
-	//std::copy(_inStr.begin(), _inStr.end(), inStrCopy); 
-	//inStrCopy[_inStr.size()] = '\0';
 
 	BYTE dbSum, dbLen;
 	CString bufferLine  = _T("");
@@ -80,7 +67,6 @@ bool Bin::parse() {
 	bufferBlock += bufferLine;
 	dbSum = 02 + (BYTE)(_startAddr>>8) + (BYTE)_startAddr + 04;
 	dbSum = ~dbSum + 1;
-	// printf("%02X\r\n", dbSum);
 	bufferLine.Format(_T("%02X\r\n"), dbSum);
 	bufferBlock += bufferLine;
 
@@ -88,37 +74,31 @@ bool Bin::parse() {
 	for (int l = 0; l < _dataSize; l++) {
 		if (l % 16 == 0) {
 			dbLen = static_cast<BYTE>((_dataSize - l >= 16) ? 16 : _dataSize - l);
-			// printf(":%02X%04X00", dbLen, l);
 			bufferLine.Format(_T(":%02X%04X00"), dbLen, l);
 			bufferBlock += bufferLine;
 
 			dbSum = dbLen + (BYTE)(l>>8) + (BYTE)l + 00;
 		}
-		// printf("%02X", inStrCopy[l]);
 		bufferLine.Format(_T("%02X"), _inDatas[l]);
 		bufferBlock += bufferLine;
 
 		dbSum += _inDatas[l];
 		if (l % 16 == dbLen-1) {
 			dbSum = ~dbSum + 1;
-			//printf("%02X\r\n", dbSum);
 			bufferLine.Format(_T("%02X\r\n"), dbSum);
 			bufferBlock += bufferLine;
 		}
 	}
 
 	// the last line
-	//printf(":00000001FF");
 	bufferBlock += CString(_T(":00000001FF"));
 
 	_outStr = CT2A(bufferBlock);
-	//delete [] inStrCopy;
-
 	return true;
 }
 
 
-// -MARK: text
+// MARK: -text
 string Bin::getBin() {
 
 	string resultStr = "";
@@ -134,16 +114,9 @@ string Bin::getBin() {
 	}
 	return resultStr;
 }
-
 string Bin::getHex() {
 	return _outStr;
 }
-
-
-string Bin::getEditFieldText() {
-	return _binEditField;
-}
-
 string Bin::getFilePath() {
 	string filePathStr = CT2A(_fileName);
 	return filePathStr;
@@ -161,7 +134,6 @@ FILE* Bin::getFileWriteHandler() {
 	fopen_s(&_pBinFileHandler, asciiFileName, "wb");
 	return _pBinFileHandler;
 }
-
 bool Bin::write() {
 
 	_pBinFileHandler = getFileWriteHandler();
@@ -171,19 +143,12 @@ bool Bin::write() {
 		return false;
 	}
 
-	//start to write  
-	//typedef list<HexBlock>::reverse_iterator ListRevIter;
-	//for(ListRevIter rIter = _hexBlocks.rbegin(); rIter != _hexBlocks.rend(); rIter++) {
-	//int validLength = rIter->validLength;
 	fwrite(_inDatas, 1, _dataSize, _pBinFileHandler);
-	//}
-
 	fclose(_pBinFileHandler);
 	_pBinFileHandler = NULL;
 
 	return true;
 }
-
 void Bin::writeToHexFile(FILE* fileHandler) {
 
 	if (fileHandler == NULL) {  
@@ -191,7 +156,7 @@ void Bin::writeToHexFile(FILE* fileHandler) {
         return;  
     }
 
-	fwrite(_binEditField.c_str(), 1, _binEditField.length(), fileHandler);
+	fwrite(_outStr.c_str(), 1, _outStr.length(), fileHandler);
 
 	fclose(fileHandler);
 	fileHandler = NULL;

@@ -125,13 +125,12 @@ void CHexBinWorkerDlg::OnPaint()
 	}
 }
 //当用户拖动最小化窗口时系统调用此函数取得光标显示
-HCURSOR CHexBinWorkerDlg::OnQueryDragIcon()
-{
+HCURSOR CHexBinWorkerDlg::OnQueryDragIcon() {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
 
-// Mark: -User Interaction
+// MARK: -User Interaction
 void CHexBinWorkerDlg::showFilePath() {
 	// clear
 	GetDlgItem(IDC_HEX_PATH)->SetWindowText(_T(""));
@@ -246,7 +245,7 @@ void CHexBinWorkerDlg::OnBnClickedSave() {
 }
 
 
-// contents will need to be rearranged
+// TODO: contents will need to be rearranged
 void CHexBinWorkerDlg::findAvailableCom() {
 
 	HANDLE hCom;

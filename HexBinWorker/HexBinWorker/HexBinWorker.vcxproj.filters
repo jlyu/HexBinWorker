@@ -47,13 +47,13 @@
     <ClInclude Include="HexBinController.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="defineV.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="CnComm.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="HexEdit.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="GlobalDefine.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

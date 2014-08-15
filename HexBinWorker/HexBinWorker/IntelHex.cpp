@@ -21,10 +21,12 @@ using namespace std;
 8bit 二进制转16进制
 
 */
+/****************************************************************************** 
+*                                Methods                                      *
+******************************************************************************/
 bool IntelHex::openHexFile(CString& hexFileName) {
 
 	CT2A asciiFileName(hexFileName);
-	//_pHexFileHandler = fopen(asciiFileName, "r");
 	fopen_s(&_pHexFileHandler, asciiFileName, "r");
 
 	if(!_pHexFileHandler) {  
@@ -33,7 +35,6 @@ bool IntelHex::openHexFile(CString& hexFileName) {
     }  
 	return true;
 }
-
 bool IntelHex::checkLine(const char *src) {
 	
 	string checkPattern("[:0-9A-F\\r\\n]*");
@@ -56,7 +57,6 @@ bool IntelHex::matchLine(const char *src, HexRecord& hexRecord) {
 	std::smatch matchResult;
 
 	if(std::regex_match(lineString, matchResult, regExpress)) {  
-		//HexRecord record;
 		hexRecord.dataLength = string(matchResult[1].first, matchResult[1].second);
 		hexRecord.startAddress = string(matchResult[2].first, matchResult[2].second);
 		hexRecord.recordType = string(matchResult[3].first, matchResult[3].second);
@@ -98,7 +98,7 @@ bool IntelHex::verifyLine(const HexRecord& hexRecord) {
 	return true;
 }
 void IntelHex::splitHexData(const string& inData, vector<BYTE>& outData) {
-
+	//08280032345A -> [08,28,00,32,34,5A]
 	typedef string::const_iterator cIter;
 	for (cIter i = inData.begin() ; i < inData.end(); i += 2) {
 
@@ -159,10 +159,6 @@ bool IntelHex::appendDatas(const HexRecord& hexRecord){
 
 	return true;
 }
-
-
-
-
 void IntelHex::hexBlocksToOutDatas() {
 	// renew outDatas
 	if (_outDatas != NULL) {
@@ -179,81 +175,12 @@ void IntelHex::hexBlocksToOutDatas() {
 
 	_dataSize = rIter->validLength;
 
-	// copy the 1st datasBlock only
+	// TODO: copy the 1st datasBlock only
 	for (int i=0; i<_dataSize; i++) {
 		_outDatas[i] = rIter->datas[i];
 	}
 
 }	
-
-
-void IntelHex::hexStringToByte(const char* src, const int srcLen, BYTE* dst) {
-    
-    for (int i = 0; i < srcLen; i += 2)
-    {
-        BYTE highByte = toupper(src[i]);
-        BYTE lowByte  = toupper(src[i+1]);
-
-        if (highByte > 0x39) {
-            highByte -= 0x37;
-		} else {
-            highByte -= 0x30;
-		}
-
-        if (lowByte > 0x39) {
-            lowByte -= 0x37;
-		} else {
-            lowByte -= 0x30;
-		}
-
-        dst[i/2] = (highByte << 4) | lowByte;
-    }
-}
-void IntelHex::byteToHexString(BYTE* source, char* dest, int sourceLen)
-{
-    short i;
-    unsigned char highByte, lowByte;
-
-
-    for (i = 0; i < sourceLen; i++)
-    {
-        highByte = source[i] >> 4;
-        lowByte = source[i] & 0x0f ;
-
-
-        highByte += 0x30;
-
-
-        if (highByte > 0x39)
-                dest[i * 2] = highByte + 0x07;
-        else
-                dest[i * 2] = highByte;
-
-
-        lowByte += 0x30;
-        if (lowByte > 0x39)
-            dest[i * 2 + 1] = lowByte + 0x07;
-        else
-            dest[i * 2 + 1] = lowByte;
-    }
-    return ;
-}
-
-//void IntelHex::hexStringToDec() {
-//	// 字符串 -> 16进制表示
-//	//const int fileLines = fileContent.size();
-//	//for (int i=0; i<fileLines; i++) {
-//	//	//typedef string::iterator Iter;
-//	//	//string dataCopy = fileLines.hexR
-//	//	//for (Iter i = fileLines..begin()+1 ; i < origRecordCopy.end() - 2; i += 2) {
-//	//	//string hexStr = string(i, i+2);
-//
-//	//	//HexRecord.datas.push_back();
-//
-//	//	//string hexData = "0x" + fileContent[i].hexRecord.data;
-//	//	//long n = strtol(data.c_str(), NULL, 16);
-//	//}
-//}
 unsigned int IntelHex::hexToDec(const string& str) {
 	
 	unsigned int result = 0;
@@ -274,112 +201,13 @@ unsigned int IntelHex::hexToDec(const string& str) {
 
     return result;
 }
-bool IntelHex::formatParse(const char *src, const int lineNo) {
-	//解析前格式   :llaaaattddcc               :020000000828CE
-	//解析后格式   : ll aaaa tt [dd] cc        : 02 0000 00 [0828] CE
-	//按域分别存入 
-
-	const int srcLength = strlen(src);
-	int srcIndex = 0, dstIndex = 0; //索引，p为src的索引，q为dst索引  
-    //int index = 0;//循环标志 
-
-	HexRecord hexRecord;
-
-	while (srcIndex < srcLength) {  
-
-		if (srcIndex == 0) {
-			if (src[srcIndex] != ':') {
-				printf("Wrong Format.\n"); // TODO:
-				break;
-			}
-			srcIndex++;
-		}
-
-		if(srcIndex == 1) {   //提取两位的"ll"
-            for(int index = 0; index < 2; index++) { 	
-				hexRecord.dataLength += src[srcIndex++];
-            }  
-        }
-
-		if(srcIndex == 3) {  //提取四位的"aaaa"
-            for(int index = 0; index < 4; index++) {  
-				hexRecord.startAddress += src[srcIndex++];
-            }
-        }
-
-		if(srcIndex == 7) {  //提取两位的"tt"
-            for(int index = 0; index < 2; index++) {  
-				hexRecord.recordType += src[srcIndex++];
-            }  
-        }
-
-		if(srcIndex == 9) { //提取2N位的"[dd]"
-			const int dataLen = srcLength - 2 - srcIndex;
-			for(int index = 0; index < dataLen; index++) { 
-				hexRecord.data += src[srcIndex++];
-			}
-		}
-
-		if (srcIndex == srcLength-2) { //提取两位的"cc"
-			for(int index = 0; index < 2; index++) {  
-				hexRecord.sumCheck += src[srcIndex++];
-            }  
-		}
-
-	}
-	return true;
-}
-bool IntelHex::hexFormatParse(const char *src, char *dst) {
-	//解析前格式   :llaaaattddcc               :020000000828CE
-	//解析后格式   : ll aaaa tt [dd] cc        : 02 0000 00 [0828] CE
-	int srcLength = strlen(src);
-	int srcIndex = 0, dstIndex = 0; //索引，p为src的索引，q为dst索引  
-    int index = 0;//循环标志 
-
-	while (srcIndex <= srcLength) { //循环，对src按格式解析 
-		if (srcIndex == 0) {
-			if (src[srcIndex] != ':') {
-				printf("Wrong Format.\n");
-				break;
-			} else {  
-                dst[dstIndex++] = ':'; 
-				dst[dstIndex++] = ' ';  
-                srcIndex++;
-				continue;  
-            }  
-		}
-
-		if(srcIndex == 1) {  
-            for(index = 0; index < 2; index++) {  //提取两位的"ll"  
-                dst[dstIndex++] = src[srcIndex++];  
-            }  
-            dst[dstIndex++] = ' ';
-			continue;  
-        }  
-
-	}
-
-	return false;
-}
-void IntelHex::byteToBin(BYTE *pByte, char* pBin){
-
-	int n = (int)*pByte;
-
-	for (int i=0; i<8; i++) {
-		int p = (int)(pow(2.0, i));
-		if (n&p) {
-			pBin[7-i] = '1';
-		} else {
-			pBin[7-1] = '0';
-		}
-	}
-}
 
 
 
 
-// - Interface
-
+/****************************************************************************** 
+*                                Interface                                    *
+******************************************************************************/
 bool IntelHex::read() {
 
 	if (!openHexFile(_fileName)) return false;
@@ -388,7 +216,7 @@ bool IntelHex::read() {
 	const int bufferSize = sizeof(char) * 128;
 	char *lineBuffer = new char[bufferSize];
 	if (lineBuffer == NULL ) {  
-		printf("Apply for memory failed.!\n");  
+		TRACE("Apply for memory failed! -> @[IntelHex.cpp IntelHex::read()]\n");  
         return false;  
     } 
 
@@ -468,43 +296,15 @@ bool IntelHex::parse() {
 	}
 }
 
-//bool IntelHex::verify() {
-//
-//
-//
-//	return false;
-//}
 
+// - Getter / Setter
 string IntelHex::getHex() {
 	return _inStr;
 }
-string IntelHex::getBin() {
-
-	typedef list<HexBlock>::reverse_iterator ListRevIter;
-	for(ListRevIter rIter = _hexBlocks.rbegin(); rIter != _hexBlocks.rend(); rIter++) {
-		char ch[3];
-		const int validLength = rIter->validLength;
-		
-		for (int i=0; i<validLength; i++) {
-			BYTE b = rIter->datas[i];
-			sprintf_s(ch, 3, "%02X", b);
-			_outStr += ch;
-			_outStr += " ";
-
-			if (i % RECORD_LENGTH == RECORD_LENGTH - 1) {
-				_outStr += "\r\n";
-			}
-		}
-	}
-	return _outStr;
-}
-
 void IntelHex::getBin(BYTE* &outDatas, int &dataSize) {
 	outDatas = _outDatas;
 	dataSize = _dataSize;
 }
-
-
 string IntelHex::getFilePath() {
 	string filePathStr = CT2A(_fileName);
 	return filePathStr;

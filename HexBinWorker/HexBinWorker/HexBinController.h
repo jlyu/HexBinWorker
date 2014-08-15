@@ -20,25 +20,19 @@ private:
 	ProcessType _processType;
 
 public:
-	HexBinController(void) { }
+	HexBinController(void)  { }
 	~HexBinController(void) { }
 
 	void init(CString& fileName);
-
 	bool isHexFile(const CString& fileName);
+
 	void read(const CString& fileName);
-	void readHex();
-	void readBin();
 
 	bool parse(const CString& fileName);
 	bool parseHex(string& inStr);
 	void parseBin(BYTE *pDatas, int dataSize);
-	
-	//bool verifyHex();
 
 	// text
-	//void getText(CString& hexText, CString& binText);
-	void getBinText(CString& binText);
 	void getHexText(CString& hexText);
 	void getFilePath(CString& hexPath, CString& binPath);
 
@@ -46,12 +40,10 @@ public:
 	void getBinDatas(BYTE* &datas, int &dataSize);
 	void setHexData(string hexData);
 
-
 	// write
 	bool writeHex();
 	bool writeBin();
 	void writeToBinFile();
 	void writeToHexFile();
-
 };
 
