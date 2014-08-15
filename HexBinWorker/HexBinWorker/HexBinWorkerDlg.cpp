@@ -348,5 +348,6 @@ void CHexBinWorkerDlg::OnBnClickedBtnFilereplication()
     }
 
     //
-	_comController.getCommand();
+	//_comController.getCommand();
+    _comController.eraseMemory();
 }

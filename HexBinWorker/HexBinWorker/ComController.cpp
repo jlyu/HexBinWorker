@@ -17,6 +17,7 @@ bool ComController::openCom(int comNumber){
     _comNumber = comNumber;
 	bool openOK = _hCom.Open(_comNumber);
 	if (openOK)	{
+        _hCom.SetState(115200, 8, EVENPARITY, ONESTOPBIT);
         return true;
     } else {
 		CString errMessage;
@@ -28,10 +29,10 @@ bool ComController::openCom(int comNumber){
 
 bool ComController::getCommand() {
 
-    _hCom.SetState(115200, 8, EVENPARITY, ONESTOPBIT); // 
-    BYTE *revData = new BYTE[15];
+    BYTE *revData = new BYTE[15];  //TODO: _revData ?
     int saveCount = 0;
 
+    bool getCommandOK = false;
     while (true)
 	{
 	    _hCom.Write(GET_COMMAND, 2);
@@ -39,24 +40,62 @@ bool ComController::getCommand() {
 		
         if (revData[0] == ACK) { // get!
             // TODO: ..and check ?
+            getCommandOK = true;
             break;
         }
 
         if (saveCount == 100) {
-            return false;
+            getCommandOK = false;
+            break;
         }
 
         saveCount++;
     }
 
-    CString bufferCStr, bufferBlock;
-	for (int i=0; i<15; i++) {
-		bufferCStr.Format(_T("%02X"), revData[i]);
-		bufferBlock += bufferCStr;
-	}
+
+    if (getCommandOK) {
+        CString bufferCStr, bufferBlock;
+	    for (int i=0; i<15; i++) {
+		    bufferCStr.Format(_T("%02X"), revData[i]);
+		    bufferBlock += bufferCStr;
+	    }
+    }
 		
 	delete [] revData;
-    return true;
+    return getCommandOK;
 }
 
+bool ComController::eraseMemory() {
+    BYTE *revData = new BYTE[1];  //TODO: _revData ?
+    int saveCount = 0;
 
+    bool eraseMemoryOK = false;
+    while (true) {
+        _hCom.Write(ERASE_MEMORY, 2);
+	    _hCom.Read(revData, 1);
+    
+        if (revData[0] == ACK) { // get!
+            _hCom.Write(GLOBAL_ERASE, 2);
+            _hCom.Read(revData, 1);
+
+            if (revData[0] == ACK) {
+                eraseMemoryOK = true;
+            } else {
+                eraseMemoryOK = false;
+            }
+
+            break;
+        }
+
+        if (saveCount == 100) {
+           eraseMemoryOK = false;
+           break;
+        }
+
+        saveCount++;
+
+    }
+
+    delete [] revData;
+    return eraseMemoryOK;
+}
