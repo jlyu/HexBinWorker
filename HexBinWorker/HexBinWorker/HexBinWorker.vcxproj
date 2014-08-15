@@ -101,6 +101,7 @@
   <ItemGroup>
     <ClInclude Include="Bin.h" />
     <ClInclude Include="CnComm.h" />
+    <ClInclude Include="ComController.h" />
     <ClInclude Include="GlobalDefine.h" />
     <ClInclude Include="HexBinController.h" />
     <ClInclude Include="HexBinWorker.h" />
@@ -113,6 +114,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bin.cpp" />
+    <ClCompile Include="ComController.cpp" />
     <ClCompile Include="HexBinController.cpp" />
     <ClCompile Include="HexBinWorker.cpp" />
     <ClCompile Include="HexBinWorkerDlg.cpp" />

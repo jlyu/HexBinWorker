@@ -33,7 +33,7 @@ END_MESSAGE_MAP()
 
 // MARK: CHexBinWorkerDlg 
 CHexBinWorkerDlg::CHexBinWorkerDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CHexBinWorkerDlg::IDD, pParent), _hCom(false, 0) {
+	: CDialogEx(CHexBinWorkerDlg::IDD, pParent) {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 void CHexBinWorkerDlg::DoDataExchange(CDataExchange* pDX) {
@@ -48,7 +48,8 @@ BEGIN_MESSAGE_MAP(CHexBinWorkerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_SAVE, &CHexBinWorkerDlg::OnBnClickedSave)
 	ON_BN_CLICKED(IDC_HEX_TO_BIN, &CHexBinWorkerDlg::OnBnClickedHexToBin)
 	ON_BN_CLICKED(IDC_BIN_TO_HEX, &CHexBinWorkerDlg::OnBnClickedBinToHex)
-	ON_BN_CLICKED(IDC_BTN_OPENCOM, &CHexBinWorkerDlg::OnBnClickedBtnOpencom)
+	//ON_BN_CLICKED(IDC_BTN_OPENCOM, &CHexBinWorkerDlg::OnBnClickedBtnOpencom)
+	ON_BN_CLICKED(IDC_BTN_FILEREPLICATION, &CHexBinWorkerDlg::OnBnClickedBtnFilereplication)
 END_MESSAGE_MAP()
 
 
@@ -245,7 +246,7 @@ void CHexBinWorkerDlg::OnBnClickedSave() {
 }
 
 
-// TODO: contents will need to be rearranged
+// Mark: -Com 
 void CHexBinWorkerDlg::findAvailableCom() {
 
 	HANDLE hCom;
@@ -268,7 +269,6 @@ void CHexBinWorkerDlg::findAvailableCom() {
 
 	showAvailableCom(availableComSerial);
 }
-
 void CHexBinWorkerDlg::showAvailableCom(const vector<CString> &aCom) {
 	const int availableComSize = aCom.size();
 	if (availableComSize == 0) {
@@ -285,6 +285,7 @@ void CHexBinWorkerDlg::showAvailableCom(const vector<CString> &aCom) {
 	((CComboBox *)GetDlgItem(IDC_COMBO_COM))->SetCurSel(comCount - 1);
 }
 
+/*
 void CHexBinWorkerDlg::OnBnClickedBtnOpencom() {
 	
 	CString comSerialStr;
@@ -331,4 +332,10 @@ void CHexBinWorkerDlg::OnBnClickedBtnOpencom() {
 	
 	_hCom.Close();
 	
+}
+*/
+
+void CHexBinWorkerDlg::OnBnClickedBtnFilereplication()
+{
+	// TODO: 在此添加控件通知处理程序代码
 }

@@ -13,6 +13,18 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="头文件\Model">
+      <UniqueIdentifier>{a2b02155-fb66-45ba-9f45-7ed25c46c678}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Controller">
+      <UniqueIdentifier>{fe2389a7-6382-4201-9b20-b0005b0cd648}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\View">
+      <UniqueIdentifier>{d6a71703-1d4d-42fe-a043-93866340eb04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Utility">
+      <UniqueIdentifier>{3b1f856b-dbde-413d-ae81-265d559d6afa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\HexBinWorker.rc2">
@@ -23,38 +35,41 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="HexBinWorker.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="HexBinWorkerDlg.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="IntelHex.h">
-      <Filter>头文件</Filter>
+      <Filter>头文件\Model</Filter>
     </ClInclude>
     <ClInclude Include="Bin.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="HexBinController.h">
-      <Filter>头文件</Filter>
+      <Filter>头文件\Model</Filter>
     </ClInclude>
     <ClInclude Include="CnComm.h">
-      <Filter>头文件</Filter>
+      <Filter>头文件\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="HexBinController.h">
+      <Filter>头文件\Controller</Filter>
     </ClInclude>
     <ClInclude Include="HexEdit.h">
-      <Filter>头文件</Filter>
+      <Filter>头文件\View</Filter>
+    </ClInclude>
+    <ClInclude Include="HexBinWorkerDlg.h">
+      <Filter>头文件\View</Filter>
     </ClInclude>
     <ClInclude Include="GlobalDefine.h">
-      <Filter>头文件</Filter>
+      <Filter>头文件\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="HexBinWorker.h">
+      <Filter>头文件\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>头文件\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>头文件\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>头文件\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="ComController.h">
+      <Filter>头文件\Controller</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -77,6 +92,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="HexEdit.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ComController.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

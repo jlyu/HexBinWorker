@@ -1,5 +1,6 @@
 #pragma once
 #include "CnComm.h"
+#include "ComController.h"
 #include "HexBinController.h"
 #include "HexEdit.h"
 
@@ -28,7 +29,8 @@ protected:
 	afx_msg void OnBnClickedSave();
 	afx_msg void OnBnClickedHexToBin();
 	afx_msg void OnBnClickedBinToHex();
-	afx_msg void OnBnClickedBtnOpencom();
+	//afx_msg void OnBnClickedBtnOpencom();
+	afx_msg void OnBnClickedBtnFilereplication();
 	DECLARE_MESSAGE_MAP()
 
 public:
@@ -43,9 +45,7 @@ public:
 	void getBinEditText(BYTE *pDatas, int dataSize);
 
 
-
-	// to be rearraged..
-	CnComm _hCom;
+	// -Com
 	void findAvailableCom();
 	void showAvailableCom(const vector<CString> &aCom);
 	
@@ -56,5 +56,7 @@ private:
 
 	// -Controller
 	HexBinController _hbController;
+	ComController _comController;
 	CHexEdit _hexEdit;
+	
 };
