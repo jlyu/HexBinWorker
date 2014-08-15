@@ -378,23 +378,8 @@ void IntelHex::byteToBin(BYTE *pByte, char* pBin){
 		}
 	}
 }
-void IntelHex::writeToBinFile(FILE* fileHandler) { 
-	
-	if (fileHandler == NULL) {  
-        printf("Open file error.\n");  
-        return;  
-    }
 
-	 //¿ªÊ¼Ð´Èë  
-	typedef list<HexBlock>::reverse_iterator ListRevIter;
-	for(ListRevIter rIter = _hexBlocks.rbegin(); rIter != _hexBlocks.rend(); rIter++) {
-		int validLength = rIter->validLength;
-		fwrite(rIter->datas, 1, validLength, fileHandler);
-	}
 
-	fclose(fileHandler);
-	fileHandler = NULL;
-}
 
 
 // - Interface
@@ -502,10 +487,47 @@ string IntelHex::getFilePath() {
 	return filePathStr;
 }
 
+
+// - Write
 FILE* IntelHex::getFileWriteHandler() {
-	CString fileNameCopy = _fileName;
-	fileNameCopy.Insert(_fileName.GetLength()-4, _T("_"));
-	CT2A asciiFileName(fileNameCopy); //avoid to overwriting original hex file // TODO
+	if (_pHexFileHandler != NULL) {
+		fclose(_pHexFileHandler);
+		_pHexFileHandler = NULL;
+	}
+
+	CT2A asciiFileName(_fileName); 
 	fopen_s(&_pHexFileHandler, asciiFileName, "wb");
 	return _pHexFileHandler;
+}
+bool IntelHex::write() {
+
+	_pHexFileHandler = getFileWriteHandler();
+
+	if (_pHexFileHandler == NULL) {
+		TRACE("Open file error.\n");
+		return false;
+	}
+	
+	fwrite(_inStr.c_str(), 1, _inStr.length(), _pHexFileHandler);
+
+	fclose(_pHexFileHandler);
+	_pHexFileHandler = NULL;
+	return true;
+}
+void IntelHex::writeToBinFile(FILE* fileHandler) { 
+	
+	if (fileHandler == NULL) {  
+        printf("Open file error.\n");  
+        return;  
+    }
+
+	//start to write  
+	typedef list<HexBlock>::reverse_iterator ListRevIter;
+	for(ListRevIter rIter = _hexBlocks.rbegin(); rIter != _hexBlocks.rend(); rIter++) {
+		int validLength = rIter->validLength;
+		fwrite(rIter->datas, 1, validLength, fileHandler);
+	}
+
+	fclose(fileHandler);
+	fileHandler = NULL;
 }

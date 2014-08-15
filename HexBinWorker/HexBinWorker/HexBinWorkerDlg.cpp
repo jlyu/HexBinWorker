@@ -217,10 +217,16 @@ void CHexBinWorkerDlg::OnBnClickedBinToHex() {
 	showHexEditText();
 	showBinEditText();
 }
-void CHexBinWorkerDlg::OnBnClickedSave()
-{
-	//_hexFile.writeToBinFile(); //TODO: add fileNAME
-	//MessageBox(_T("saved"), NULL);
+void CHexBinWorkerDlg::OnBnClickedSave() {
+
+	string hexText;
+	getHexEditText(hexText);
+	_hbController.setHexData(hexText);
+	// TODO: hex file verify check ?
+	_hbController.writeHex();
+	
+
+	MessageBox(_T("hex and bin files have been saved."), NULL);
 }
 
 

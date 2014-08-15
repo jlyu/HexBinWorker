@@ -2,9 +2,7 @@
 #include "HexBinController.h"
 
 
-HexBinController::~HexBinController(void) {
-	//TODO
-}
+
 
 void HexBinController::init(CString& fileName) {
 	CString hexFileName; 
@@ -75,13 +73,16 @@ void HexBinController::parseBin(BYTE *pDatas, int dataSize) {
 	_bin.parse(pDatas, dataSize); 
 }
 
-void HexBinController::getText(CString& hexText, CString& binText) {
-	if (_processType == PROCESS_HEX_TO_BIN) {
+
+// MARK: text
+void HexBinController::getBinText(CString& binText) {
+	binText = _hex.getBin().c_str();
+}
+void HexBinController::getHexText(CString& hexText) {
+	if (_processType ==PROCESS_HEX_TO_BIN) {
 		hexText = _hex.getHex().c_str();
-		//binText = _hex.getBin().c_str();
 	} else if (_processType == PROCESS_BIN_TO_HEX) {
 		hexText = _bin.getHex().c_str();
-		binText = _bin.getBin().c_str();
 	}
 }
 void HexBinController::getFilePath(CString& hexPath, CString& binPath) {
@@ -89,10 +90,8 @@ void HexBinController::getFilePath(CString& hexPath, CString& binPath) {
 	binPath = _bin.getFilePath().c_str();
 }
 
-// MARK: text
-void HexBinController::getBinText(CString& binText) {
-	binText = _hex.getBin().c_str();
-}
+
+// MARK: getter/setter
 void HexBinController::getBinDatas(BYTE* &datas, int &dataSize) {
 
 	if (_processType == PROCESS_HEX_TO_BIN) {
@@ -105,21 +104,16 @@ void HexBinController::getBinDatas(BYTE* &datas, int &dataSize) {
 	}
 	
 }
-
-//void HexBinController::getHexDatas(BYTE* &datas, int &dataSize) {
-//	_hex.getBin(datas, dataSize);
-//}
-
-// MARK: redo text
-void HexBinController::getHexText(CString& hexText) {
-	if (_processType ==PROCESS_HEX_TO_BIN) {
-		hexText = _hex.getHex().c_str();
-	} else if (_processType == PROCESS_BIN_TO_HEX) {
-		hexText = _bin.getHex().c_str();
-	}
+void HexBinController::setHexData(string hexData) {
+	_hex.setHex(hexData); 
 }
 
+
 // MARK: write
+void HexBinController::writeHex() {
+	_hex.write();
+}
+
 void HexBinController::writeToBinFile() {
 
 	FILE* pFileHandler = _bin.getFileWriteHandler();
@@ -127,6 +121,7 @@ void HexBinController::writeToBinFile() {
 
 }
 void HexBinController::writeToHexFile() {
+
 	FILE* pFileHandler = _hex.getFileWriteHandler();
 	_bin.writeToHexFile(pFileHandler);
 }

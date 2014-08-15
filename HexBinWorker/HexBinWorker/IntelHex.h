@@ -4,15 +4,11 @@
 #include <list>
 #include <vector>
 #include "defineV.h"
-
 using namespace std;
 
 
-
-class IntelHex
-{
+class IntelHex {
 private:
-	
 	struct HexRecord {
 		string dataLength;
 		string startAddress;
@@ -33,7 +29,6 @@ private:
 		}
 	};
 
-	
 	bool openHexFile(CString& hexFileName);
 	bool checkLine(const char *src);
 	bool matchLine(const char *src);
@@ -67,14 +62,13 @@ private:
 
 	list<HexBlock> _hexBlocks;
 
+	//string _hexEditField;
 
 public:
-
 	IntelHex(void) { 
 		_pHexFileHandler = NULL; 
 		_outDatas = NULL;
 	}
-
 	IntelHex(const CString& hexFileName) {
 		
 		_fileName = hexFileName;
@@ -87,7 +81,6 @@ public:
 		_dataSize = 0;
 		_startAddr = 0x00;
 	}
-
 	~IntelHex(void) { 
 		if (_pHexFileHandler != NULL) {
 			fclose(_pHexFileHandler);
@@ -105,20 +98,20 @@ public:
 	bool parse(string& inStr);
 	bool parse();
 
-	// text
+	// getter 
+	//   text 
 	string getHex();
 	string getBin();
 	void getBin(BYTE* &outDatas, int &dataSize);
-
-
-	// write
-	void writeToBinFile(FILE* fileHandler);
-
-
+	//   other
 	string getFilePath();
 	FILE* getFileWriteHandler();
-	string _hexEditField;
-	
 
+	// setter
+	void setHex(string &inStr) { _inStr = inStr; }
+
+	// write
+	bool write();
+	void writeToBinFile(FILE* fileHandler);
 };
 
