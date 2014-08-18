@@ -10,12 +10,16 @@ public:
 	ComController(void);
 	virtual ~ComController(void);
 
-public:
     bool openCom(int comNumber);
     bool getCommand();
     bool eraseMemory();
-    bool writeMemory(BYTE* datas, int dataSize, long startAddress);
+    bool writeMemory(BYTE* datas, int dataSize, long startAddress = 0x0800);
     bool readMemory();
+
+private:
+    bool ComController::sendWriteMemoryHead();
+    bool ComController::sendWriteMemoryAddr(long MSB, long LSB);
+    bool ComController::sendWriteMemorydata(BYTE* datas, int dataSize, int currentIndex);
 
 private:
 	CnComm _hCom;

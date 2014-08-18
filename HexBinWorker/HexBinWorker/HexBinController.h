@@ -38,6 +38,7 @@ public:
 
 	// getter / setter
 	void getBinDatas(BYTE* &datas, int &dataSize);
+    void getHexDatas(BYTE* &datas, int &dataSize);
 	void setHexData(string hexData);
 
 	// write

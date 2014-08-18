@@ -77,7 +77,7 @@ void HexBinController::parseBin(BYTE *pDatas, int dataSize) {
 // MARK: getter/setter 
 void HexBinController::getHexText(CString& hexText) {
 	if (_processType ==PROCESS_HEX_TO_BIN) {
-		hexText = _hex.getHex().c_str();
+		hexText = _hex.getHex().c_str();  // TODO: over length ?
 	} else if (_processType == PROCESS_BIN_TO_HEX) {
 		hexText = _bin.getHex().c_str();
 	}
@@ -97,6 +97,9 @@ void HexBinController::getBinDatas(BYTE* &datas, int &dataSize) {
 		_bin.getBin(datas, dataSize);
 	}
 	
+}
+void HexBinController::getHexDatas(BYTE* &datas, int &dataSize) {
+    _hex.getBin(datas, dataSize);
 }
 void HexBinController::setHexData(string hexData) {
 	_hex.setHex(hexData); 

@@ -46,9 +46,9 @@ private:
 	string _inStr;
 
 	// -out
-	BYTE *_outDatas;
-	long _dataSize;
-	long _startAddr;
+	BYTE* _outDatas;
+	long  _dataSize;
+	long  _startAddr;
 
 	list<HexBlock> _hexBlocks;
 

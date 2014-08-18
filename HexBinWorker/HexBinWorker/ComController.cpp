@@ -63,7 +63,6 @@ bool ComController::getCommand() {
 	delete [] revData;
     return getCommandOK;
 }
-
 bool ComController::eraseMemory() {
     BYTE *revData = new BYTE[1];  //TODO: _revData ?
     int saveCount = 0;
@@ -99,27 +98,19 @@ bool ComController::eraseMemory() {
     return eraseMemoryOK;
 }
 
-
-bool ComController::writeMemory(BYTE* datas, int dataSize, long startAddress){
-/* 
-if the write operation was successful, the bootloader transmits the ACK byte; 
-otherwise it transmits a NACK byte to the user and aborts the command
-
-The maximum length of the block to be written for the STM32F10xxx is 256 bytes.
-
-When writting to the RAM, care must be taken to avoid overlapping with the first 512 bytes 
-(0x200) in RAM because they are used by the bootloader firmware.
-*/
-    BYTE *revData = new BYTE[1];  //TODO: _revData ?
-    int saveCount = 0;
+bool ComController::sendWriteMemoryHead() {
+    BYTE revFlag[1] = { 0x1F };   
     
     _hCom.Write(WRITE_MEMORY, 2);
-	_hCom.Read(revData, 1);
+	_hCom.Read(revFlag, 1);
 
-    if (revData[0] == NACK) {
+    if (revFlag[0] == NACK) {
         return false; 
     }
 
+    return true;
+}
+bool ComController::sendWriteMemoryAddr(long MSB, long LSB) {
     /* Send the start address (4 bytes) & checksum
        Byte 3 to byte 6:start address
          byte 3: MSB
@@ -131,32 +122,105 @@ When writting to the RAM, care must be taken to avoid overlapping with the first
 
        Wait for ACK
     */
-    //BYTE overlappedAddress = 0x0200; //TODO: ??
-    // 00-00 -> FF-FF
+    BYTE revFlag[1] = { 0x1F };
 
-    BYTE checkSum;
-    checkSum = (BYTE)(startAddress>>8) + (BYTE)startAddress;
-    checkSum = ~checkSum + 1;
+    const int addrSize = 5;
+    BYTE* addr = new BYTE[addrSize];
+    memset(addr, 0x00, addrSize);
 
-    const int sendAddressSize = 5;
-    BYTE* sendAddress = new BYTE[sendAddressSize];
-    memset(sendAddress, 0x00, sendAddressSize);
-    sendAddress[2] = (BYTE)(startAddress>>8);
-    sendAddress[3] = (BYTE)startAddress;
-    sendAddress[4] = checkSum;
+    addr[0] = MSB >> 8;
+    addr[1] = MSB;
+    addr[2] = LSB >> 8;
+    addr[3] = LSB;
 
-    _hCom.Write(sendAddress, sendAddressSize);
-    _hCom.Read(revData, 1);
+    // addr checksum
+    addr[4] = addr[0]^addr[1]^addr[2]^addr[3];
 
-    if (revData[0] == NACK) {
+    _hCom.Write(addr, addrSize);
+    _hCom.Read(revFlag, 1);
+    
+    if (revFlag[0] == NACK) {
+        delete [] addr; //TODO: DRY
         return false; 
     }
 
+    delete [] addr;
+    return true;
+}
+bool ComController::sendWriteMemorydata(BYTE* datas, int dataSize, int currentIndex) {
+
+    BYTE revFlag[1] = { 0x1F };
+
     /* Send the number of bytes to be written
-        (1 byte), the data (N + 1) bytes) & checksum
-
+        (1 byte), the data (N + 0x01) bytes) & checksum
     */
+    BYTE* data = new BYTE[1 + 16 + 1 + 1]; // 19
+    
+    // Byte 8: Number of bytes to be received (0 < N ¡Ü255)
+    int dataLength = (dataSize - currentIndex >= 16) ? 16 : dataSize - currentIndex;
+    data[0] = static_cast<BYTE>(dataLength);
 
+    BYTE dataSumCheck = data[0];
+    const int currentLine = (int)(dataSize / 16);
+    for (int i=1; i <= dataLength; i++ ) {
+        
+        data[i] = datas[currentIndex + i - 1];
+        dataSumCheck ^= data[i];
+    }
 
+    data[dataLength] = 0x01;
+    dataSumCheck ^= 0x01;
+    data[dataLength+1] =  dataSumCheck;
+    
+    _hCom.Write(data, dataLength+3);
+    _hCom.Read(revFlag, 1);
+
+    if (revFlag[0] == NACK) {
+        delete [] data; //TODO: DRY
+        return false; 
+    }
+
+    delete [] data;
+    return false;
+}
+
+bool ComController::writeMemory(BYTE* datas, int dataSize, long startAddress) {
+/* 
+if the write operation was successful, the bootloader transmits the ACK byte; 
+otherwise it transmits a NACK byte to the user and aborts the command
+
+The maximum length of the block to be written for the STM32F10xxx is 256 bytes.
+
+When writting to the RAM, care must be taken to avoid overlapping with the first 512 bytes 
+(0x200) in RAM because they are used by the bootloader firmware.
+*/
+    BYTE revFlag[1] = { 0x1F };
+    BYTE dataLength = 0x00;
+   // BYTE wDatas[16] = { 0x00 };
+  //  BYTE wDataCheckSum = 0x00;
+    
+
+    for (long l = 0; l < dataSize; l++) {
+
+        if (l % 16 == 0) {
+
+            if (!sendWriteMemoryHead()) {
+                return false;
+            }
+
+            if (!sendWriteMemoryAddr(startAddress, l)) {
+                return false;
+            }
+
+           dataLength = static_cast<BYTE>((dataSize - l >= 16) ? 16 : dataSize - l);
+
+		}
+
+        if (l % 16 == dataLength - 1) {
+            if (!sendWriteMemorydata(datas, dataSize, l)) {
+                return false;
+            }
+        }
+	}
     return true;
 }
