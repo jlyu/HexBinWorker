@@ -355,7 +355,7 @@ void CHexBinWorkerDlg::OnBnClickedBtnFilereplication()
     BYTE* pDatas = NULL;
 	int dataSize = 0;
 	_hbController.getBinDatas(pDatas, dataSize);
-	getBinEditText(pDatas, dataSize);
+	//getBinEditText(pDatas, dataSize);
 
     _comController.writeMemory(pDatas, dataSize);
 }

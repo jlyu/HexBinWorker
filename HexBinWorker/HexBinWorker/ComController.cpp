@@ -99,7 +99,7 @@ bool ComController::eraseMemory() {
 }
 
 bool ComController::sendWriteMemoryHead() {
-    BYTE revFlag[1] = { 0x1F };   
+    BYTE revFlag[1] = { 0xFF };   
     
     _hCom.Write(WRITE_MEMORY, 2);
 	_hCom.Read(revFlag, 1);
@@ -122,7 +122,7 @@ bool ComController::sendWriteMemoryAddr(long MSB, long LSB) {
 
        Wait for ACK
     */
-    BYTE revFlag[1] = { 0x1F };
+    BYTE revFlag[1] = { 0xFF };
 
     const int addrSize = 5;
     BYTE* addr = new BYTE[addrSize];
@@ -149,7 +149,7 @@ bool ComController::sendWriteMemoryAddr(long MSB, long LSB) {
 }
 bool ComController::sendWriteMemorydata(BYTE* datas, int dataSize, int currentIndex) {
 
-    BYTE revFlag[1] = { 0x1F };
+    BYTE revFlag[1] = { 0xFF };
 
     /* Send the number of bytes to be written
         (1 byte), the data (N + 0x01) bytes) & checksum
@@ -161,16 +161,17 @@ bool ComController::sendWriteMemorydata(BYTE* datas, int dataSize, int currentIn
     data[0] = static_cast<BYTE>(dataLength);
 
     BYTE dataSumCheck = data[0];
-    const int currentLine = (int)(dataSize / 16);
+    const int currentLine = (int)(currentIndex / 16);
     for (int i=1; i <= dataLength; i++ ) {
         
-        data[i] = datas[currentIndex + i - 1];
+        int datasIndex = currentLine * 16 + i - 1;
+        data[i] = datas[datasIndex];
         dataSumCheck ^= data[i];
     }
 
-    data[dataLength] = 0x01;
+    data[dataLength+1] = 0x01;
     dataSumCheck ^= 0x01;
-    data[dataLength+1] =  dataSumCheck;
+    data[dataLength+2] =  dataSumCheck;
     
     _hCom.Write(data, dataLength+3);
     _hCom.Read(revFlag, 1);
@@ -181,7 +182,7 @@ bool ComController::sendWriteMemorydata(BYTE* datas, int dataSize, int currentIn
     }
 
     delete [] data;
-    return false;
+    return true;
 }
 
 bool ComController::writeMemory(BYTE* datas, int dataSize, long startAddress) {
@@ -196,9 +197,6 @@ When writting to the RAM, care must be taken to avoid overlapping with the first
 */
     BYTE revFlag[1] = { 0x1F };
     BYTE dataLength = 0x00;
-   // BYTE wDatas[16] = { 0x00 };
-  //  BYTE wDataCheckSum = 0x00;
-    
 
     for (long l = 0; l < dataSize; l++) {
 
