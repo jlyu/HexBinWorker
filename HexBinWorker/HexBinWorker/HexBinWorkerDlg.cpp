@@ -83,8 +83,7 @@ BOOL CHexBinWorkerDlg::OnInitDialog() {
 
 	_editFont.CreateFont(-12, 0,0,0,0,0,0,0,0,0,0,0,0, _T("Consolas"));
 	GetDlgItem(IDC_HEXFILEFIELD)->SetFont(&_editFont);
-	GetDlgItem(IDC_BINFILEFIELD)->SetFont(&_editFont);
-
+	
     static_cast<CEdit*>(GetDlgItem(IDC_HEXFILEFIELD))->SetLimitText(0); // =2147483646 (0x7FFFFFFE)
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
@@ -246,7 +245,39 @@ void CHexBinWorkerDlg::OnBnClickedSave() {
 		MessageBox(_T("保存失败"));
 	}
 }
+void CHexBinWorkerDlg::OnBnClickedBtnFilereplication()
+{
+    // get COM Serial Number
+    CString comSerialStr;
+	int currentComSerial = ((CComboBox *)GetDlgItem(IDC_COMBO_COM))->GetCurSel();
+	((CComboBox *)GetDlgItem(IDC_COMBO_COM))->GetLBText(currentComSerial, comSerialStr);
+    CString comNumberCStr = comSerialStr.Mid(3);
+	int comNumber = _ttoi(comNumberCStr);
 
+    // open COM
+    bool openOK = _comController.openCom(comNumber);
+    if (!openOK) {
+        CString errMessage;
+        errMessage.Format(_T("无法打开串口：COM%d"), comNumber);
+        MessageBox(errMessage);
+    }
+
+    // write data
+    BYTE* pDatas = NULL;
+	int dataSize = 0;
+	_hbController.getBinDatas(pDatas, dataSize);
+
+    bool writeOK = _comController.writeMemory(pDatas, dataSize);
+    if (writeOK) {
+        MessageBox(_T("当前 Intel Hex 文件烧录成功"));
+    } else {
+        MessageBox(_T("烧录过程中发生错误，未烧录"));
+    }
+
+    // Option 
+    //_comController.getCommand();
+    //_comController.eraseMemory();
+}
 
 // Mark: -Com 
 void CHexBinWorkerDlg::findAvailableCom() {
@@ -287,82 +318,3 @@ void CHexBinWorkerDlg::showAvailableCom(const vector<CString> &aCom) {
 	((CComboBox *)GetDlgItem(IDC_COMBO_COM))->SetCurSel(comCount - 1);
 }
 
-/*
-void CHexBinWorkerDlg::OnBnClickedBtnOpencom() {
-	
-	CString comSerialStr;
-	int currentComSerial = ((CComboBox *)GetDlgItem(IDC_COMBO_COM))->GetCurSel();
-	((CComboBox *)GetDlgItem(IDC_COMBO_COM))->GetLBText(currentComSerial, comSerialStr);
-
-	CString comNumberCStr = comSerialStr.Mid(3);
-	int comNumber = _ttoi(comNumberCStr);
-
-	// open com: USB port
-	bool isSuccess = _hCom.Open(comNumber);
-	if (!isSuccess)	{
-		CString messageCStr(_T("无法打开串口：COM") + comNumberCStr);
-		MessageBox(messageCStr);
-		return;
-	}
-
-	_hCom.SetState(115200, 8, EVENPARITY, ONESTOPBIT);
-	
-	
-	//while (true)
-	//{
-		//char *revData = new char[3];
-		BYTE *revData = new BYTE[15];	
-
-		_hCom.Write("\x00\xFF", 2);
-		//_hCom.Reads(revData, 16);
-		_hCom.Read(revData, 15);
-		//revData[2] = '\0';
-
-		CString bufferCStr, bufferBlock;
-		for (int i=0; i<15; i++) {
-			bufferCStr.Format(_T("%02X"), revData[i]);
-			bufferBlock += bufferCStr;
-		}
-		
-		//CString revCStr;
-		//revCStr.Format(_T("%02X"), revData);
-
-		delete [] revData;
-
-	
-	//}
-	
-	_hCom.Close();
-	
-}
-*/
-
-void CHexBinWorkerDlg::OnBnClickedBtnFilereplication()
-{
-    // get COM Serial Number
-    CString comSerialStr;
-	int currentComSerial = ((CComboBox *)GetDlgItem(IDC_COMBO_COM))->GetCurSel();
-	((CComboBox *)GetDlgItem(IDC_COMBO_COM))->GetLBText(currentComSerial, comSerialStr);
-    CString comNumberCStr = comSerialStr.Mid(3);
-	int comNumber = _ttoi(comNumberCStr);
-
-    // open COM
-    bool openOK = _comController.openCom(comNumber);
-    if (!openOK) {
-        CString errMessage;
-        errMessage.Format(_T("无法打开串口：COM%d"), comNumber);
-        MessageBox(errMessage);
-    }
-
-    //
-	//_comController.getCommand();
-    //_comController.eraseMemory();
-
-    // TODO: GET datas from hex.datas
-    BYTE* pDatas = NULL;
-	int dataSize = 0;
-	_hbController.getBinDatas(pDatas, dataSize);
-	//getBinEditText(pDatas, dataSize);
-
-    _comController.writeMemory(pDatas, dataSize);
-}

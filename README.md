@@ -24,7 +24,11 @@
 √ 8. 硬件调试  
 √ 9. 实现 ISP 通讯协议(获取命令、擦除|烧录|读取内存)  
 
+###### 界面设计草图及目标分析
 ![](https://raw.githubusercontent.com/ChainYu/HexBinWorker/master/docs/HexBinFileWorker.png)
 
+###### ARM Cortex M3 开发板
+![](https://raw.githubusercontent.com/ChainYu/HexBinWorker/master/docs/ARM_Cortex_M3.png)
 
-![ARM Cortex M3 开发板](https://raw.githubusercontent.com/ChainYu/HexBinWorker/master/docs/ARM_Cortex_M3.png)
+###### 软件Release β1.0
+![](https://raw.githubusercontent.com/ChainYu/HexBinWorker/master/docs/HexBinWorker_v1.0.png)

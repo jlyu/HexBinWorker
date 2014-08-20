@@ -114,7 +114,7 @@ protected:
 	//afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 
 
-	// todo
+	// TODO
 	//afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnEditCopy();
 	//}}AFX_MSG

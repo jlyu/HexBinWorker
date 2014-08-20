@@ -29,7 +29,6 @@ protected:
 	afx_msg void OnBnClickedSave();
 	afx_msg void OnBnClickedHexToBin();
 	afx_msg void OnBnClickedBinToHex();
-	//afx_msg void OnBnClickedBtnOpencom();
 	afx_msg void OnBnClickedBtnFilereplication();
 	DECLARE_MESSAGE_MAP()
 
@@ -58,5 +57,4 @@ private:
 	HexBinController _hbController;
 	ComController _comController;
 	CHexEdit _hexEdit;
-	
 };

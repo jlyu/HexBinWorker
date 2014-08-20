@@ -128,10 +128,10 @@ bool ComController::sendWriteMemoryAddr(long MSB, long LSB) {
     BYTE* addr = new BYTE[addrSize];
     memset(addr, 0x00, addrSize);
 
-    addr[0] = MSB >> 8;
-    addr[1] = MSB;
-    addr[2] = LSB >> 8;
-    addr[3] = LSB;
+    addr[0] = static_cast<BYTE>(MSB >> 8);
+    addr[1] = static_cast<BYTE>(MSB);
+    addr[2] = static_cast<BYTE>(LSB >> 8);
+    addr[3] = static_cast<BYTE>(LSB);
 
     // addr checksum
     addr[4] = addr[0]^addr[1]^addr[2]^addr[3];
