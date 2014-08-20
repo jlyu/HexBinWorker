@@ -233,7 +233,9 @@ void CHexBinWorkerDlg::OnBnClickedSave() {
 	BYTE* pDatas = NULL;
 	int dataSize = 0;
 	_hbController.getBinDatas(pDatas, dataSize);
-	getBinEditText(pDatas, dataSize);
+    getBinEditText(pDatas, dataSize);
+    _hbController.setBinDatas(pDatas, dataSize);
+	
 
 	// save
 	bool writeHexOK = _hbController.writeHex();
