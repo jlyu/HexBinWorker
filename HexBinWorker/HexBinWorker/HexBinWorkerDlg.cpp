@@ -85,12 +85,7 @@ BOOL CHexBinWorkerDlg::OnInitDialog() {
 	GetDlgItem(IDC_HEXFILEFIELD)->SetFont(&_editFont);
 	GetDlgItem(IDC_BINFILEFIELD)->SetFont(&_editFont);
 
-    // TODO:
-    UINT textLimit = static_cast<CEdit*>(GetDlgItem(IDC_HEXFILEFIELD))->GetLimitText();
-    static_cast<CEdit*>(GetDlgItem(IDC_HEXFILEFIELD))->SetLimitText(0);
-    textLimit = static_cast<CEdit*>(GetDlgItem(IDC_HEXFILEFIELD))->GetLimitText();
-
-
+    static_cast<CEdit*>(GetDlgItem(IDC_HEXFILEFIELD))->SetLimitText(0); // =2147483646 (0x7FFFFFFE)
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -145,15 +140,20 @@ void CHexBinWorkerDlg::showFilePath() {
 	GetDlgItem(IDC_HEX_PATH)->SetWindowText(hexPath);
 	GetDlgItem(IDC_BIN_PATH)->SetWindowText(binPath);
 }
-void CHexBinWorkerDlg::showHexEditText() {
+void CHexBinWorkerDlg::showHexEditText(bool needClear) {
+	if (needClear){
+        GetDlgItem(IDC_HEXFILEFIELD)->SetWindowText(_T(""));  // clear
+	}
 	
-	GetDlgItem(IDC_HEXFILEFIELD)->SetWindowText(_T(""));  // clear
-
 	CString hexText;
 	_hbController.getHexText(hexText);
 	GetDlgItem(IDC_HEXFILEFIELD)->SetWindowText(hexText);
 }
-void CHexBinWorkerDlg::showBinEditText() {
+void CHexBinWorkerDlg::showBinEditText(bool needClear) {
+    if (needClear) {
+        _hexEdit.Clear();
+    }
+
 	BYTE* pDatas = NULL;
 	int dataSize = 0;
 	_hbController.getBinDatas(pDatas, dataSize);
@@ -186,7 +186,7 @@ void CHexBinWorkerDlg::OnBnClickedOk()
 
 		// Show 
 		showHexEditText();
-		showBinEditText();
+		showBinEditText(true);
 
 		showFilePath();
 	}
@@ -202,7 +202,7 @@ void CHexBinWorkerDlg::OnBnClickedHexToBin() {
 		MessageBox(_T("Hex 文件无法解析到 Bin 文件，格式错误"));
 	}
 
-	showHexEditText();
+	//showHexEditText();
 	showBinEditText();
 }
 void CHexBinWorkerDlg::OnBnClickedBinToHex() {
@@ -217,7 +217,7 @@ void CHexBinWorkerDlg::OnBnClickedBinToHex() {
 	_hbController.parseBin(pDatas, dataSize); //TODO:
 	
 	showHexEditText();
-	showBinEditText();
+	//showBinEditText();
 }
 void CHexBinWorkerDlg::OnBnClickedSave() {
 	// refresh hex data

@@ -166,7 +166,7 @@ void IntelHex::hexBlocksToOutDatas() {
 	if (_outDatas != NULL) {
 		delete [] _outDatas;
 	} 
-	_outDatas = new BYTE[FLASH_VOLUME * 64];
+	_outDatas = new BYTE[FLASH_VOLUME * 1024]; // ..!!
 	
 	typedef list<HexBlock>::reverse_iterator ListRevIter;
 	ListRevIter rIter = _hexBlocks.rbegin();
@@ -179,7 +179,7 @@ void IntelHex::hexBlocksToOutDatas() {
 
 	// TODO: copy the 1st datasBlock only
 	for (int i=0; i<_dataSize; i++) {
-		_outDatas[i] = rIter->datas[i]; //TODO: read another file cause error
+		_outDatas[i] = rIter->datas[i];
 	}
 
 }	

@@ -19,7 +19,7 @@ public:
 private:
     bool ComController::sendWriteMemoryHead();
     bool ComController::sendWriteMemoryAddr(long MSB, long LSB);
-    bool ComController::sendWriteMemorydata(BYTE* datas, int dataSize, int currentIndex);
+    bool ComController::sendWriteMemoryData(BYTE* datas, int dataSize, int currentIndex);
 
 private:
 	CnComm _hCom;

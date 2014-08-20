@@ -147,7 +147,7 @@ bool ComController::sendWriteMemoryAddr(long MSB, long LSB) {
     delete [] addr;
     return true;
 }
-bool ComController::sendWriteMemorydata(BYTE* datas, int dataSize, int currentIndex) {
+bool ComController::sendWriteMemoryData(BYTE* datas, int dataSize, int currentIndex) {
 
     BYTE revFlag[1] = { 0xFF };
 
@@ -215,7 +215,7 @@ When writting to the RAM, care must be taken to avoid overlapping with the first
 		}
 
         if (l % 16 == dataLength - 1) {
-            if (!sendWriteMemorydata(datas, dataSize, l)) {
+            if (!sendWriteMemoryData(datas, dataSize, l)) {
                 return false;
             }
         }

@@ -38,10 +38,10 @@ public:
 	// -User Interaction
 	void showFilePath();
 	
-	void showHexEditText();
+	void showHexEditText(bool needClear = true);
 	void getHexEditText(string& hexText);
 
-	void showBinEditText();
+	void showBinEditText(bool needClear = false);
 	void getBinEditText(BYTE *pDatas, int dataSize);
 
 

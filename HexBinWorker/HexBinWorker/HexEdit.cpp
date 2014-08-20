@@ -1092,9 +1092,6 @@ void CHexEdit::SetData(LPBYTE p, int len)
         free(m_pData);
     }
 	
-	//Clear();
-	
-
 	m_pData = (LPBYTE) malloc(len);
     if (m_pData == NULL) {
         TRACE("alloc CHexEdit::m_pData failed");

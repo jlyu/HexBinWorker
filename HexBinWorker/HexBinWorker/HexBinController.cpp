@@ -78,19 +78,7 @@ void HexBinController::parseBin(BYTE *pDatas, int dataSize) {
 // MARK: getter/setter 
 void HexBinController::getHexText(CString& hexText) {
 	if (_processType == PROCESS_HEX_TO_BIN) {
-
-        string s =_hex._inStr;
-		//CStringA s  = _hex._inStr.c_str();  // TODO: over length ?
-		hexText = _hex._inStr.c_str();  // TODO: over length ?
-       
-
-        //const int hexDataSize = 65536;
-        //wchar_t hexDatas[hexDataSize] = { '\0' };
-        //
-        //mbstowcs(hexDatas,  _hex.getHex().c_str(), hexDataSize);
-
-        //hexText = hexDatas;
-
+		hexText = _hex.getHex().c_str();
 	} else if (_processType == PROCESS_BIN_TO_HEX) {
 		hexText = _bin.getHex().c_str();
 	}
