@@ -34,10 +34,10 @@ bool ComController::getCommand() {
     bool getCommandOK = false;
     while (true)
 	{
-	    _hCom.Write(GET_COMMAND, 2);
+	    _hCom.Write(GET_COMMAND);
 	    _hCom.Read(revData, 15);
 		
-        if (revData[0] == ACK) { // get!
+        if (revData[0] == ACK) {
             // TODO: ..and check ?
             getCommandOK = true;
             break;
@@ -64,19 +64,21 @@ bool ComController::getCommand() {
     return getCommandOK;
 }
 bool ComController::eraseMemory() {
-    BYTE *revData = new BYTE[1];  //TODO: _revData ?
+
+    BYTE revFlag[1] = { 0xFF }; 
     int saveCount = 0;
 
     bool eraseMemoryOK = false;
     while (true) {
-        _hCom.Write(ERASE_MEMORY, 2);
-	    _hCom.Read(revData, 1);
+        _hCom.Write(ERASE_MEMORY);
+	    _hCom.Read(revFlag, 1);
     
-        if (revData[0] == ACK) { // get!
-            _hCom.Write(GLOBAL_ERASE, 2);
-            _hCom.Read(revData, 1);
+        if (revFlag[0] == ACK) { 
 
-            if (revData[0] == ACK) {
+            _hCom.Write(GLOBAL_ERASE);
+            _hCom.Read(revFlag, 1);
+
+            if (revFlag[0] == ACK) {
                 eraseMemoryOK = true;
             } else {
                 eraseMemoryOK = false;
@@ -94,21 +96,19 @@ bool ComController::eraseMemory() {
 
     }
 
-    delete [] revData;
     return eraseMemoryOK;
 }
 
 bool ComController::sendWriteMemoryHead() {
-    BYTE revFlag[1] = { 0xFF };   
+    BYTE revFlag[1] = { 0xFF };
     
-    _hCom.Write(WRITE_MEMORY, 2);
+    _hCom.Write(WRITE_MEMORY);
 	_hCom.Read(revFlag, 1);
 
-    if (revFlag[0] == NACK) {
-        return false; 
-    }
+    CString tmpFlag;
+    tmpFlag.Format(_T("%02X"), revFlag[0]);
 
-    return true;
+    return revFlag[0] == ACK;
 }
 bool ComController::sendWriteMemoryAddr(long MSB, long LSB) {
     /* Send the start address (4 bytes) & checksum
@@ -125,8 +125,7 @@ bool ComController::sendWriteMemoryAddr(long MSB, long LSB) {
     BYTE revFlag[1] = { 0xFF };
 
     const int addrSize = 5;
-    BYTE* addr = new BYTE[addrSize];
-    memset(addr, 0x00, addrSize);
+    BYTE addr[addrSize] = { 0x00 };
 
     addr[0] = static_cast<BYTE>(MSB >> 8);
     addr[1] = static_cast<BYTE>(MSB);
@@ -134,18 +133,16 @@ bool ComController::sendWriteMemoryAddr(long MSB, long LSB) {
     addr[3] = static_cast<BYTE>(LSB);
 
     // addr checksum
-    addr[4] = addr[0]^addr[1]^addr[2]^addr[3];
+    addr[4] = addr[0] ^ addr[1] ^ addr[2] ^ addr[3];
 
     _hCom.Write(addr, addrSize);
     _hCom.Read(revFlag, 1);
-    
-    if (revFlag[0] == NACK) {
-        delete [] addr; //TODO: DRY
-        return false; 
-    }
 
-    delete [] addr;
-    return true;
+    CString tmpFlag, addrStr;
+    tmpFlag.Format(_T("%02X"), revFlag[0]);
+    addrStr.Format(_T("%02X %02X %02X %02X %02X"), addr[0], addr[1], addr[2], addr[3], addr[4]);
+    
+    return revFlag[0] == ACK;
 }
 bool ComController::sendWriteMemoryData(BYTE* datas, int dataSize, int currentIndex) {
 
@@ -154,7 +151,7 @@ bool ComController::sendWriteMemoryData(BYTE* datas, int dataSize, int currentIn
     /* Send the number of bytes to be written
         (1 byte), the data (N + 0x01) bytes) & checksum
     */
-    BYTE* data = new BYTE[1 + 16 + 1 + 1]; // 19
+    BYTE data[19] = { 0x00 }; //new BYTE[1 + 16 + 1 + 1]; // 19
     
     // Byte 8: Number of bytes to be received (0 < N ¡Ü255)
     int dataLength = (dataSize - currentIndex >= 16) ? 16 : dataSize - currentIndex;
@@ -176,13 +173,15 @@ bool ComController::sendWriteMemoryData(BYTE* datas, int dataSize, int currentIn
     _hCom.Write(data, dataLength+3);
     _hCom.Read(revFlag, 1);
 
-    if (revFlag[0] == NACK) {
-        delete [] data; //TODO: DRY
-        return false; 
-    }
+    return revFlag[0] == ACK;
 
-    delete [] data;
-    return true;
+    //if (revFlag[0] == NACK) {
+    //    //delete [] data; //TODO: DRY
+    //    return false; 
+    //}
+
+    ////delete [] data;
+    //return true;
 }
 
 bool ComController::writeMemory(BYTE* datas, int dataSize, long startAddress) {
@@ -195,7 +194,7 @@ The maximum length of the block to be written for the STM32F10xxx is 256 bytes.
 When writting to the RAM, care must be taken to avoid overlapping with the first 512 bytes 
 (0x200) in RAM because they are used by the bootloader firmware.
 */
-    BYTE revFlag[1] = { 0x1F };
+    BYTE revFlag[1] = { 0xFF };
     BYTE dataLength = 0x00;
 
     for (long l = 0; l < dataSize; l++) {

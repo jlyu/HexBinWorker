@@ -269,6 +269,13 @@ void CHexBinWorkerDlg::OnBnClickedBtnFilereplication()
 	int dataSize = 0;
 	_hbController.getBinDatas(pDatas, dataSize);
 
+    //bool eraseOK = _comController.eraseMemory();
+    //if (!eraseOK) {
+    //    MessageBox(_T("无法擦除 Flash"));
+    //}
+
+//    _comController.getCommand();
+
     bool writeOK = _comController.writeMemory(pDatas, dataSize);
     if (writeOK) {
         MessageBox(_T("当前 Intel Hex 文件烧录成功"));
