@@ -102,10 +102,12 @@ void HexBinController::getBinDatas(BYTE* &datas, int &dataSize) {
 void HexBinController::getHexDatas(BYTE* &datas, int &dataSize) {
     _hex.getBin(datas, dataSize);
 }
-void HexBinController::setHexData(string hexData) {
+void HexBinController::setHexDatas(string hexData) {
 	_hex.setHex(hexData); 
 }
-
+void HexBinController::setBinDatas(BYTE* datas, int dataSize) {
+    _bin.setBin(datas, dataSize); 
+}
 
 // MARK: write
 bool HexBinController::writeHex() {

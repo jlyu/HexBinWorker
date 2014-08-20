@@ -27,7 +27,7 @@ bool Bin::read() {
 	_dataSize = ftell(_pBinFileHandler);
 	fseek(_pBinFileHandler, 0, SEEK_SET);
 
-	const int bufferSize = FLASH_VOLUME * 64;
+	const int bufferSize = FLASH_VOLUME * 1024;
 	if (_dataSize > bufferSize) {
 		return false;
 	}

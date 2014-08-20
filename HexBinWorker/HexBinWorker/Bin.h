@@ -58,11 +58,21 @@ public:
 	// getter / setter
 	void   getBin(BYTE* &datas, int &dataSize) { 
 		if (_inDatas == NULL) {
-			_inDatas = new BYTE[FLASH_VOLUME * 64];
+			_inDatas = new BYTE[FLASH_VOLUME * 1024];
 		}
 		datas = _inDatas;
 		dataSize =  _dataSize; 
 	}
+    void   setBin(BYTE* datas, int dataSize){
+        if (_inDatas == NULL) {
+			_inDatas = new BYTE[FLASH_VOLUME * 1024];
+		}
+        _dataSize = dataSize;
+        // copy
+        for (int i=0; i<_dataSize; i++) {
+            _inDatas[i] = datas[i];
+        }
+    }
 	string getBin();
 	string getHex();
 	string getFilePath();
