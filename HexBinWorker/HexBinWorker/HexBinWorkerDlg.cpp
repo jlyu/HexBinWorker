@@ -85,6 +85,13 @@ BOOL CHexBinWorkerDlg::OnInitDialog() {
 	GetDlgItem(IDC_HEXFILEFIELD)->SetFont(&_editFont);
 	GetDlgItem(IDC_BINFILEFIELD)->SetFont(&_editFont);
 
+    // TODO:
+    UINT textLimit = static_cast<CEdit*>(GetDlgItem(IDC_HEXFILEFIELD))->GetLimitText();
+    static_cast<CEdit*>(GetDlgItem(IDC_HEXFILEFIELD))->SetLimitText(0);
+    textLimit = static_cast<CEdit*>(GetDlgItem(IDC_HEXFILEFIELD))->GetLimitText();
+
+
+
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 void CHexBinWorkerDlg::OnSysCommand(UINT nID, LPARAM lParam) {
@@ -156,7 +163,7 @@ void CHexBinWorkerDlg::showBinEditText() {
 void CHexBinWorkerDlg::getHexEditText(string& hexText){
 	CString hexTextCStr;
 	GetDlgItem(IDC_HEXFILEFIELD)->GetWindowText(hexTextCStr);
-	hexText = CT2A(hexTextCStr);
+	hexText = CT2A(hexTextCStr, CP_UTF8);
 }
 void CHexBinWorkerDlg::getBinEditText(BYTE *pDatas, int dataSize) {
 	_hexEdit.GetData(pDatas, dataSize);
@@ -190,7 +197,7 @@ void CHexBinWorkerDlg::OnBnClickedHexToBin() {
 	string hexText;
 	getHexEditText(hexText);
 
-	bool succeed = _hbController.parseHex(hexText);
+	bool succeed = _hbController.parseHex(hexText); //TODO: block with 3 sec
 	if (!succeed) {
 		MessageBox(_T("Hex 文件无法解析到 Bin 文件，格式错误"));
 	}

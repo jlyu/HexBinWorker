@@ -43,7 +43,7 @@ private:
 	FILE* _pHexFileHandler;
 
 	// -in
-	string _inStr;
+	//string _inStr;
 
 	// -out
 	BYTE* _outDatas;
@@ -53,6 +53,8 @@ private:
 	list<HexBlock> _hexBlocks;
 
 public:
+    string _inStr;
+
 	IntelHex(void) { 
 		_pHexFileHandler = NULL; 
 		_outDatas = NULL;

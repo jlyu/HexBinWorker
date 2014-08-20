@@ -8,8 +8,7 @@ bool HexBinController::isHexFile(const CString& fileName) {
 	CString fileExtension = PathFindExtension(fileName);
 	fileExtension.MakeLower();
 
-	if (fileExtension == _T(".hex"))
-	{
+	if (fileExtension == _T(".hex")) {
 		return true;
 	}
 
@@ -49,8 +48,10 @@ void HexBinController::init(CString& fileName) {
 void HexBinController::read(const CString& fileName){
 	if (isHexFile(fileName)) {
 		_hex.read();
+        typeHexToBin();
 	} else {
 		_bin.read();
+        typeBinToHex();
 	}
 }
 
@@ -76,8 +77,20 @@ void HexBinController::parseBin(BYTE *pDatas, int dataSize) {
 
 // MARK: getter/setter 
 void HexBinController::getHexText(CString& hexText) {
-	if (_processType ==PROCESS_HEX_TO_BIN) {
-		hexText = _hex.getHex().c_str();  // TODO: over length ?
+	if (_processType == PROCESS_HEX_TO_BIN) {
+
+        string s =_hex._inStr;
+		//CStringA s  = _hex._inStr.c_str();  // TODO: over length ?
+		hexText = _hex._inStr.c_str();  // TODO: over length ?
+       
+
+        //const int hexDataSize = 65536;
+        //wchar_t hexDatas[hexDataSize] = { '\0' };
+        //
+        //mbstowcs(hexDatas,  _hex.getHex().c_str(), hexDataSize);
+
+        //hexText = hexDatas;
+
 	} else if (_processType == PROCESS_BIN_TO_HEX) {
 		hexText = _bin.getHex().c_str();
 	}

@@ -179,7 +179,7 @@ void IntelHex::hexBlocksToOutDatas() {
 
 	// TODO: copy the 1st datasBlock only
 	for (int i=0; i<_dataSize; i++) {
-		_outDatas[i] = rIter->datas[i];
+		_outDatas[i] = rIter->datas[i]; //TODO: read another file cause error
 	}
 
 }	
@@ -232,7 +232,9 @@ bool IntelHex::read() {
 
 bool IntelHex::parse(string& inStr) {
 
-	_inStr = inStr;
+    if (_inStr != inStr) {
+        _inStr = inStr;
+    }
 
 	if (!_hexBlocks.empty()) {
 		_hexBlocks.clear();
