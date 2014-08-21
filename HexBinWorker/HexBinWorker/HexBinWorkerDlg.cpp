@@ -262,12 +262,18 @@ void CHexBinWorkerDlg::OnBnClickedBtnFilereplication()
         CString errMessage;
         errMessage.Format(_T("无法打开串口：COM%d"), comNumber);
         MessageBox(errMessage);
+        return;
     }
 
     // write data
     BYTE* pDatas = NULL;
 	int dataSize = 0;
 	_hbController.getBinDatas(pDatas, dataSize);
+
+    if (dataSize == 0) {
+        MessageBox(_T("未发现烧录的数据"));
+        return;
+    }
 
     //bool eraseOK = _comController.eraseMemory();
     //if (!eraseOK) {
