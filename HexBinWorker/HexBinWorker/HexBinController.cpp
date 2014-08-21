@@ -18,24 +18,28 @@ void HexBinController::init(CString& fileName) {
 	CString hexFileName; 
 	CString binFileName;
 
-	string fileNameStr = CT2A(fileName);
+    
+	string fileNameStr = CT2A(fileName/*.MakeLower()*/);
+    
 
 	if (isHexFile(fileName)) {
 		hexFileName = fileName;
 
-		int pos = fileNameStr.find(".hex");
+		int pos = fileNameStr.find(".");
+        VERIFY(pos != -1);
 		fileNameStr.replace(pos, 4, ".bin");
-		
 		binFileName = fileNameStr.c_str();
 		
 		_processType = PROCESS_HEX_TO_BIN;
+
 	} else {
 		binFileName = fileName;
 
-		int pos = fileNameStr.find(".bin");
+		int pos = fileNameStr.find(".");
+        VERIFY(pos != -1);
 		fileNameStr.replace(pos, 4, ".hex");
-		
 		hexFileName = fileNameStr.c_str();
+
 		_processType = PROCESS_BIN_TO_HEX;
 	}
 
