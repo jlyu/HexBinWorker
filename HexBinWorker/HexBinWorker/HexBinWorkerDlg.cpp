@@ -202,7 +202,6 @@ void CHexBinWorkerDlg::OnBnClickedHexToBin() {
         return;
 	}
 
-	//showHexEditText();
 	showBinEditText();
 }
 void CHexBinWorkerDlg::OnBnClickedBinToHex() {
@@ -220,7 +219,6 @@ void CHexBinWorkerDlg::OnBnClickedBinToHex() {
 	}
 
 	showHexEditText();
-	//showBinEditText();
 }
 void CHexBinWorkerDlg::OnBnClickedSave() {
 	// refresh hex data
@@ -269,33 +267,37 @@ void CHexBinWorkerDlg::OnBnClickedBtnFilereplication()
         return;
     }
 
-    // write data
+    // get data
     BYTE* pDatas = NULL;
 	int dataSize = 0;
-	_hbController.getBinDatas(pDatas, dataSize);
+    _hbController.getBinDatas(pDatas, dataSize);
 
     if (dataSize == 0) {
-        MessageBox(_T("未发现烧录的数据"));
-        return;
+        _hbController.parse();
+        _hbController.getBinDatas(pDatas, dataSize);
+
+        if (dataSize == 0) {
+            MessageBox(_T("未发现烧录的数据"));
+            return;
+        }
     }
+
+    // TODO: how to reset ARM status to recive write command again?
 
     //bool eraseOK = _comController.eraseMemory();
     //if (!eraseOK) {
     //    MessageBox(_T("无法擦除 Flash"));
     //}
 
-//    _comController.getCommand();
+    //_comController.getCommand();
 
+    // write data
     bool writeOK = _comController.writeMemory(pDatas, dataSize);
     if (writeOK) {
         MessageBox(_T("当前 Intel Hex 文件烧录成功"));
     } else {
         MessageBox(_T("烧录过程中发生错误，未烧录"));
     }
-
-    // Option 
-    //_comController.getCommand();
-    //_comController.eraseMemory();
 }
 
 // Mark: -Com 

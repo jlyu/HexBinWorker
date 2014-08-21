@@ -56,6 +56,7 @@ public:
 	IntelHex(void) { 
 		_pHexFileHandler = NULL; 
 		_outDatas = NULL;
+        _dataSize = 0;
 	}
 	IntelHex(const CString& hexFileName) {
 		
