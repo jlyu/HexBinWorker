@@ -61,6 +61,15 @@ void HexBinController::read(const CString& fileName){
 
 
 // MARK: parse
+bool HexBinController::parse() {
+    if (_processType == PROCESS_HEX_TO_BIN) {
+        return _hex.parse();
+    } else if (_processType == PROCESS_BIN_TO_HEX) {
+        return _bin.parse();
+    }
+    return false;
+}
+
 bool HexBinController::parse(const CString& fileName) {
 	
 	if (isHexFile(fileName)) {

@@ -194,7 +194,7 @@ The maximum length of the block to be written for the STM32F10xxx is 256 bytes.
 When writting to the RAM, care must be taken to avoid overlapping with the first 512 bytes 
 (0x200) in RAM because they are used by the bootloader firmware.
 */
-    if (dataSize == 0) {
+    if (dataSize <= 0) {
         return false;
     }
 
@@ -223,5 +223,6 @@ When writting to the RAM, care must be taken to avoid overlapping with the first
             }
         }
 	}
+
     return true;
 }

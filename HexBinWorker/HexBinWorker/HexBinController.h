@@ -28,6 +28,7 @@ public:
 
 	void read(const CString& fileName);
 
+    bool parse();
 	bool parse(const CString& fileName);
 	bool parseHex(string& inStr);
 	bool parseBin(BYTE *pDatas, int dataSize);

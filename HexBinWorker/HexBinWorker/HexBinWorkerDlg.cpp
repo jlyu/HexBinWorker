@@ -202,7 +202,6 @@ void CHexBinWorkerDlg::OnBnClickedHexToBin() {
         return;
 	}
 
-	//showHexEditText();
 	showBinEditText();
 }
 void CHexBinWorkerDlg::OnBnClickedBinToHex() {
@@ -220,7 +219,6 @@ void CHexBinWorkerDlg::OnBnClickedBinToHex() {
 	}
 
 	showHexEditText();
-	//showBinEditText();
 }
 void CHexBinWorkerDlg::OnBnClickedSave() {
 	// refresh hex data
@@ -269,14 +267,19 @@ void CHexBinWorkerDlg::OnBnClickedBtnFilereplication()
         return;
     }
 
-    // write data
+    // get data
     BYTE* pDatas = NULL;
 	int dataSize = 0;
-	_hbController.getBinDatas(pDatas, dataSize);
+    _hbController.getBinDatas(pDatas, dataSize);
 
     if (dataSize == 0) {
-        MessageBox(_T("未发现烧录的数据"));
-        return;
+        _hbController.parse();
+        _hbController.getBinDatas(pDatas, dataSize);
+
+        if (dataSize == 0) {
+            MessageBox(_T("未发现烧录的数据"));
+            return;
+        }
     }
 
     //bool eraseOK = _comController.eraseMemory();
@@ -284,8 +287,9 @@ void CHexBinWorkerDlg::OnBnClickedBtnFilereplication()
     //    MessageBox(_T("无法擦除 Flash"));
     //}
 
-//    _comController.getCommand();
+    //_comController.getCommand();
 
+    // write data
     bool writeOK = _comController.writeMemory(pDatas, dataSize);
     if (writeOK) {
         MessageBox(_T("当前 Intel Hex 文件烧录成功"));
