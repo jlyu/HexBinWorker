@@ -196,9 +196,10 @@ void CHexBinWorkerDlg::OnBnClickedHexToBin() {
 	string hexText;
 	getHexEditText(hexText);
 
-	bool succeed = _hbController.parseHex(hexText); //TODO: block with 3 sec
-	if (!succeed) {
+	bool parseOK = _hbController.parseHex(hexText); //TODO: block with 3 sec
+	if (!parseOK) {
 		MessageBox(_T("Hex 文件无法解析到 Bin 文件，格式错误"));
+        return;
 	}
 
 	//showHexEditText();
@@ -210,11 +211,14 @@ void CHexBinWorkerDlg::OnBnClickedBinToHex() {
 	BYTE* pDatas = NULL;
 	int dataSize = 0;
 
-	
 	_hbController.getBinDatas(pDatas, dataSize); 
 	_hexEdit.GetData(pDatas, dataSize);
-	_hbController.parseBin(pDatas, dataSize); //TODO:
-	
+	bool parseOK = _hbController.parseBin(pDatas, dataSize);
+	if (!parseOK) {
+		MessageBox(_T("bin 文件无法解析到 HEX 文件"));
+        return;
+	}
+
 	showHexEditText();
 	//showBinEditText();
 }

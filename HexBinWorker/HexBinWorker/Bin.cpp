@@ -54,7 +54,7 @@ bool Bin::parse(BYTE *pDatas, int dataSize) {
 }
 bool Bin::parse() {
 
-	if (_inDatas == NULL) {
+	if (_inDatas == NULL || _dataSize == 0) {
 		return false;
 	}
 

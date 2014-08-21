@@ -73,9 +73,9 @@ bool HexBinController::parseHex(string& inStr) {
 	_processType = PROCESS_HEX_TO_BIN;
 	return _hex.parse(inStr); 
 }
-void HexBinController::parseBin(BYTE *pDatas, int dataSize) { 
+bool HexBinController::parseBin(BYTE *pDatas, int dataSize) { 
 	_processType = PROCESS_BIN_TO_HEX;
-	_bin.parse(pDatas, dataSize); 
+	return _bin.parse(pDatas, dataSize); 
 }
 
 

@@ -30,7 +30,7 @@ public:
 
 	bool parse(const CString& fileName);
 	bool parseHex(string& inStr);
-	void parseBin(BYTE *pDatas, int dataSize);
+	bool parseBin(BYTE *pDatas, int dataSize);
 
 	// text
 	void getHexText(CString& hexText);
