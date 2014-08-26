@@ -34,8 +34,8 @@ bool ComController::getCommand() {
     bool getCommandOK = false;
     while (true)
 	{
-	    _hCom.Write(GET_COMMAND);
-	    _hCom.Read(revData, 15);
+	    _hCom.WriteSync(GET_COMMAND);
+	    _hCom.ReadSync(revData, 15);
 		
         if (revData[0] == ACK) {
             // TODO: ..and check ?
@@ -70,13 +70,13 @@ bool ComController::eraseMemory() {
 
     bool eraseMemoryOK = false;
     while (true) {
-        _hCom.Write(ERASE_MEMORY);
-	    _hCom.Read(revFlag, 1);
+        _hCom.WriteSync(ERASE_MEMORY);
+	    _hCom.ReadSync(revFlag, 1);
     
         if (revFlag[0] == ACK) { 
 
-            _hCom.Write(GLOBAL_ERASE);
-            _hCom.Read(revFlag, 1);
+            _hCom.WriteSync(GLOBAL_ERASE);
+            _hCom.ReadSync(revFlag, 1);
 
             if (revFlag[0] == ACK) {
                 eraseMemoryOK = true;
@@ -102,8 +102,8 @@ bool ComController::eraseMemory() {
 bool ComController::sendWriteMemoryHead() {
     BYTE revFlag[1] = { 0xFF };
     
-    _hCom.Write(WRITE_MEMORY);
-	_hCom.Read(revFlag, 1);
+    _hCom.WriteSync(WRITE_MEMORY);
+	_hCom.ReadSync(revFlag, 1);
 
     CString tmpFlag;
     tmpFlag.Format(_T("%02X"), revFlag[0]);
@@ -135,8 +135,8 @@ bool ComController::sendWriteMemoryAddr(long MSB, long LSB) {
     // addr checksum
     addr[4] = addr[0] ^ addr[1] ^ addr[2] ^ addr[3];
 
-    _hCom.Write(addr, addrSize);
-    _hCom.Read(revFlag, 1);
+    _hCom.WriteSync(addr, addrSize);
+    _hCom.ReadSync(revFlag, 1);
 
     CString tmpFlag, addrStr;
     tmpFlag.Format(_T("%02X"), revFlag[0]);
@@ -159,7 +159,7 @@ bool ComController::sendWriteMemoryData(BYTE* datas, int dataSize, int currentIn
 
     BYTE dataSumCheck = data[0];
     const int currentLine = (int)(currentIndex / 16);
-    for (int i=1; i <= dataLength; i++ ) {
+    for (int i=1; i <= dataLength; i++) {
         
         int datasIndex = currentLine * 16 + i - 1;
         data[i] = datas[datasIndex];
@@ -170,18 +170,17 @@ bool ComController::sendWriteMemoryData(BYTE* datas, int dataSize, int currentIn
     dataSumCheck ^= 0x01;
     data[dataLength+2] =  dataSumCheck;
     
-    _hCom.Write(data, dataLength+3);
-    _hCom.Read(revFlag, 1);
+    _hCom.WriteSync(data, dataLength+3);
+    _hCom.ReadSync(revFlag, 1);
 
+    CString tmpFlag, dataStr, datasStr;
+    tmpFlag.Format(_T("%02X"), revFlag[0]);
+    for (int i=0; i <= dataLength+3; i++) {
+        dataStr.Format(_T("%02X"), data[i]);
+        datasStr += dataStr;
+    }
+   
     return revFlag[0] == ACK;
-
-    //if (revFlag[0] == NACK) {
-    //    //delete [] data; //TODO: DRY
-    //    return false; 
-    //}
-
-    ////delete [] data;
-    //return true;
 }
 
 bool ComController::writeMemory(BYTE* datas, int dataSize, long startAddress) {
